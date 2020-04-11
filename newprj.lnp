@@ -1,0 +1,8 @@
+"STARTUP.obj",
+"C8051F12x_FIR_Demo.obj",
+"modbus.obj",
+"F120_FlashPrimitives.obj",
+"F120_FlashUtils.obj",
+"fir.obj" 
+TO "newprj" 
+RAMSIZE(256) 

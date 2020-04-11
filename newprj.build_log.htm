@@ -1,0 +1,57 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.11.2.0
+Copyright (C) 2014 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Vadim Jigulin, RZD, LIC=BU3Y8-309A2-AZAW4-FKBYA-3UTX7-AD4RG
+ 
+Tool Versions:
+Toolchain:       PK51 Prof. Developers Kit  Version: 9.53.0.0
+Toolchain Path:  C:\Keil_v5\C51\BIN
+C Compiler:      C51.exe V9.53.0.0
+Assembler:       A51.exe V8.02b
+Linker/Locator:  BL51.exe V6.22
+Library Manager: LIB51.exe V4.30.0.2
+Hex Converter:   OH51.exe V2.7.0.0
+CPU DLL:         S8051.DLL V3.95.0.0
+Dialog DLL:      DCYG.DLL V2.72.0.0
+Target DLL:      SiC8051F.dll V4.4.0.0
+Dialog DLL:      TCYG.DLL V2.70
+ 
+<h2>Project:</h2>
+C:\Users\¬‡‰ËÏ\Desktop\newprj\newprj.uvproj
+Project File Date:  04/01/2020
+
+<h2>Output:</h2>
+Rebuild target 'Target 1'
+assembling STARTUP.A51...
+compiling C8051F12x_FIR_Demo.c...
+C8051F12x_FIR_Demo.c(44): warning C317: attempt to redefine macro 'NOP'
+compiling modbus.c...
+modbus.c(270): warning C173: missing return-expression
+modbus.c(270): warning C290: missing return value
+compiling F120_FlashPrimitives.c...
+compiling F120_FlashUtils.c...
+compiling fir.c...
+fir.c(18): warning C280: 'order': unreferenced local variable
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_PUTCHAR?C8051F12X_FIR_DEMO
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?GET_MODBUS_RECEIVER_COUNTER?MODBUS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_SET_MODBUS_RECEIVER_COUNTER?MODBUS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?INC_MODBUS_RECEIVER_COUNTER?MODBUS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_FLASH_FILL?F120_FLASHUTILS
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_POPULATEFIRALL?FIR
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_FLASH_BYTEREAD?F120_FLASHPRIMITIVES
+    CALLER1: ?C_C51STARTUP
+    CALLER2: ?PR?TIMER0_ISR?C8051F12X_FIR_DEMO
+Program Size: data=117.2 xdata=7489 code=8984
+"newprj" - 0 Error(s), 11 Warning(s).

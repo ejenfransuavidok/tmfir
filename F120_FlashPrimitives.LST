@@ -1,0 +1,244 @@
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              04/01/2020 23:34:38 PAGE 1   
+
+
+C51 COMPILER V9.53.0.0, COMPILATION OF MODULE F120_FLASHPRIMITIVES
+OBJECT MODULE PLACED IN F120_FlashPrimitives.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE F120_FlashPrimitives.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(
+                    -2)
+
+line level    source
+
+   1          //-----------------------------------------------------------------------------
+   2          // F120_FlashPrimitives.c
+   3          //-----------------------------------------------------------------------------
+   4          // Copyright 2004 Silicon Laboratories, Inc.
+   5          //
+   6          // This program contains several useful utilities for writing and updating
+   7          // FLASH memory.
+   8          //
+   9          // AUTH: BW & GP
+  10          // DATE: 21 JUL 04
+  11          //
+  12          // Target: C8051F12x
+  13          // Tool chain: KEIL C51 7.06
+  14          //
+  15          // Release 1.2 / 23 OCT 2008 (GP)
+  16          // -Upgrading release version due to change in FlashUtils.c
+  17          //
+  18          // Release 1.1
+  19          // -Upgrading release version due to change in FlashPrimitives.h
+  20          // -07 FEB 2006 (GP)
+  21          //
+  22          // Release 1.0
+  23          //
+  24          
+  25          //-----------------------------------------------------------------------------
+  26          // Includes
+  27          //-----------------------------------------------------------------------------
+  28          
+  29          #include "F120_FlashPrimitives.h"
+  30          #include <c8051F120.h>
+  31          
+  32          //-----------------------------------------------------------------------------
+  33          // Structures, Unions, Enumerations, and Type Definitions
+  34          //-----------------------------------------------------------------------------
+  35          
+  36          //-----------------------------------------------------------------------------
+  37          // Global Constants
+  38          //-----------------------------------------------------------------------------
+  39          
+  40          //-----------------------------------------------------------------------------
+  41          // Function Prototypes
+  42          //-----------------------------------------------------------------------------
+  43          
+  44          // FLASH read/write/erase routines
+  45          void FLASH_ByteWrite (FLADDR addr, char byte, bit SFLE);
+  46          unsigned char FLASH_ByteRead (FLADDR addr, bit SFLE);
+  47          void FLASH_PageErase (FLADDR addr, bit SFLE);
+  48          
+  49          //-----------------------------------------------------------------------------
+  50          // Global Variables
+  51          //-----------------------------------------------------------------------------
+  52          
+  53          //-----------------------------------------------------------------------------
+  54          // FLASH Routines
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              04/01/2020 23:34:38 PAGE 2   
+
+  55          //-----------------------------------------------------------------------------
+  56          
+  57          //-----------------------------------------------------------------------------
+  58          // FLASH_ByteWrite
+  59          //-----------------------------------------------------------------------------
+  60          //
+  61          // This routine writes <byte> to the linear FLASH address <addr>.
+  62          // Linear map is decoded as follows:
+  63          // Linear Address       Bank     Bank Address
+  64          // ------------------------------------------------
+  65          // 0x00000 - 0x07FFF    0        0x0000 - 0x7FFF
+  66          // 0x08000 - 0x0FFFF    1        0x8000 - 0xFFFF
+  67          // 0x10000 - 0x17FFF    2        0x8000 - 0xFFFF
+  68          // 0x18000 - 0x1FFFF    3        0x8000 - 0xFFFF
+  69          //
+  70          void FLASH_ByteWrite (FLADDR addr, char byte, bit SFLE)
+  71          {
+  72   1         char SFRPAGE_SAVE = SFRPAGE;        // preserve SFRPAGE
+  73   1         bit EA_SAVE = EA;                   // preserve EA
+  74   1         char PSBANK_SAVE = PSBANK;          // preserve PSBANK
+  75   1         char xdata * data pwrite;           // FLASH write pointer
+  76   1      
+  77   1         EA = 0;                             // disable interrupts
+  78   1      
+  79   1         SFRPAGE = LEGACY_PAGE;
+  80   1      
+  81   1         if (addr < 0x10000) {               // 64K linear address
+  82   2            pwrite = (char xdata *) addr;
+  83   2         } else if (addr < 0x18000) {        // BANK 2
+  84   2            addr |= 0x8000;
+  85   2            pwrite = (char xdata *) addr;
+  86   2            PSBANK &= ~0x30;                 // COBANK = 0x2
+  87   2            PSBANK |=  0x20;
+  88   2         } else {                            // BANK 3
+  89   2            pwrite = (char xdata *) addr;
+  90   2            PSBANK &= ~0x30;                 // COBANK = 0x3
+  91   2            PSBANK |=  0x30;
+  92   2         }
+  93   1      
+  94   1         FLSCL |= 0x01;                      // enable FLASH writes/erases
+  95   1         PSCTL |= 0x01;                      // PSWE = 1
+  96   1      
+  97   1         if (SFLE) {
+  98   2            PSCTL |= 0x04;                   // set SFLE
+  99   2         }
+ 100   1      
+ 101   1         RSTSRC = 0x02;                      // enable VDDMON as reset source
+ 102   1         *pwrite = byte;                     // write the byte
+ 103   1      
+ 104   1         if (SFLE) {
+ 105   2            PSCTL &= ~0x04;                  // clear SFLE
+ 106   2         }
+ 107   1         PSCTL &= ~0x01;                     // PSWE = 0
+ 108   1         FLSCL &= ~0x01;                     // disable FLASH writes/erases
+ 109   1      
+ 110   1         PSBANK = PSBANK_SAVE;               // restore PSBANK
+ 111   1         SFRPAGE = SFRPAGE_SAVE;             // restore SFRPAGE
+ 112   1         EA = EA_SAVE;                       // restore interrupts
+ 113   1      }
+ 114          
+ 115          //-----------------------------------------------------------------------------
+ 116          // FLASH_ByteRead
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              04/01/2020 23:34:38 PAGE 3   
+
+ 117          //-----------------------------------------------------------------------------
+ 118          //
+ 119          // This routine reads a <byte> from the linear FLASH address <addr>.
+ 120          //
+ 121          unsigned char FLASH_ByteRead (FLADDR addr, bit SFLE)
+ 122          {
+ 123   1         char SFRPAGE_SAVE = SFRPAGE;        // preserve SFRPAGE
+ 124   1         bit EA_SAVE = EA;                   // preserve EA
+ 125   1         char PSBANK_SAVE = PSBANK;          // preserve PSBANK
+ 126   1         char code * data pread;             // FLASH read pointer
+ 127   1         unsigned char byte;
+ 128   1      
+ 129   1         EA = 0;                             // disable interrupts
+ 130   1      
+ 131   1         SFRPAGE = LEGACY_PAGE;
+ 132   1      
+ 133   1         if (addr < 0x10000) {               // 64K linear address
+ 134   2            pread = (char code *) addr;
+ 135   2         } else if (addr < 0x18000) {        // BANK 2
+ 136   2            addr |= 0x8000;
+ 137   2            pread = (char code *) addr;
+ 138   2            PSBANK &= ~0x30;                 // COBANK = 0x2
+ 139   2            PSBANK |=  0x20;
+ 140   2         } else {                            // BANK 3
+ 141   2            pread = (char code *) addr;
+ 142   2            PSBANK &= ~0x30;                 // COBANK = 0x3
+ 143   2            PSBANK |=  0x30;
+ 144   2         }
+ 145   1      
+ 146   1         if (SFLE) {
+ 147   2            PSCTL |= 0x04;                   // set SFLE
+ 148   2         }
+ 149   1      
+ 150   1         byte = *pread;                      // read the byte
+ 151   1      
+ 152   1         if (SFLE) {
+ 153   2            PSCTL &= ~0x04;                  // clear SFLE
+ 154   2         }
+ 155   1      
+ 156   1         PSBANK = PSBANK_SAVE;               // restore PSBANK
+ 157   1         SFRPAGE = SFRPAGE_SAVE;             // restore SFRPAGE
+ 158   1         EA = EA_SAVE;                       // restore interrupts
+ 159   1      
+ 160   1         return byte;
+ 161   1      }
+ 162          
+ 163          //-----------------------------------------------------------------------------
+ 164          // FLASH_PageErase
+ 165          //-----------------------------------------------------------------------------
+ 166          //
+ 167          // This routine erases the FLASH page containing the linear FLASH address
+ 168          // <addr>.
+ 169          //
+ 170          void FLASH_PageErase (FLADDR addr, bit SFLE)
+ 171          {
+ 172   1         char SFRPAGE_SAVE = SFRPAGE;        // preserve SFRPAGE
+ 173   1         bit EA_SAVE = EA;                   // preserve EA
+ 174   1         char PSBANK_SAVE = PSBANK;          // preserve PSBANK
+ 175   1         char xdata * data pwrite;           // FLASH write pointer
+ 176   1      
+ 177   1         EA = 0;                             // disable interrupts
+ 178   1      
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              04/01/2020 23:34:38 PAGE 4   
+
+ 179   1         SFRPAGE = LEGACY_PAGE;
+ 180   1      
+ 181   1         if (addr < 0x10000) {               // 64K linear address
+ 182   2            pwrite = (char xdata *) addr;
+ 183   2         } else if (addr < 0x18000) {        // BANK 2
+ 184   2            addr |= 0x8000;
+ 185   2            pwrite = (char xdata *) addr;
+ 186   2            PSBANK &= ~0x30;                 // COBANK = 0x2
+ 187   2            PSBANK |=  0x20;
+ 188   2         } else {                            // BANK 3
+ 189   2            pwrite = (char xdata *) addr;
+ 190   2            PSBANK &= ~0x30;                 // COBANK = 0x3
+ 191   2            PSBANK |=  0x30;
+ 192   2         }
+ 193   1      
+ 194   1         FLSCL |= 0x01;                      // enable FLASH writes/erases
+ 195   1         PSCTL |= 0x03;                      // PSWE = 1; PSEE = 1
+ 196   1      
+ 197   1         if (SFLE) {
+ 198   2            PSCTL |= 0x04;                   // set SFLE
+ 199   2         }
+ 200   1      
+ 201   1         RSTSRC = 0x02;                      // enable VDDMON as reset source
+ 202   1         *pwrite = 0;                        // initiate page erase
+ 203   1      
+ 204   1         if (SFLE) {
+ 205   2            PSCTL &= ~0x04;                  // clear SFLE
+ 206   2         }
+ 207   1      
+ 208   1         PSCTL &= ~0x03;                     // PSWE = 0; PSEE = 0
+ 209   1         FLSCL &= ~0x01;                     // disable FLASH writes/erases
+ 210   1      
+ 211   1         PSBANK = PSBANK_SAVE;               // restore PSBANK
+ 212   1         SFRPAGE = SFRPAGE_SAVE;             // restore SFRPAGE
+ 213   1         EA = EA_SAVE;                       // restore interrupts
+ 214   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    473    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      25
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       6
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
