@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 1   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE C8051F12X_FIR_DEMO
@@ -62,7 +62,7 @@ line level    source
   52          // Single FIR_TAP macro takes advantage of mirroring
   53          // (i.e. the FIR coefficients are mirrored, so the coefficient only needs to be
   54          // loaded into the MAC registers once).
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 2   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 2   
 
   55          #define FIR_TAP_MIRROR(X,Y,Z) \
   56             MAC0A = X; \
@@ -126,7 +126,7 @@ line level    source
  113          // Define the UART printing functions
  114          #if defined __C51__
  115          char putchar (char c);                 // Define putchar for Keil
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 3   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 3   
 
  116          #elif defined SDCC
               void putchar (char c);
@@ -190,7 +190,7 @@ line level    source
  175          
  176          void main (void)
  177          {
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 4   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 4   
 
  178   1         WDTCN = 0xDE;                       // Disable watchdog timer
  179   1         WDTCN = 0xAD;
@@ -254,7 +254,7 @@ line level    source
  237   1         SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
  238   1      
  239   1         OSCICN = 0x83;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 5   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 5   
 
  240   1      
  241   1         // Step 2. Set the PLLSRC bit (PLL0CN.2) to select the desired
@@ -318,7 +318,7 @@ line level    source
  299          // P0.1 - UART RX1
  300          //
  301          // P1.6 - LED (push-pull)
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 6   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 6   
 
  302          //
  303          // DAC0 - DAC0 output
@@ -382,7 +382,7 @@ line level    source
  361   1      
  362   1         SFRPAGE = UART0_PAGE;               // Switch to the necessary SFRPAGE
  363   1          
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 7   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 7   
 
  364   1         SCON0  = 0x70;
  365   1         TMOD   = 0x20;
@@ -446,7 +446,7 @@ line level    source
  423   1                                             // mode; ADC0 conversions are initiated
  424   1                                             // on overflow of Timer3; ADC0 data is
  425   1                                             // left-justified
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 8   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 8   
 
  426   1      
  427   1         REF0CN = 0x03;                      // Enable on-chip VREF and VREF output
@@ -510,7 +510,7 @@ line level    source
  485   1         char SFRPAGE_SAVE = SFRPAGE;     // Save Current SFR page
  486   1      
  487   1         SFRPAGE = TMR4_PAGE;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 9   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 9   
 
  488   1      
  489   1         TMR4CN = 0x00;                   // Stop Timer4; Clear overflow flag (TF4);
@@ -574,7 +574,7 @@ line level    source
  547   2              {
  548   3                x[i].s16 = 0;
  549   3              }
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 10  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 10  
 
  550   2              // Initialize the sample array
  551   2              for (i = 0; i < N; i ++)
@@ -618,10 +618,10 @@ line level    source
  589   3                for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
  590   3                {
  591   4                   //BREAK_MACRO
- 592   4                   EA = 0;
+ 592   4                   //EA = 0;
  593   4                   FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
  594   4                   x[opposite_sample_index]);
- 595   4                   EA = 1;
+ 595   4                   //EA = 1;
  596   4                  
  597   4                   if (sample_index == 0)
  598   4                   {
@@ -638,7 +638,7 @@ line level    source
  609   5                   }
  610   4                   else
  611   4                   {
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 11  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 11  
 
  612   5                      opposite_sample_index++;
  613   5                   }
@@ -649,9 +649,9 @@ line level    source
  618   3                if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
  619   3                {
  620   4                   //BREAK_MACRO
- 621   4                   EA = 0;
+ 621   4                   //EA = 0;
  622   4                   FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
- 623   4                   EA = 1;
+ 623   4                   //EA = 1;
  624   4                   NOP ();
  625   4                   NOP ();
  626   4                   NOP ();
@@ -702,7 +702,7 @@ line level    source
  671   1        if(TI0 == 1) {
  672   2          TI0 = 0;
  673   2          if (modbus_transmit_buffer_is_empty()) {
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 12  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 12  
 
  674   3          }
  675   2          else {
@@ -766,7 +766,7 @@ line level    source
               void putchar (char c)
               #endif
  735          {
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/01/2020 23:34:37 PAGE 13  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/13/2020 21:50:24 PAGE 13  
 
  736   1         modbus_push_transmit_buffer(c);
  737   1      #if defined __C51__
@@ -780,7 +780,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1618    ----
+   CODE SIZE        =   1610    ----
    CONSTANT SIZE    =    512    ----
    XDATA SIZE       =   2343      10
    PDATA SIZE       =   ----    ----

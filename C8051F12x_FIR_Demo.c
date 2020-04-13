@@ -589,10 +589,10 @@ SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
 					for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
 					{
 					   //BREAK_MACRO
-						 EA = 0;
+						 //EA = 0;
 						 FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
 						 x[opposite_sample_index]);
-             EA = 1;
+             //EA = 1;
 						
 						 if (sample_index == 0)
 						 {
@@ -618,9 +618,9 @@ SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
 					if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
 					{
 						 //BREAK_MACRO
-						 EA = 0;
+						 //EA = 0;
 						 FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
-						 EA = 1;
+						 //EA = 1;
 						 NOP ();
 						 NOP ();
 						 NOP ();

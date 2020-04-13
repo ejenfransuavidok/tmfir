@@ -19,6 +19,16 @@ uint8_t * getModbusBufferData() {
 	return modbus_buffer_data;
 }
 
+void restore_fir() {
+	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+	SFRPAGE_save = SFRPAGE;
+	SFRPAGE = TMR4_PAGE;
+	TR4 = 1;
+	SFRPAGE = UART0_PAGE;
+	AD0EN = 1;
+	SFRPAGE = SFRPAGE_save;
+}
+
 void modbus_init_from_flash() {
 	FLASH_Read (modbus_buffer_data, MODBUS_FLASH_ADDRESS, 3000, 0);
 }
@@ -64,8 +74,8 @@ uint16_t calc_crc(uint8_t * command, int size_command) {
 bool modbus_check_crc(uint8_t * command_receiver, int receiver_pointer) {
 	if(receiver_pointer > 2) {
 		uint16_t crc_calc = calc_crc(command_receiver, receiver_pointer - 2);
-		uint16_t crc = command_receiver [receiver_pointer - 2];
-		crc = (crc << 8) + command_receiver [receiver_pointer - 1];
+		uint16_t crc = command_receiver [receiver_pointer - 1];
+		crc = (crc << 8) + command_receiver [receiver_pointer - 2];
 		return crc_calc == crc;
 	}
 	return false;
@@ -100,7 +110,7 @@ void modbus_response_error(uint8_t error) {
 	}
 }
 
-void modbus_process_function_3() {
+int modbus_process_function_3() {
 	SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(i, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(register_hi, uint16_t, xdata);
@@ -124,6 +134,7 @@ void modbus_process_function_3() {
 	number = registers << 1;
 	if((address << 1) + number >= MODBUS_DATA_LENGTH) {
 		modbus_response_error(MODBUS_ERROR_ILLEGAL_DATA_ADDRESS);
+	  return MODBUS_FAIL;
 	}
 	else {
 		modbus_data = modbus_get_address();
@@ -151,6 +162,7 @@ void modbus_process_function_3() {
 		modbus_push_transmit_buffer((uint8_t)(crc >> 8));
 		modbus_push_transmit_buffer((uint8_t)(crc));
 		TI0 = 1;
+		return MODBUS_GOOD;
 		//AD0EN = 1;
 	}
 }
@@ -159,7 +171,7 @@ bool modbus_check_size_of_func16(int registers_num) {
 	return modbus_receiver_pointer == (MODBUS_FUNCTION_16_BASE_LENGTH + (registers_num << 1));
 }
 
-void modbus_process_function_16() {
+int modbus_process_function_16() {
 	SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(i, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(p, uint16_t, xdata);
@@ -189,6 +201,7 @@ void modbus_process_function_16() {
 	number = registers << 1;
 	if(((address << 1) + number >= MODBUS_DATA_LENGTH) || !modbus_check_size_of_func16(registers)) {
 		modbus_response_error(MODBUS_ERROR_ILLEGAL_DATA_ADDRESS);
+		return MODBUS_FAIL;
 	}
 	else {
 		resetFlashUpdate();
@@ -234,11 +247,13 @@ void modbus_process_function_16() {
 			}
 		}
 		TI0 = 1;
+		return MODBUS_GOOD;
 		//AD0EN = 1;
 	}
 }
 
 bool modbus_command_received() {
+	char modbus_result = MODBUS_FAIL;
 	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
 	
 	SFRPAGE_save = SFRPAGE;
@@ -247,17 +262,13 @@ bool modbus_command_received() {
 		uint8_t function = modbus_get_function();
 		if(function == 3 || function == 16) {
 			if(function ==3) {
-				modbus_process_function_3();
+				modbus_result = modbus_process_function_3();
 			}
 			else {
-				modbus_process_function_16();
+				modbus_result = modbus_process_function_16();
 			}
 			if (modbus_receiver_pointer < 0xFF) {
-				SFRPAGE = TMR4_PAGE;
-				TR4 = 1;
-				SFRPAGE = UART0_PAGE;
-				AD0EN = 1;
-				SFRPAGE = SFRPAGE_save;
+				restore_fir();
 			}
 		}
 		else {
@@ -267,6 +278,9 @@ bool modbus_command_received() {
 	}
 	sender_pause_timer = 0;
 	modbus_receiver_pointer = 0;
+	if (modbus_result == MODBUS_FAIL) {
+		restore_fir();
+	}
 }
 
 int get_modbus_receiver_counter() {
