@@ -32,8 +32,8 @@
 #define START_FREQUENCY  10            // Define the starting frequency
 #define STOP_FREQUENCY   4999          // Define the ending frequency
 #define FREQ_STEP        10            // Define the number of Hz the frequency
-                                       // will step for the frequency sweep																			 
-
+                                       // will step for the frequency sweep			
+																			 
 //-----------------------------------------------------------------------------
 // Macros
 //-----------------------------------------------------------------------------
@@ -175,6 +175,16 @@ void _sdcc_external_startup (void)
 
 void main (void)
 {
+	 //-----------------------------------------------------------------------------
+	 // FIR VARIABLES
+	 //-----------------------------------------------------------------------------
+   static unsigned char delay_index = 0;
+	 SI_SEGMENT_VARIABLE(coeff_index, unsigned char, xdata);
+	 SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
+	 SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
+	 SI_SEGMENT_VARIABLE(i, int, xdata);
+	 //-----------------------------------------------------------------------------
+	 
    WDTCN = 0xDE;                       // Disable watchdog timer
    WDTCN = 0xAD;
 
@@ -211,7 +221,92 @@ void main (void)
 	
 	 modbus_init_from_flash();
 	 
-   while (1);
+//-----------------------------------------------------------------------------	 
+   while (1) {
+      if (data_for_filter_counter == N) {
+			   for (freq_number=0; freq_number<12; freq_number++) {
+            delay_index = delay_index_arr [freq_number];
+					  // Initialize the delay line for the FIR filter
+					  for (i = 0; i < FILTER_MAX_ORDER; i++)
+					  {
+						   x[i].s16 = 0;
+					  }
+					  // Initialize the sample array
+					  for (i = 0; i < N; i ++)
+					  {
+						   filtered_samples[i] = 0;
+					  }		
+					  TAPS = populateFirCoefficients(B_FIR, freq_number);
+					  if (TAPS > FILTER_MAX_ORDER || TAPS == 0) {
+						   TAPS = 10;
+					  }
+					  for (i=0; i<N; i++) {					
+						   // Store ADC result in the delay line
+						   x[delay_index].u16 = data_for_filter[i].u16;
+						   // Sample_index points to newest data
+						   sample_index = delay_index;         
+						   // Update delay index
+						   if (delay_index == (TAPS - 1))
+						   {
+							    delay_index = 0;
+						   }
+						   else
+						   {
+							    delay_index++;
+						   }
+
+						   MAC0CF |= 0x08;                  // Clear accumulator
+					
+						   // Mirror algorithm
+						   if (sample_index == TAPS - 1)
+						   {
+							    opposite_sample_index = 0;
+						   }
+						   else
+						   {
+							    opposite_sample_index = sample_index + 1;
+						   }
+						   for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
+						   {
+							    FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
+							    x[opposite_sample_index]);
+						 
+							    if (sample_index == 0)
+							    {
+								     sample_index = TAPS - 1;
+							    }
+							    else
+							    {
+								     sample_index--;
+							    }
+
+							    if (opposite_sample_index == TAPS - 1)
+							    {
+								     opposite_sample_index = 0;
+							    }
+							    else
+							    {
+								     opposite_sample_index++;
+							    }
+						   }		
+						   if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
+						   {
+							    FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
+							    NOP ();
+							    NOP ();
+							    NOP ();
+						   }
+						   Sample.u16 = MAC0RND;
+						   filtered_samples[i] = Sample.u16;
+					  }
+					  putRms2Modbus(RMS_Calc((int *) filtered_samples, N, TAPS), freq_number);
+					  delay_index_arr [freq_number] = delay_index;
+			   }
+			   LED = !LED;
+			   data_for_filter_counter = 0;
+			}
+   }
+//-----------------------------------------------------------------------------	 
 }
 
 //-----------------------------------------------------------------------------
@@ -494,7 +589,7 @@ void Timer4_Init (int counts)
 
    RCAP4 = -counts;                 // Set reload value
    TMR4 = RCAP4;                    // Initialzie Timer4 to reload value
-
+	
    EIE2 |= 0x04;                    // Enable Timer4 interrupts
    TR4 = 1;                         // Start Timer4
 
@@ -521,15 +616,7 @@ void Timer4_Init (int counts)
 //void ADC0_ISR (void) interrupt 15
 SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
 {
-   SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
 	 volatile SI_UU16_t input;
-   static unsigned char delay_index = 0;
-   //unsigned char coeff_index, sample_index, opposite_sample_index;
-	 SI_SEGMENT_VARIABLE(coeff_index, unsigned char, xdata);
-	 SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
-	 SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
-	 SI_SEGMENT_VARIABLE(i, int, xdata);
-	 SFRPAGE_save = SFRPAGE;
 	
    AD0INT = 0;                         // Clear ADC conversion complete
                                        // indicator
@@ -540,105 +627,6 @@ SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
    if (data_for_filter_counter < N) {
 			data_for_filter [data_for_filter_counter++].u16 = input.u16;
 	 }
-	 else {
-		    delay_index = delay_index_arr [freq_number];
-				// Initialize the delay line for the FIR filter
-			  for (i = 0; i < FILTER_MAX_ORDER; i++)
-			  {
-					x[i].s16 = 0;
-			  }
-		    // Initialize the sample array
-			  for (i = 0; i < N; i ++)
-			  {
-					filtered_samples[i] = 0;
-			  }		
-				TAPS = populateFirCoefficients(B_FIR, freq_number);
-				if (TAPS > FILTER_MAX_ORDER || TAPS == 0) {
-					TAPS = 10;
-				}
-				for (i=0; i<N; i++) {
-					//BREAK_MACRO
-					
-					// Store ADC result in the delay line
-					x[delay_index].u16 = data_for_filter[i].u16;
-					// Sample_index points to newest data
-					sample_index = delay_index;         
-					// Update delay index
-					if (delay_index == (TAPS - 1))
-					{
-						delay_index = 0;
-					}
-					else
-					{
-						delay_index++;
-					}
-					SFRPAGE = MAC0_PAGE;
-
-					MAC0CF |= 0x08;                  // Clear accumulator
-					
-					// Mirror algorithm
-					if (sample_index == TAPS - 1)
-					{
-						 opposite_sample_index = 0;
-					}
-					else
-					{
-						 opposite_sample_index = sample_index + 1;
-					}
-
-					for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
-					{
-					   //BREAK_MACRO
-						 //EA = 0;
-						 FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
-						 x[opposite_sample_index]);
-             //EA = 1;
-						
-						 if (sample_index == 0)
-						 {
-								sample_index = TAPS - 1;
-						 }
-						 else
-						 {
-								sample_index--;
-						 }
-
-						 if (opposite_sample_index == TAPS - 1)
-						 {
-								opposite_sample_index = 0;
-						 }
-						 else
-						 {
-								opposite_sample_index++;
-						 }
-					}
-					
-					//BREAK_MACRO
-					
-					if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
-					{
-						 //BREAK_MACRO
-						 //EA = 0;
-						 FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
-						 //EA = 1;
-						 NOP ();
-						 NOP ();
-						 NOP ();
-					}
-					Sample.u16 = MAC0RND;
-					filtered_samples[i] = Sample.u16;
-				}
-				putRms2Modbus(RMS_Calc((int *) filtered_samples, N, TAPS), freq_number);
-				delay_index_arr [freq_number] = delay_index;
-				
-				freq_number++;
-				if (freq_number > 11) {
-					freq_number = 0;
-					LED = !LED;
-					data_for_filter_counter = 0;
-				}	
-				//data_for_filter_counter = 0;
-		}
 }
 
 SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
@@ -707,6 +695,8 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
 	 		}
 	 }
 
+	 //LED = !LED;
+	 
    SFRPAGE = DAC0_PAGE;
 
    // Add a DC bias to make the rails 0 to 65535
@@ -738,7 +728,6 @@ void putchar (char c)
    return c;                           // Print the character
 #endif
 }
-
 //-----------------------------------------------------------------------------
 // End Of File
 //-----------------------------------------------------------------------------

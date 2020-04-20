@@ -253,9 +253,10 @@ int modbus_process_function_16() {
 }
 
 bool modbus_command_received() {
-	char modbus_result = MODBUS_FAIL;
+	SI_SEGMENT_VARIABLE(modbus_result, char, xdata);
 	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
 	
+	modbus_result = MODBUS_FAIL;
 	SFRPAGE_save = SFRPAGE;
 	
 	if(modbus_check_crc(modbus_command_receiver, modbus_receiver_pointer) && modbus_check_address()) {
