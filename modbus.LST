@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/18/2020 10:09:52 PAGE 1   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/21/2020 08:27:19 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MODBUS
@@ -62,7 +62,7 @@ line level    source
   53   1        crc ^= (uint16_t)a;
   54   1        for (i = 0; i < 8; ++i) {
   55   2          if (crc & 1)
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/18/2020 10:09:52 PAGE 2   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/21/2020 08:27:19 PAGE 2   
 
   56   2            crc = (crc >> 1) ^ 0xA001;
   57   2          else
@@ -126,7 +126,7 @@ line level    source
  115   1        SI_SEGMENT_VARIABLE(i, uint16_t, xdata);
  116   1        SI_SEGMENT_VARIABLE(register_hi, uint16_t, xdata);
  117   1        SI_SEGMENT_VARIABLE(register_lo, uint16_t, xdata);
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/18/2020 10:09:52 PAGE 3   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/21/2020 08:27:19 PAGE 3   
 
  118   1        SI_SEGMENT_VARIABLE(modbus_data, uint8_t, xdata);
  119   1        SI_SEGMENT_VARIABLE(address_hi, uint16_t, xdata);
@@ -190,7 +190,7 @@ line level    source
  177   1        SI_SEGMENT_VARIABLE(p, uint16_t, xdata);
  178   1        SI_SEGMENT_VARIABLE(register_hi, uint16_t, xdata);
  179   1        SI_SEGMENT_VARIABLE(register_lo, uint16_t, xdata);
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/18/2020 10:09:52 PAGE 4   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/21/2020 08:27:19 PAGE 4   
 
  180   1        SI_SEGMENT_VARIABLE(register_in_hi, uint8_t, xdata);
  181   1        SI_SEGMENT_VARIABLE(register_in_lo, uint8_t, xdata);
@@ -254,7 +254,7 @@ line level    source
  239   2          
  240   2          modbus_push_transmit_buffer((uint8_t)(crc >> 8));
  241   2          modbus_push_transmit_buffer((uint8_t)(crc));
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/18/2020 10:09:52 PAGE 5   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/21/2020 08:27:19 PAGE 5   
 
  242   2          
  243   2          if (isNeedFlashUpdate()) {
@@ -318,7 +318,7 @@ line level    source
  300   1        sender_pause_timer = 0;
  301   1        modbus_command_receiver [modbus_receiver_pointer++] = input;
  302   1        if(modbus_receiver_pointer == MODBUS_RECEIVER_LENGTH) {
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/18/2020 10:09:52 PAGE 6   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/21/2020 08:27:19 PAGE 6   
 
  303   2          modbus_receiver_pointer = 0;
  304   2        }

@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               04/18/2020 10:09:56 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               04/21/2020 08:27:20 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -62,7 +62,7 @@ line level    source
   52   1        // reg number to byte number
   53   1        order = order << 1;
   54   1        // get filter order
-C51 COMPILER V9.53.0.0   FIR                                                               04/18/2020 10:09:56 PAGE 2   
+C51 COMPILER V9.53.0.0   FIR                                                               04/21/2020 08:27:20 PAGE 2   
 
   55   1        order = modbus_buffer_data [order + 1];
   56   1        if (order > FILTER_MAX_ORDER) {
@@ -126,7 +126,7 @@ line level    source
  114   1         SI_SEGMENT_VARIABLE(count, int, xdata);
  115   1         SI_SEGMENT_VARIABLE(average, float, xdata);
  116   1         float RMS_summation = 0;
-C51 COMPILER V9.53.0.0   FIR                                                               04/18/2020 10:09:56 PAGE 3   
+C51 COMPILER V9.53.0.0   FIR                                                               04/21/2020 08:27:20 PAGE 3   
 
  117   1         float RMS_Value;
  118   1         float temp;

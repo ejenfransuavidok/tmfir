@@ -90,7 +90,7 @@ SI_SEGMENT_VARIABLE(FREQS[12], unsigned long, xdata) = {1343, 1445, 1547, 1649, 
 SI_SEGMENT_VARIABLE(number, int, xdata);
 SI_SEGMENT_VARIABLE(frequency, unsigned long, xdata);
 SI_SEGMENT_VARIABLE(delay_index_arr[12], unsigned char, xdata) = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-SI_SEGMENT_VARIABLE(global_counter, int, xdata);
+SI_SEGMENT_VARIABLE(freq_divider, char, xdata);
 
 sbit LED = P1^6;                       // LED='1' means ON
 // For the frequency sweep
@@ -223,6 +223,12 @@ void main (void)
 	 
 //-----------------------------------------------------------------------------	 
    while (1) {
+		  freq_divider = 0;
+		  for (number=0; number<12; number++) {
+			   if (getFreqFromModbusForDAC(number) != 0) {
+            freq_divider++;
+	 		   }
+	    }
       if (data_for_filter_counter == N) {
 			   for (freq_number=0; freq_number<12; freq_number++) {
             delay_index = delay_index_arr [freq_number];
@@ -685,13 +691,17 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
                                        // to the IDAC
    TMR3CN &= ~0x80;                    // Clear Timer3 overflow flag
 	
+	 if (freq_divider == 0) {
+	    freq_divider = 1;
+	 }
+	
    for (number=0; number<12; number++) {
 			if (getFreqFromModbusForDAC(number) != 0) {
 				Phase_Add = (unsigned int)((unsigned long)((FREQS[number] *
                 PHASE_PRECISION) / OUTPUT_RATE_DAC));
 		    
 				phase_acc[number].u16 += Phase_Add;
-				temp1 += SINE_TABLE[phase_acc[number].u8[MSB]];
+				temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
 	 		}
 	 }
 
