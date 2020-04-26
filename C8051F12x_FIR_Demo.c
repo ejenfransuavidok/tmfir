@@ -37,7 +37,7 @@
 #define STOP_FREQUENCY   4999          // Define the ending frequency
 #define FREQ_STEP        10            // Define the number of Hz the frequency
                                        // will step for the frequency sweep
-#define DAC1_VALUE       0x00FF        // value for DAC1																			 
+#define DAC1_VALUE       0x2000        // value for DAC1																			 
 																			 
 //-----------------------------------------------------------------------------
 // Macros
@@ -525,7 +525,7 @@ void DAC1_Init(void){
    DAC1CN = 0x84;                      // Enable DAC1 in left-justified mode
                                        // managed by write data to DAC1H
 	 
-	 DAC1 = 0x8000 ^ DAC1_VALUE;         // Write to DAC1
+	 DAC1 = DAC1_VALUE;                  // Write to DAC1
 
    SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
 }
