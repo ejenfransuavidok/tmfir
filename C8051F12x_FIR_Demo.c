@@ -10,6 +10,10 @@
 #include "fir.h"
 #include "modbus.h"
 
+//-------------------------- BIPOLIAR SELECTOR --------------------------------
+#define BIPOLIAR_ADC
+//-----------------------------------------------------------------------------
+
 //-----------------------------------------------------------------------------
 // Global Constants
 //-----------------------------------------------------------------------------
@@ -32,7 +36,8 @@
 #define START_FREQUENCY  10            // Define the starting frequency
 #define STOP_FREQUENCY   4999          // Define the ending frequency
 #define FREQ_STEP        10            // Define the number of Hz the frequency
-                                       // will step for the frequency sweep			
+                                       // will step for the frequency sweep
+#define DAC1_VALUE       0x00FF        // value for DAC1																			 
 																			 
 //-----------------------------------------------------------------------------
 // Macros
@@ -105,7 +110,8 @@ void PORT_Init (void);                 // Configure port output
 void UART0_Init (void);                // Configure UART operation
 void Timer0_Init(void);								 // Configure Timer0
 void ADC0_Init (void);                 // Configure ADC
-void DAC0_Init(void);									 // Configure DAC
+void DAC0_Init(void);									 // Configure DAC0
+void DAC1_Init(void);									 // Configure DAC1
 void Timer3_Init (int counts);         // Configure Timer 3
 void Timer4_Init (int counts);         // Configure Timer 4
 void Set_DAC_Frequency (unsigned long frequency);
@@ -201,7 +207,8 @@ void main (void)
 	 // Initialize Timer4 to overflow at the DAC sample rate
    Timer4_Init (SYSCLK/OUTPUT_RATE_DAC);	
 	
-	 DAC0_Init ();                       // Initialize the DAC
+	 DAC0_Init ();                       // Initialize the DAC0
+	 DAC1_Init ();                       // Initialize the DAC1
 	 ADC0_Init ();                       // Initialize the ADC	
 	
    SFRPAGE = ADC0_PAGE;
@@ -498,6 +505,32 @@ void DAC0_Init(void){
 }
 
 //-----------------------------------------------------------------------------
+// DAC1_Init
+//-----------------------------------------------------------------------------
+//
+// Return Value:  None
+// Parameters:    None
+//
+// Configure DAC1 to update on write to DAC1H.  VREF is already enabled by
+// the ADC initialization code.
+//
+//-----------------------------------------------------------------------------
+void DAC1_Init(void){
+
+   SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+	 SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
+
+   SFRPAGE = DAC1_PAGE;
+
+   DAC1CN = 0x84;                      // Enable DAC1 in left-justified mode
+                                       // managed by write data to DAC1H
+	 
+	 DAC1 = 0x8000 ^ DAC1_VALUE;         // Write to DAC1
+
+   SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
+}
+
+//-----------------------------------------------------------------------------
 // ADC0_Init
 //-----------------------------------------------------------------------------
 //
@@ -523,9 +556,13 @@ void ADC0_Init (void)
 
    REF0CN = 0x03;                      // Enable on-chip VREF and VREF output
                                        // buffer
-
+#ifndef BIPOLIAR_ADC
    AMX0SL = 0x00;                      // Select AIN0.0 as ADC mux input
-
+#else	
+	 AMX0CF = 0x01;
+	 AMX0SL = 0x01;
+#endif
+	
    ADC0CF = (SYSCLK/2500000) << 3;     // ADC conversion clock = 2.5MHz
 
    EIE2 |= 0x02;                       // Enable ADC interrupts
