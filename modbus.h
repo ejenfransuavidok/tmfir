@@ -29,6 +29,8 @@
 #define MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_1 2813
 #define MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_2 2814
 #define MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_3 2815
+#define MODBUS_FREQ_DIVIDER_ADDRESS 2523
+#define MODBUS_FREQ_VALUES_START_ADDRESS 2498
 #define MODBUS_FLASH_ADDRESS 0x10000
 #define MODBUS_GOOD 1
 #define MODBUS_FAIL 0
@@ -51,10 +53,14 @@ void modbus_push_transmit_buffer(char output);
  
 bool modbus_was_sendind_received();
 
-void modbus_init_from_flash();
+void modbus_init_from_flash(void (*init_after_flash_reload)(void));
 
 uint8_t * getModbusBufferData();
 
 bool modbus_transmit_buffer_is_empty();
+
+unsigned char modbus_get_freq_divider();
+
+void modbus_init_freqs(unsigned long * freqs);
 
 #endif

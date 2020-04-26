@@ -13,7 +13,7 @@ SI_SEGMENT_VARIABLE(modbus_command_receiver[MODBUS_RECEIVER_LENGTH], uint8_t, xd
 SI_SEGMENT_VARIABLE(modbus_command_transmitter[MODBUS_TRANSMITTER_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_buffer_data[MODBUS_DATA_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_error_response[5], uint8_t, xdata);
-//SI_SEGMENT_VARIABLE(modbus_flash[4096], uint8_t, code);
+void (*init_after_flash_reload_func_pointer)(void);
 
 uint8_t * getModbusBufferData() {
 	return modbus_buffer_data;
@@ -29,8 +29,10 @@ void restore_fir() {
 	SFRPAGE = SFRPAGE_save;
 }
 
-void modbus_init_from_flash() {
+void modbus_init_from_flash(void (*init_after_flash_reload)(void)) {
 	FLASH_Read (modbus_buffer_data, MODBUS_FLASH_ADDRESS, 3000, 0);
+	init_after_flash_reload_func_pointer = init_after_flash_reload;
+	init_after_flash_reload_func_pointer();
 }
 
 void resetFlashUpdate() {
@@ -245,6 +247,7 @@ int modbus_process_function_16() {
 				// 4 - pages (one page size is 1024)
 				FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
 			}
+			init_after_flash_reload_func_pointer();
 		}
 		TI0 = 1;
 		return MODBUS_GOOD;
@@ -338,4 +341,22 @@ bool modbus_was_sendind_received() {
 
 bool modbus_transmit_buffer_is_empty() {
 	return modbus_transmitter_pointer_right == 0;
+}
+
+unsigned char modbus_get_freq_divider() {
+	return modbus_buffer_data [MODBUS_FREQ_DIVIDER_ADDRESS];
+}
+
+void modbus_init_freqs(unsigned long * freqs) {
+	 SI_SEGMENT_VARIABLE(i, char, xdata);
+	 SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(address, unsigned short int, xdata);
+	 address = MODBUS_FREQ_VALUES_START_ADDRESS;
+	 for (i=0; i<12; i++) {
+	    hi = modbus_buffer_data [address];
+		  lo = modbus_buffer_data [address + 1];
+		  freqs [i] = (hi << 8) + lo;
+		  address += 2;
+	 }
 }

@@ -70,17 +70,37 @@ void putRms2Modbus(int value, int number) {
 	SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(address, int, xdata);
+	SI_SEGMENT_VARIABLE(amplitude_reference, int, xdata);
+	SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
 	
 	if (number > 11 || number < 0) {
 		return;
 	}
-	address = MODBUS_FREQUENCY_VALUE_START + number;
+	//---------------------- PUT FIR RESULT TO MODBUS ----------------------
+	address = MODBUS_FREQUENCY_AMPLITUDES_VALUE_START + number;
 	address = address << 1;
 	hi = (value >> 8);
 	lo = (value & 0xFF);
 	modbus_buffer_data = getModbusBufferData();
 	modbus_buffer_data [address] = hi;
 	modbus_buffer_data [address + 1] = lo;
+	//---------------------- READ REFERENCE FROM MODBUS ----------------------
+	address = MODBUS_AMPLITUDES_THREASHOLS_VALUE_START + number;
+	address = address << 1;
+	hi = modbus_buffer_data [address];
+	lo = modbus_buffer_data [address + 1];
+	amplitude_reference = (hi << 8) + lo;
+	//---------------------- COMPARE FIR RESULT AND REFEREBCE ----------------------
+	if (value > amplitude_reference) {
+		 flag = 1;
+	} else {
+	   flag = 0;
+	}
+	//---------------------- PUT COMPARATIVE TO MODBUS LIKE A FLAG ----------------------
+	address = MODBUS_FREQUENCY_VALUE_START + number;
+	address = address << 1;
+	modbus_buffer_data [address] = 0;
+	modbus_buffer_data [address + 1] = flag;
 }
 
 /*-----------------------------------------------------------------------------
