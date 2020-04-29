@@ -247,7 +247,6 @@ int modbus_process_function_16() {
 				// 4 - pages (one page size is 1024)
 				FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
 			}
-			init_after_flash_reload_func_pointer();
 		}
 		TI0 = 1;
 		return MODBUS_GOOD;
@@ -284,6 +283,8 @@ bool modbus_command_received() {
 	modbus_receiver_pointer = 0;
 	if (modbus_result == MODBUS_FAIL) {
 		restore_fir();
+	} else {
+	  init_after_flash_reload_func_pointer();
 	}
 }
 
@@ -321,14 +322,15 @@ void modbus_transmit_byte() {
 }
 
 void modbus_push_transmit_buffer(uint8_t output) {
-	if(output == '\n') {
+	 /*
+	 if(output == '\n') {
 	   modbus_command_transmitter[modbus_transmitter_pointer_right++] = 0x0d;
-		 //TI0 = 1;
 	 }
 	 else {
 	   modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
-		 //TI0 = 1;
 	 }
+	 */
+	 modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
 	 if(modbus_transmitter_pointer_right == MODBUS_TRANSMITTER_LENGTH) {
 				modbus_transmitter_pointer_right = 0;
 	 }

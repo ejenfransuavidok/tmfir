@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/27/2020 01:18:23 PAGE 1   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/29/2020 21:59:28 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MODBUS
@@ -62,7 +62,7 @@ line level    source
   53          uint16_t crc16_update(uint16_t crc, uint8_t a) {
   54   1        SI_SEGMENT_VARIABLE(i, int, xdata);
   55   1        crc ^= (uint16_t)a;
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/27/2020 01:18:23 PAGE 2   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/29/2020 21:59:28 PAGE 2   
 
   56   1        for (i = 0; i < 8; ++i) {
   57   2          if (crc & 1)
@@ -126,7 +126,7 @@ line level    source
  115          int modbus_process_function_3() {
  116   1        SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
  117   1        SI_SEGMENT_VARIABLE(i, uint16_t, xdata);
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/27/2020 01:18:23 PAGE 3   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/29/2020 21:59:28 PAGE 3   
 
  118   1        SI_SEGMENT_VARIABLE(register_hi, uint16_t, xdata);
  119   1        SI_SEGMENT_VARIABLE(register_lo, uint16_t, xdata);
@@ -190,7 +190,7 @@ line level    source
  177   1        SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
  178   1        SI_SEGMENT_VARIABLE(i, uint16_t, xdata);
  179   1        SI_SEGMENT_VARIABLE(p, uint16_t, xdata);
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/27/2020 01:18:23 PAGE 4   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/29/2020 21:59:28 PAGE 4   
 
  180   1        SI_SEGMENT_VARIABLE(register_hi, uint16_t, xdata);
  181   1        SI_SEGMENT_VARIABLE(register_lo, uint16_t, xdata);
@@ -254,7 +254,7 @@ line level    source
  239   2          crc = crc16_update(crc, modbus_data);
  240   2          modbus_push_transmit_buffer(modbus_data);
  241   2          
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/27/2020 01:18:23 PAGE 5   
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/29/2020 21:59:28 PAGE 5   
 
  242   2          modbus_push_transmit_buffer((uint8_t)(crc >> 8));
  243   2          modbus_push_transmit_buffer((uint8_t)(crc));
@@ -264,129 +264,131 @@ line level    source
  247   4              // 4 - pages (one page size is 1024)
  248   4              FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
  249   4            }
- 250   3            init_after_flash_reload_func_pointer();
- 251   3          }
- 252   2          TI0 = 1;
- 253   2          return MODBUS_GOOD;
- 254   2          //AD0EN = 1;
- 255   2        }
- 256   1      }
- 257          
- 258          bool modbus_command_received() {
- 259   1        SI_SEGMENT_VARIABLE(modbus_result, char, xdata);
- 260   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
- 261   1        
- 262   1        modbus_result = MODBUS_FAIL;
- 263   1        SFRPAGE_save = SFRPAGE;
- 264   1        
- 265   1        if(modbus_check_crc(modbus_command_receiver, modbus_receiver_pointer) && modbus_check_address()) {
- 266   2          uint8_t function = modbus_get_function();
- 267   2          if(function == 3 || function == 16) {
- 268   3            if(function ==3) {
- 269   4              modbus_result = modbus_process_function_3();
- 270   4            }
- 271   3            else {
- 272   4              modbus_result = modbus_process_function_16();
- 273   4            }
- 274   3            if (modbus_receiver_pointer < 0xFF) {
- 275   4              restore_fir();
- 276   4            }
- 277   3          }
- 278   2          else {
- 279   3            modbus_response_error(MODBUS_ERROR_ILLEGAL_FUNCTION_CODE);
- 280   3          }
- 281   2          //modbus_receiver_pointer = 0;
- 282   2        }
- 283   1        sender_pause_timer = 0;
- 284   1        modbus_receiver_pointer = 0;
- 285   1        if (modbus_result == MODBUS_FAIL) {
- 286   2          restore_fir();
- 287   2        }
- 288   1      }
-*** WARNING C173 IN LINE 288 OF modbus.c: missing return-expression
- 289          
- 290          int get_modbus_receiver_counter() {
- 291   1        return sender_pause_timer;
- 292   1      }
- 293          
- 294          void set_modbus_receiver_counter(int mrc) {
- 295   1        sender_pause_timer = mrc;
- 296   1      }
- 297          
- 298          void inc_modbus_receiver_counter() {
- 299   1        sender_pause_timer++;
- 300   1      }
- 301          
- 302          void modbus_byte_receive(uint8_t input) {
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/27/2020 01:18:23 PAGE 6   
+ 250   3          }
+ 251   2          TI0 = 1;
+ 252   2          return MODBUS_GOOD;
+ 253   2          //AD0EN = 1;
+ 254   2        }
+ 255   1      }
+ 256          
+ 257          bool modbus_command_received() {
+ 258   1        SI_SEGMENT_VARIABLE(modbus_result, char, xdata);
+ 259   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+ 260   1        
+ 261   1        modbus_result = MODBUS_FAIL;
+ 262   1        SFRPAGE_save = SFRPAGE;
+ 263   1        
+ 264   1        if(modbus_check_crc(modbus_command_receiver, modbus_receiver_pointer) && modbus_check_address()) {
+ 265   2          uint8_t function = modbus_get_function();
+ 266   2          if(function == 3 || function == 16) {
+ 267   3            if(function ==3) {
+ 268   4              modbus_result = modbus_process_function_3();
+ 269   4            }
+ 270   3            else {
+ 271   4              modbus_result = modbus_process_function_16();
+ 272   4            }
+ 273   3            if (modbus_receiver_pointer < 0xFF) {
+ 274   4              restore_fir();
+ 275   4            }
+ 276   3          }
+ 277   2          else {
+ 278   3            modbus_response_error(MODBUS_ERROR_ILLEGAL_FUNCTION_CODE);
+ 279   3          }
+ 280   2          //modbus_receiver_pointer = 0;
+ 281   2        }
+ 282   1        sender_pause_timer = 0;
+ 283   1        modbus_receiver_pointer = 0;
+ 284   1        if (modbus_result == MODBUS_FAIL) {
+ 285   2          restore_fir();
+ 286   2        } else {
+ 287   2          init_after_flash_reload_func_pointer();
+ 288   2        }
+ 289   1      }
+*** WARNING C173 IN LINE 289 OF modbus.c: missing return-expression
+ 290          
+ 291          int get_modbus_receiver_counter() {
+ 292   1        return sender_pause_timer;
+ 293   1      }
+ 294          
+ 295          void set_modbus_receiver_counter(int mrc) {
+ 296   1        sender_pause_timer = mrc;
+ 297   1      }
+ 298          
+ 299          void inc_modbus_receiver_counter() {
+ 300   1        sender_pause_timer++;
+ 301   1      }
+ 302          
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/29/2020 21:59:28 PAGE 6   
 
- 303   1        sender_pause_timer = 0;
- 304   1        modbus_command_receiver [modbus_receiver_pointer++] = input;
- 305   1        if(modbus_receiver_pointer == MODBUS_RECEIVER_LENGTH) {
- 306   2          modbus_receiver_pointer = 0;
- 307   2        }
- 308   1      }
- 309          
- 310          void modbus_transmit_byte() {
- 311   1        if(modbus_transmitter_pointer_right > 0) {
- 312   2          SBUF0 = modbus_command_transmitter [modbus_transmitter_pointer_left++];
- 313   2          if (modbus_transmitter_pointer_left == MODBUS_TRANSMITTER_LENGTH) {
- 314   3            modbus_transmitter_pointer_left = 0;
- 315   3          }
- 316   2        }
- 317   1        if(modbus_transmitter_pointer_right == modbus_transmitter_pointer_left) {
- 318   2          modbus_transmitter_pointer_right = 0;
- 319   2          modbus_transmitter_pointer_left = 0;
- 320   2        }
- 321   1      }
- 322          
- 323          void modbus_push_transmit_buffer(uint8_t output) {
- 324   1        if(output == '\n') {
- 325   2           modbus_command_transmitter[modbus_transmitter_pointer_right++] = 0x0d;
- 326   2           //TI0 = 1;
- 327   2         }
- 328   1         else {
- 329   2           modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
- 330   2           //TI0 = 1;
- 331   2         }
- 332   1         if(modbus_transmitter_pointer_right == MODBUS_TRANSMITTER_LENGTH) {
- 333   2              modbus_transmitter_pointer_right = 0;
- 334   2         }
- 335   1      }
- 336          
- 337          bool modbus_was_sendind_received() {
- 338   1        sender_pause_timer++;
- 339   1        return (sender_pause_timer > 6 && modbus_receiver_pointer > 0);
- 340   1      }
- 341          
- 342          bool modbus_transmit_buffer_is_empty() {
- 343   1        return modbus_transmitter_pointer_right == 0;
- 344   1      }
- 345          
- 346          unsigned char modbus_get_freq_divider() {
- 347   1        return modbus_buffer_data [MODBUS_FREQ_DIVIDER_ADDRESS];
- 348   1      }
- 349          
- 350          void modbus_init_freqs(unsigned long * freqs) {
- 351   1         SI_SEGMENT_VARIABLE(i, char, xdata);
- 352   1         SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
- 353   1         SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
- 354   1         SI_SEGMENT_VARIABLE(address, unsigned short int, xdata);
- 355   1         address = MODBUS_FREQ_VALUES_START_ADDRESS;
- 356   1         for (i=0; i<12; i++) {
- 357   2            hi = modbus_buffer_data [address];
- 358   2            lo = modbus_buffer_data [address + 1];
- 359   2            freqs [i] = (hi << 8) + lo;
- 360   2            address += 2;
- 361   2         }
- 362   1      }
-*** WARNING C290 IN LINE 288 OF modbus.c: missing return value
+ 303          void modbus_byte_receive(uint8_t input) {
+ 304   1        sender_pause_timer = 0;
+ 305   1        modbus_command_receiver [modbus_receiver_pointer++] = input;
+ 306   1        if(modbus_receiver_pointer == MODBUS_RECEIVER_LENGTH) {
+ 307   2          modbus_receiver_pointer = 0;
+ 308   2        }
+ 309   1      }
+ 310          
+ 311          void modbus_transmit_byte() {
+ 312   1        if(modbus_transmitter_pointer_right > 0) {
+ 313   2          SBUF0 = modbus_command_transmitter [modbus_transmitter_pointer_left++];
+ 314   2          if (modbus_transmitter_pointer_left == MODBUS_TRANSMITTER_LENGTH) {
+ 315   3            modbus_transmitter_pointer_left = 0;
+ 316   3          }
+ 317   2        }
+ 318   1        if(modbus_transmitter_pointer_right == modbus_transmitter_pointer_left) {
+ 319   2          modbus_transmitter_pointer_right = 0;
+ 320   2          modbus_transmitter_pointer_left = 0;
+ 321   2        }
+ 322   1      }
+ 323          
+ 324          void modbus_push_transmit_buffer(uint8_t output) {
+ 325   1         /*
+ 326   1         if(output == '\n') {
+ 327   1           modbus_command_transmitter[modbus_transmitter_pointer_right++] = 0x0d;
+ 328   1         }
+ 329   1         else {
+ 330   1           modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
+ 331   1         }
+ 332   1         */
+ 333   1         modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
+ 334   1         if(modbus_transmitter_pointer_right == MODBUS_TRANSMITTER_LENGTH) {
+ 335   2              modbus_transmitter_pointer_right = 0;
+ 336   2         }
+ 337   1      }
+ 338          
+ 339          bool modbus_was_sendind_received() {
+ 340   1        sender_pause_timer++;
+ 341   1        return (sender_pause_timer > 6 && modbus_receiver_pointer > 0);
+ 342   1      }
+ 343          
+ 344          bool modbus_transmit_buffer_is_empty() {
+ 345   1        return modbus_transmitter_pointer_right == 0;
+ 346   1      }
+ 347          
+ 348          unsigned char modbus_get_freq_divider() {
+ 349   1        return modbus_buffer_data [MODBUS_FREQ_DIVIDER_ADDRESS];
+ 350   1      }
+ 351          
+ 352          void modbus_init_freqs(unsigned long * freqs) {
+ 353   1         SI_SEGMENT_VARIABLE(i, char, xdata);
+ 354   1         SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+ 355   1         SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+ 356   1         SI_SEGMENT_VARIABLE(address, unsigned short int, xdata);
+ 357   1         address = MODBUS_FREQ_VALUES_START_ADDRESS;
+ 358   1         for (i=0; i<12; i++) {
+ 359   2            hi = modbus_buffer_data [address];
+ 360   2            lo = modbus_buffer_data [address + 1];
+ 361   2            freqs [i] = (hi << 8) + lo;
+ 362   2            address += 2;
+ 363   2         }
+ 364   1      }
+C51 COMPILER V9.53.0.0   MODBUS                                                            04/29/2020 21:59:28 PAGE 7   
 
-C51 COMPILER V9.53.0.0   MODBUS                                                            04/27/2020 01:18:23 PAGE 7   
+*** WARNING C290 IN LINE 289 OF modbus.c: missing return value
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   2080    ----
+   CODE SIZE        =   2052    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   5053      64
    PDATA SIZE       =   ----    ----

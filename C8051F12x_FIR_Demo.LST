@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 1   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE C8051F12X_FIR_DEMO
@@ -62,7 +62,7 @@ line level    source
                  _asm \
                  nop \
                  _endasm;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 2   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 2   
 
               #endif // defined SDCC
   56          
@@ -126,7 +126,7 @@ line level    source
  113          void DAC0_Init(void);                  // Configure DAC0
  114          void DAC1_Init(void);                  // Configure DAC1
  115          void Timer3_Init (int counts);         // Configure Timer 3
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 3   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 3   
 
  116          void Timer4_Init (int counts);         // Configure Timer 4
  117          void Set_DAC_Frequency (unsigned long frequency);
@@ -190,7 +190,7 @@ line level    source
                  WDTCN = 0xAD;
               }
               #endif // defined SDCC
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 4   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 4   
 
  178          
  179          //-----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ line level    source
  237   4                  delay_index = delay_index_arr [freq_number];
  238   4                  // Initialize the delay line for the FIR filter
  239   4                  for (i = 0; i < FILTER_MAX_ORDER; i++)
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 5   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 5   
 
  240   4                  {
  241   5                     x[i].s16 = 0;
@@ -318,7 +318,7 @@ line level    source
  299   7                        }
  300   6                     }    
  301   5                     if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 6   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 6   
 
  302   5                     {
  303   6                        FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
@@ -382,7 +382,7 @@ line level    source
  361   1         PLL0DIV = 0x01;
  362   1      
  363   1         // Step 6. Program the PLLLP3-0 bits (PLL0FLT.3-0) to the appropriate
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 7   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 7   
 
  364   1         // range for the divided reference frequency.
  365   1         PLL0FLT |= 0x01;
@@ -446,7 +446,7 @@ line level    source
  423   1         XBR2     = 0x40;                    // Enable crossbar and weak pull-up
  424   1                                             // Enable UART0
  425   1      
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 8   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 8   
 
  426   1         P0MDOUT |= 0x01;                    // Set TX1 pin to push-pull
  427   1         P1MDOUT |= 0x40;                    // Set P1.6(LED) to push-pull
@@ -510,7 +510,7 @@ line level    source
  485          //-----------------------------------------------------------------------------
  486          //
  487          // Return Value:  None
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 9   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 9   
 
  488          // Parameters:    None
  489          //
@@ -574,7 +574,7 @@ line level    source
  547          {
  548   1         char SFRPAGE_SAVE = SFRPAGE;        // Save Current SFR page
  549   1      
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 10  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 10  
 
  550   1         SFRPAGE = ADC0_PAGE;
  551   1      
@@ -638,7 +638,7 @@ line level    source
  609          //           should occur
  610          //
  611          // Configure Timer4 to auto-reload mode and to generate interrupts
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 11  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 11  
 
  612          // at intervals specified in <counts> using SYSCLK as its time base.
  613          //
@@ -702,7 +702,7 @@ line level    source
  671          SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
  672          {
  673   1        unsigned char SFRPAGE_save = SFRPAGE;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 12  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 12  
 
  674   1        SFRPAGE = TIMER01_PAGE;
  675   1        TH0     = 0x00;
@@ -766,7 +766,7 @@ line level    source
  733   3              temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
  734   3            }
  735   2         }
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/27/2020 01:18:22 PAGE 13  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                04/29/2020 21:59:28 PAGE 13  
 
  736   1      
  737   1         //LED = !LED;

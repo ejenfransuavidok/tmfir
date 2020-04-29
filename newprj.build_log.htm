@@ -30,8 +30,8 @@ assembling STARTUP.A51...
 compiling C8051F12x_FIR_Demo.c...
 C8051F12x_FIR_Demo.c(49): warning C317: attempt to redefine macro 'NOP'
 compiling modbus.c...
-modbus.c(288): warning C173: missing return-expression
-modbus.c(288): warning C290: missing return value
+modbus.c(289): warning C173: missing return-expression
+modbus.c(289): warning C290: missing return value
 compiling F120_FlashPrimitives.c...
 compiling F120_FlashUtils.c...
 compiling fir.c...
@@ -53,7 +53,7 @@ linking...
     SEGMENT: ?PR?_FLASH_BYTEREAD?F120_FLASHPRIMITIVES
     CALLER1: ?C_C51STARTUP
     CALLER2: ?PR?TIMER0_ISR?C8051F12X_FIR_DEMO
-Program Size: data=107.2 xdata=7484 code=9641
+Program Size: data=107.2 xdata=7484 code=9613
 "newprj" - 0 Error(s), 11 Warning(s).
 Load "E:\\GIT\\newprj_from_01.04.2020\\newprj" 
 *** AGDI-Msg: Attempting Connection.
@@ -65,6 +65,6 @@ Flash Erase Done.
 *** AGDI-Msg: Connection successful.
 Flash Image Update Complete. 
 Beginning programming...
-Flash Program Done: 9641 bytes programmed.
-Checksum:0xf2a5
-Flash Verify Done: 9641 bytes verified.
+Flash Program Done: 9613 bytes programmed.
+Checksum:0xe750
+Flash Verify Done: 9613 bytes verified.
