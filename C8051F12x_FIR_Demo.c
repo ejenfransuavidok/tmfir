@@ -353,7 +353,7 @@ void SYSCLK_Init (void)
    FLSCL |= 0x30;                      // >= 100 MHz
    SFRPAGE = CONFIG_PAGE;
 
-   // Step 4. Enable power to the PLL by setting PLLPWR (PLL0CN.0) to ‘1’.
+   // Step 4. Enable power to the PLL by setting PLLPWR (PLL0CN.0) to Â‘1Â’.
    PLL0CN |= 0x01;
 
    // Step 5. Program the PLL0DIV register to produce the divided reference
@@ -372,13 +372,13 @@ void SYSCLK_Init (void)
    // factor.
    PLL0MUL = 0x04;
 
-   // Step 9. Wait at least 5 µs, to provide a fast frequency lock.
+   // Step 9. Wait at least 5 Âµs, to provide a fast frequency lock.
    for (i = 100; i > 0; i--);
 
-   // Step 10. Enable the PLL by setting PLLEN (PLL0CN.1) to ‘1’.
+   // Step 10. Enable the PLL by setting PLLEN (PLL0CN.1) to Â‘1Â’.
    PLL0CN |= 0x02;
 
-   // Step 11. Poll PLLLCK (PLL0CN.4) until it changes from ‘0’ to ‘1’.
+   // Step 11. Poll PLLLCK (PLL0CN.4) until it changes from Â‘0Â’ to Â‘1Â’.
    while ((PLL0CN & 0x10) != 0x10);
 
    // Step 12. Switch the System Clock source to the PLL using the CLKSEL
@@ -560,7 +560,7 @@ void ADC0_Init (void)
    AMX0SL = 0x00;                      // Select AIN0.0 as ADC mux input
 #else	
 	 AMX0CF = 0x01;
-	 AMX0SL = 0x01;
+	 AMX0SL = 0x00;
 #endif
 	
    ADC0CF = (SYSCLK/2500000) << 3;     // ADC conversion clock = 2.5MHz
