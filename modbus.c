@@ -161,8 +161,8 @@ int modbus_process_function_3() {
 			crc = crc16_update(crc, modbus_data);
 			modbus_push_transmit_buffer(modbus_data);
 		}
-		modbus_push_transmit_buffer((uint8_t)(crc >> 8));
 		modbus_push_transmit_buffer((uint8_t)(crc));
+		modbus_push_transmit_buffer((uint8_t)(crc >> 8));
 		TI0 = 1;
 		return MODBUS_GOOD;
 		//AD0EN = 1;
@@ -239,8 +239,8 @@ int modbus_process_function_16() {
 		crc = crc16_update(crc, modbus_data);
 		modbus_push_transmit_buffer(modbus_data);
 		
-		modbus_push_transmit_buffer((uint8_t)(crc >> 8));
 		modbus_push_transmit_buffer((uint8_t)(crc));
+		modbus_push_transmit_buffer((uint8_t)(crc >> 8));
 		
 		if (isNeedFlashUpdate()) {
 			for (p=0; p<4; p++) {
