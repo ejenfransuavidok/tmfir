@@ -37,7 +37,7 @@
 #define STOP_FREQUENCY   4999          // Define the ending frequency
 #define FREQ_STEP        10            // Define the number of Hz the frequency
                                        // will step for the frequency sweep
-#define DAC1_VALUE       0x2000        // value for DAC1																			 
+#define DAC1_VALUE       0x8000        // value for DAC1																			 
 																			 
 //-----------------------------------------------------------------------------
 // Macros
@@ -565,6 +565,10 @@ void ADC0_Init (void)
 	
    ADC0CF = (SYSCLK/2500000) << 3;     // ADC conversion clock = 2.5MHz
 
+#ifdef BIPOLIAR_ADC   
+   ADC0CF |= 0x02;
+#endif
+	
    EIE2 |= 0x02;                       // Enable ADC interrupts
 
    SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
