@@ -437,6 +437,21 @@
               <FileType>5</FileType>
               <FilePath>.\fir.h</FilePath>
             </File>
+            <File>
+              <FileName>freqs.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\freqs.h</FilePath>
+            </File>
+            <File>
+              <FileName>bn.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\bn.c</FilePath>
+            </File>
+            <File>
+              <FileName>bn.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\bn.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

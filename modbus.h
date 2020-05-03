@@ -37,7 +37,7 @@
 
 uint16_t crc16_update(uint16_t crc, uint8_t a);
 
-bool modbus_command_received();
+void modbus_command_received();
 
 int get_modbus_receiver_counter();
 

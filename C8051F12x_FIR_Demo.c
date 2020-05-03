@@ -11,7 +11,7 @@
 #include "modbus.h"
 
 //-------------------------- BIPOLIAR SELECTOR --------------------------------
-#define BIPOLIAR_ADC
+//#define BIPOLIAR_ADC
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -31,13 +31,13 @@
 
 #define PHASE_PRECISION  65536         // Range of phase accumulator
 
-#define OUTPUT_RATE_DAC  24000L        // DAC output rate in Hz
+#define OUTPUT_RATE_DAC  20000L        // DAC output rate in Hz
 
 #define START_FREQUENCY  10            // Define the starting frequency
 #define STOP_FREQUENCY   4999          // Define the ending frequency
 #define FREQ_STEP        10            // Define the number of Hz the frequency
                                        // will step for the frequency sweep
-#define DAC1_VALUE       0x2000        // value for DAC1																			 
+#define DAC1_VALUE       0x8000        // value for DAC1																			 
 																			 
 //-----------------------------------------------------------------------------
 // Macros
@@ -92,15 +92,15 @@ SI_SEGMENT_VARIABLE(filtered_samples[N], int, xdata);
 SI_SEGMENT_VARIABLE(freq_number, unsigned char, xdata);
 SI_SEGMENT_VARIABLE(phase_acc[12], SI_UU16_t, xdata) = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 SI_SEGMENT_VARIABLE(FREQS[12], unsigned long, xdata) = {1343, 1445, 1547, 1649, 1751, 1853, 1955, 2057, 2159, 2261, 2363, 2465};
-SI_SEGMENT_VARIABLE(number, int, xdata);
 SI_SEGMENT_VARIABLE(frequency, unsigned long, xdata);
 SI_SEGMENT_VARIABLE(delay_index_arr[12], unsigned char, xdata) = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 SI_SEGMENT_VARIABLE(freq_divider, unsigned char, xdata);
+SI_SEGMENT_VARIABLE(freq_dac_flags[12], unsigned char, xdata);
 
-sbit LED = P1^6;                       // LED='1' means ON
-// For the frequency sweep
-unsigned int Phase_Add;
-SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);// Filter output
+sbit LED = P1^6;                                     // LED='1' means ON
+
+SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);       // Filter output
+SI_SEGMENT_VARIABLE(Phase_Add[12], unsigned int, xdata); // For the frequency sweep
 //-----------------------------------------------------------------------------
 // Function Prototypes
 //-----------------------------------------------------------------------------
@@ -190,6 +190,13 @@ void main (void)
 	 SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(i, int, xdata);
+	 //-----------------------------------------------------------------------------
+	 int count = 0;
+   float average = 0;
+   float RMS_summation = 0;
+   float RMS_Value;
+   float temp;
+	 //-----------------------------------------------------------------------------
 	 void (*init_func_pointer)(void) = init_after_flash_reload;
 	 //-----------------------------------------------------------------------------
 	 
@@ -277,9 +284,11 @@ void main (void)
 						   }
 						   for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
 						   {
-							    FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
+							    //EA=0;
+								  FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
 							    x[opposite_sample_index]);
-						 
+						      //EA=1;
+								 
 							    if (sample_index == 0)
 							    {
 								     sample_index = TAPS - 1;
@@ -300,7 +309,9 @@ void main (void)
 						   }		
 						   if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
 						   {
+								  //EA=0;
 							    FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
+								  //EA=1;
 							    NOP ();
 							    NOP ();
 							    NOP ();
@@ -308,7 +319,31 @@ void main (void)
 						   Sample.u16 = MAC0RND;
 						   filtered_samples[i] = Sample.u16;
 					  }
-					  putRms2Modbus(RMS_Calc((int *) filtered_samples, N, TAPS), freq_number);
+						//---------------------------------------------------------------------
+						average = 0.0;
+
+						for (count = TAPS; count < N; count++)
+						{
+							average += (float) filtered_samples[count];
+						}
+						average = (float)(average / (N-TAPS));
+
+						// Calculate the RMS Value using the average computed above
+						// Calculate the sum from 1 to N of (x-x_avg)^2
+						for (count = TAPS; count < N; count++)
+						{
+							// calculate difference from mean
+							temp = filtered_samples[count] - average;
+							// square it
+							temp *= temp;
+							// and add it to sum
+							RMS_summation += temp;
+						}
+						// Calculate sum from above / N
+						RMS_summation = (float)RMS_summation / (N-TAPS);
+						RMS_Value = RMS_summation / 20000;
+						//---------------------------------------------------------------------
+					  putRms2Modbus(RMS_Value, freq_number);
 					  delay_index_arr [freq_number] = delay_index;
 			   }
 			   LED = !LED;
@@ -335,8 +370,11 @@ void main (void)
 //-----------------------------------------------------------------------------
 void SYSCLK_Init (void)
 {
-   char i;
-   unsigned char SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
+   SI_SEGMENT_VARIABLE(i, char, xdata);
+	
+   SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+	
+	 SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
 
    SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
 
@@ -385,7 +423,7 @@ void SYSCLK_Init (void)
    // register.
    CLKSEL = 0x02;
 
-   SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
+   SFRPAGE = SFRPAGE_SAVE;             // Restore the SFRPAGE
 }
 
 //-----------------------------------------------------------------------------
@@ -545,7 +583,9 @@ void DAC1_Init(void){
 //-----------------------------------------------------------------------------
 void ADC0_Init (void)
 {
-   char SFRPAGE_SAVE = SFRPAGE;        // Save Current SFR page
+   SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+	
+	 SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
 
    SFRPAGE = ADC0_PAGE;
 
@@ -560,7 +600,7 @@ void ADC0_Init (void)
    AMX0SL = 0x00;                      // Select AIN0.0 as ADC mux input
 #else	
 	 AMX0CF = 0x01;
-	 AMX0SL = 0x01;
+	 AMX0SL = 0x00;
 #endif
 	
    ADC0CF = (SYSCLK/2500000) << 3;     // ADC conversion clock = 2.5MHz
@@ -585,7 +625,9 @@ void ADC0_Init (void)
 //-----------------------------------------------------------------------------
 void Timer3_Init (int counts)
 {
-   char SFRPAGE_SAVE = SFRPAGE;        // Save Current SFR page
+   SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+	
+	 SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
 
    SFRPAGE = TMR3_PAGE;
 
@@ -616,7 +658,9 @@ void Timer3_Init (int counts)
 //-----------------------------------------------------------------------------
 void Timer4_Init (int counts)
 {
-   char SFRPAGE_SAVE = SFRPAGE;     // Save Current SFR page
+   SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+	
+	 SFRPAGE_SAVE = SFRPAGE;          // Save Current SFR page
 
    SFRPAGE = TMR4_PAGE;
 
@@ -688,10 +732,10 @@ SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
 	unsigned char SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
   SFRPAGE = UART0_PAGE;
 	if(RI0 == 1) {
-		SFRPAGE = TMR4_PAGE;
-		TR4 = 0;
-		SFRPAGE = UART0_PAGE;
-		AD0EN = 0;
+		//SFRPAGE = TMR4_PAGE;
+		//TR4 = 0;
+		//SFRPAGE = UART0_PAGE;
+		//AD0EN = 0;
 		modbus_byte_receive(SBUF0);
 		RI0 = 0;
 	}
@@ -725,15 +769,12 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
    TMR3CN &= ~0x80;                    // Clear Timer3 overflow flag
 	
    for (number=0; number<12; number++) {
-			if (getFreqFromModbusForDAC(number) != 0) {
-				Phase_Add = (unsigned int)((unsigned long)((FREQS[number] *
-                PHASE_PRECISION) / OUTPUT_RATE_DAC));
-		    
-				phase_acc[number].u16 += Phase_Add;
+			if (freq_dac_flags [number] == 1) {
+				phase_acc[number].u16 += Phase_Add [number];
 				temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
 	 		}
 	 }
-
+	
 	 //LED = !LED;
 	 
    SFRPAGE = DAC0_PAGE;
@@ -745,6 +786,8 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
    DAC0 = 0x8000 ^ temp1;              // Write to DAC0
 }
 void init_after_flash_reload() {
+	 //-----------------------------------------------------------------------
+	 SI_SEGMENT_VARIABLE(i, char, xdata);
    //----------------------- FREQ DIVIDER INIT -----------------------------
    freq_divider = modbus_get_freq_divider();
 	 if (freq_divider == 0) {
@@ -753,6 +796,16 @@ void init_after_flash_reload() {
    //--------------------------- FREQ INIT ---------------------------------
    modbus_init_freqs(FREQS);
    //-----------------------------------------------------------------------
+	 for (i=0; i<12; i++) {
+	    Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
+                PHASE_PRECISION) / OUTPUT_RATE_DAC));
+	    if (getFreqFromModbusForDAC(i) != 0) {
+				 freq_dac_flags [i] = 1;
+			} else {
+			   freq_dac_flags [i] = 0;
+			}
+	 }
+	 //-----------------------------------------------------------------------
 }
 
 //-----------------------------------------------------------------------------

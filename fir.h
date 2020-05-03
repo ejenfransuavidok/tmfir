@@ -9,6 +9,7 @@
 
 #define MODBUS_FILTER_ORDER_START_REGISTER 36
 #define FILTER_MAX_ORDER 61
+#define FILTER_MAX_ORDER_IN_MODBUS 100
 #define MODBUS_FILTER_COEFFICIENT_START_REGISTER 48
 #define MODBUS_FREQUENCY_VALUE_START 12
 #define MODBUS_FREQUENCY_AMPLITUDES_VALUE_START 1262
@@ -22,8 +23,6 @@
  * @return - filter order
  */
 int populateFirCoefficients(SI_UU16_t * coefficients, int number);
-
-void populateFirAll(SI_UU16_t * coefficients);
 
 void putRms2Modbus(int value, int number);
 

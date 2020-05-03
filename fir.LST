@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               04/30/2020 08:25:40 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               05/04/2020 02:22:25 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -8,40 +8,39 @@ COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE fir.c OPTIMIZE(8,SPEED) BROWSE D
 line level    source
 
    1          #include "fir.h"
-   2          
-   3          int getFreqFromModbusForDAC(int number) {
-   4   1        uint8_t hi;
-   5   1        uint8_t lo;
-   6   1        uint8_t * modbus_buffer_data;
-   7   1        
-   8   1        modbus_buffer_data = getModbusBufferData();
-   9   1        
-  10   1        hi = modbus_buffer_data[((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1)];
-  11   1        lo = modbus_buffer_data[(((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1) + 1)];
-  12   1        
-  13   1        return ((hi << 8) + lo);
-  14   1      }
-  15          
-  16          void populateFirAll(SI_UU16_t * coefficients) {
-  17   1        SI_SEGMENT_VARIABLE(i, int, xdata);
-  18   1        SI_SEGMENT_VARIABLE(order, int, xdata);
-  19   1        SI_SEGMENT_VARIABLE(temp, int, xdata);
-  20   1        SI_SEGMENT_VARIABLE(coefficientIndex, int, xdata);
-  21   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
-  22   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
-  23   1        
-  24   1        uint8_t * modbus_buffer_data;
-  25   1        coefficientIndex = MODBUS_FILTER_COEFFICIENT_START_REGISTER;
-  26   1        modbus_buffer_data = getModbusBufferData();
+   2          /*
+   3          #define BIGINT_SIZE 16
+   4          
+   5          typedef struct {
+   6            unsigned char d [16];
+   7          } BIGINT;
+   8          
+   9          void bigintSummator(BIGINT *accumulator, BIGINT *argument) {
+  10            SI_SEGMENT_VARIABLE(i, unsigned char, xdata);
+  11            SI_SEGMENT_VARIABLE(p, unsigned char, xdata);
+  12            p = 0;
+  13            for (i=0; i<BIGINT_SIZE; i++) {
+  14              if (((*accumulator).d [i] + (*argument).d [i]) > 0xFF) {
+  15                p = 1;
+  16              } else {
+  17                p = 0;
+  18              }
+  19              (*accumulator).d [i] = (*accumulator).d [i] + (*argument).d [i] + p;
+  20            }
+  21          }
+  22          */
+  23          int getFreqFromModbusForDAC(int number) {
+  24   1        uint8_t hi;
+  25   1        uint8_t lo;
+  26   1        uint8_t * modbus_buffer_data;
   27   1        
-  28   1        for (i=0; i<1200; i++) {
-  29   2          temp = coefficientIndex + i;
-  30   2          hi = modbus_buffer_data [temp << 1];
-  31   2          lo = modbus_buffer_data [(temp << 1) + 1];
-  32   2          coefficients [i].u16 = (hi << 8) + lo;
-  33   2        }
+  28   1        modbus_buffer_data = getModbusBufferData();
+  29   1        
+  30   1        hi = modbus_buffer_data[((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1)];
+  31   1        lo = modbus_buffer_data[(((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1) + 1)];
+  32   1        
+  33   1        return ((hi << 8) + lo);
   34   1      }
-*** WARNING C280 IN LINE 18 OF fir.c: 'order': unreferenced local variable
   35          
   36          int populateFirCoefficients(SI_UU16_t * coefficients, int number) {
   37   1        SI_SEGMENT_VARIABLE(i, int, xdata);
@@ -55,20 +54,20 @@ line level    source
   45   1        if (number > 11 || number < 0) {
   46   2          return 0;
   47   2        }
-  48   1        coefficientIndex = MODBUS_FILTER_COEFFICIENT_START_REGISTER + FILTER_MAX_ORDER * number;
+  48   1        coefficientIndex = MODBUS_FILTER_COEFFICIENT_START_REGISTER + FILTER_MAX_ORDER_IN_MODBUS * number;
   49   1        modbus_buffer_data = getModbusBufferData();
   50   1        order = MODBUS_FILTER_ORDER_START_REGISTER;
   51   1        order = order + number;
   52   1        // reg number to byte number
   53   1        order = order << 1;
   54   1        // get filter order
-C51 COMPILER V9.53.0.0   FIR                                                               04/30/2020 08:25:40 PAGE 2   
-
   55   1        order = modbus_buffer_data [order + 1];
+C51 COMPILER V9.53.0.0   FIR                                                               05/04/2020 02:22:25 PAGE 2   
+
   56   1        if (order > FILTER_MAX_ORDER) {
   57   2          order = FILTER_MAX_ORDER;
   58   2        }
-  59   1        for (i = 0; i<order, i<FILTER_MAX_ORDER; i++) {
+  59   1        for (i = 0; i<order && i<FILTER_MAX_ORDER; i++) {
   60   2          temp = coefficientIndex + i;
   61   2          hi = modbus_buffer_data [temp << 1];
   62   2          lo = modbus_buffer_data [(temp << 1) + 1];
@@ -126,9 +125,9 @@ line level    source
  114          //   2) num_samples - the number of data elements in the <input_samples> array
  115          //
  116          // This routine takes a pointer to an array and a number of samples and first
-C51 COMPILER V9.53.0.0   FIR                                                               04/30/2020 08:25:40 PAGE 3   
-
  117          // computes the average value of the data.  Then, it uses this average to
+C51 COMPILER V9.53.0.0   FIR                                                               05/04/2020 02:22:25 PAGE 3   
+
  118          // calculate the RMS Value by using the following equation:
  119          //
  120          //                 N
@@ -143,61 +142,56 @@ line level    source
  129          // The above routine skips the first <TAPS> samples where the filter hasn't quite
  130          // settled.
  131          //---------------------------------------------------------------------------*/
- 132          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
- 133          {
- 134   1         SI_SEGMENT_VARIABLE(count, int, xdata);
- 135   1         SI_SEGMENT_VARIABLE(average, float, xdata);
- 136   1         float RMS_summation = 0;
- 137   1         float RMS_Value;
- 138   1         float temp;
- 139   1      
- 140   1      
- 141   1         // Calculate the average value (x_avg) of the <input_samples> array
- 142   1         average = 0.0;
- 143   1      
- 144   1         for (count = TAPS; count < num_samples; count++)
- 145   1         {
- 146   2            average += (float) input_samples[count];
- 147   2         }
- 148   1         average = (float)(average / (num_samples-TAPS));
- 149   1      
- 150   1         // Calculate the RMS Value using the average computed above
- 151   1      
- 152   1         // Calculate the sum from 1 to N of (x-x_avg)^2
- 153   1         for (count = TAPS; count < num_samples; count++)
- 154   1         {
- 155   2            // calculate difference from mean
- 156   2            temp = input_samples[count] - average;
- 157   2            // square it
- 158   2            temp *= temp;
- 159   2            // and add it to sum
- 160   2            RMS_summation += temp;
- 161   2         }
- 162   1      
- 163   1         // Calculate sum from above / N
- 164   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
- 165   1      
- 166   1      #if defined __C51__
- 167   1         RMS_Value = sqrt(RMS_summation);
- 168   1      #elif defined SDCC
-                 RMS_Value = sqrtf(RMS_summation);
-              #endif
- 171   1      
- 172   1         return (int)RMS_Value;
- 173   1      }
+ 132          /*
+ 133          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
+ 134          {
+ 135             int count = 0;
+ 136             float average = 0;
+ 137             float RMS_summation = 0;
+ 138             float RMS_Value;
+ 139             float temp;
+ 140            
+ 141             //EA = 0;
+ 142             // Calculate the average value (x_avg) of the <input_samples> array
+ 143             average = 0.0;
+ 144          
+ 145             for (count = TAPS; count < num_samples; count++)
+ 146             {
+ 147                average += (float) input_samples[count];
+ 148             }
+ 149             average = (float)(average / (num_samples-TAPS));
+ 150          
+ 151             // Calculate the RMS Value using the average computed above
+ 152             // Calculate the sum from 1 to N of (x-x_avg)^2
+ 153             for (count = TAPS; count < num_samples; count++)
+ 154             {
+ 155                // calculate difference from mean
+ 156                temp = input_samples[count] - average;
+ 157                // square it
+ 158                temp *= temp;
+ 159                // and add it to sum
+ 160                RMS_summation += temp;
+ 161             }
+ 162             // Calculate sum from above / N
+ 163             RMS_summation = (float)RMS_summation / (num_samples-TAPS);
+ 164             RMS_Value = RMS_summation / 20000;
+ 165             //EA = 1;
+ 166             return (int)RMS_Value;
+ 167          }
+ 168          */
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1232    ----
+   CODE SIZE        =    663    ----
    CONSTANT SIZE    =   ----    ----
-C51 COMPILER V9.53.0.0   FIR                                                               04/30/2020 08:25:40 PAGE 4   
-
-   XDATA SIZE       =   ----      33
+   XDATA SIZE       =   ----      17
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----      38
+   DATA SIZE        =   ----      17
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
+C51 COMPILER V9.53.0.0   FIR                                                               05/04/2020 02:22:25 PAGE 4   
 
-C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

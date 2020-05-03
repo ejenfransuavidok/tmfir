@@ -22,7 +22,7 @@ Dialog DLL:      TCYG.DLL V2.70
  
 <h2>Project:</h2>
 E:\GIT\newprj_from_01.04.2020\newprj.uvproj
-Project File Date:  04/01/2020
+Project File Date:  05/04/2020
 
 <h2>Output:</h2>
 Rebuild target 'Target 1'
@@ -30,12 +30,9 @@ assembling STARTUP.A51...
 compiling C8051F12x_FIR_Demo.c...
 C8051F12x_FIR_Demo.c(49): warning C317: attempt to redefine macro 'NOP'
 compiling modbus.c...
-modbus.c(289): warning C173: missing return-expression
-modbus.c(289): warning C290: missing return value
 compiling F120_FlashPrimitives.c...
 compiling F120_FlashUtils.c...
 compiling fir.c...
-fir.c(18): warning C280: 'order': unreferenced local variable
 linking...
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_PUTCHAR?C8051F12X_FIR_DEMO
@@ -47,11 +44,45 @@ linking...
     SEGMENT: ?PR?INC_MODBUS_RECEIVER_COUNTER?MODBUS
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?_FLASH_FILL?F120_FLASHUTILS
-*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
-    SEGMENT: ?PR?_POPULATEFIRALL?FIR
 *** WARNING L15: MULTIPLE CALL TO SEGMENT
     SEGMENT: ?PR?_FLASH_BYTEREAD?F120_FLASHPRIMITIVES
     CALLER1: ?C_C51STARTUP
     CALLER2: ?PR?TIMER0_ISR?C8051F12X_FIR_DEMO
-Program Size: data=107.2 xdata=7484 code=9613
+Program Size: data=114.2 xdata=7508 code=9323
+"newprj" - 0 Error(s), 7 Warning(s).
+Load "E:\\GIT\\newprj_from_01.04.2020\\newprj" 
+*** AGDI-Msg: Attempting Connection.
+*** AGDI-Msg: Connection successful.
+Flash Erase Done.
+*** AGDI-Msg: AG_Init code 788
+*** AGDI-Msg: AG_Init Status: AG_STARTFLASHLOAD.
+*** AGDI-Msg: Attempting Connection.
+*** AGDI-Msg: Connection successful.
+Flash Image Update Complete. 
+Beginning programming...
+Flash Program Done: 9323 bytes programmed.
+Checksum:0xe809
+Flash Verify Done: 9323 bytes verified.
+code=9300
 "newprj" - 0 Error(s), 11 Warning(s).
+Load "E:\\GIT\\newprj_from_01.04.2020\\newprj" 
+*** AGDI-Msg: Attempting Connection.
+*** AGDI-Msg: Connection successful.
+Flash Erase Done.
+*** AGDI-Msg: AG_Init code 788
+*** AGDI-Msg: AG_Init Status: AG_STARTFLASHLOAD.
+*** AGDI-Msg: Attempting Connection.
+*** AGDI-Msg: Connection successful.
+Flash Image Update Complete. 
+Beginning programming...
+Flash Program Done: 9300 bytes programmed.
+Checksum:0xdb6b
+Flash Verify Done: 9300 bytes verified.
+ARTFLASHLOAD.
+*** AGDI-Msg: Attempting Connection.
+*** AGDI-Msg: Connection successful.
+Flash Image Update Complete. 
+Beginning programming...
+Flash Program Done: 9300 bytes programmed.
+Checksum:0xdb6b
+Flash Verify Done: 9300 bytes verified.

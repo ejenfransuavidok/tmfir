@@ -9,6 +9,9 @@ int modbus_receiver_pointer = 0;
 int modbus_transmitter_pointer_right = 0;
 int modbus_transmitter_pointer_left = 0;
 int sender_pause_timer = 0;
+
+
+
 SI_SEGMENT_VARIABLE(modbus_command_receiver[MODBUS_RECEIVER_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_command_transmitter[MODBUS_TRANSMITTER_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_buffer_data[MODBUS_DATA_LENGTH], uint8_t, xdata);
@@ -254,7 +257,7 @@ int modbus_process_function_16() {
 	}
 }
 
-bool modbus_command_received() {
+void modbus_command_received() {
 	SI_SEGMENT_VARIABLE(modbus_result, char, xdata);
 	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
 	
