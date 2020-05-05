@@ -1,25 +1,6 @@
 #include "fir.h"
-/*
-#define BIGINT_SIZE 16
 
-typedef struct {
-	unsigned char d [16];
-} BIGINT;
-
-void bigintSummator(BIGINT *accumulator, BIGINT *argument) {
-	SI_SEGMENT_VARIABLE(i, unsigned char, xdata);
-	SI_SEGMENT_VARIABLE(p, unsigned char, xdata);
-	p = 0;
-	for (i=0; i<BIGINT_SIZE; i++) {
-		if (((*accumulator).d [i] + (*argument).d [i]) > 0xFF) {
-		  p = 1;
-		} else {
-		  p = 0;
-		}
-	  (*accumulator).d [i] = (*accumulator).d [i] + (*argument).d [i] + p;
-	}
-}
-*/
+#pragma NOAREGS
 int getFreqFromModbusForDAC(int number) {
 	uint8_t hi;
 	uint8_t lo;
@@ -33,11 +14,13 @@ int getFreqFromModbusForDAC(int number) {
 	return ((hi << 8) + lo);
 }
 
-int populateFirCoefficients(SI_UU16_t * coefficients, int number) {
-	SI_SEGMENT_VARIABLE(i, int, xdata);
-	SI_SEGMENT_VARIABLE(order, int, xdata);
-	SI_SEGMENT_VARIABLE(temp, int, xdata);
-	SI_SEGMENT_VARIABLE(coefficientIndex, int, xdata);
+#pragma NOAREGS
+uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
+	SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
+	SI_SEGMENT_VARIABLE(order, uint16_t, xdata);
+	SI_SEGMENT_VARIABLE(result, uint8_t, xdata);
+	SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);
+	SI_SEGMENT_VARIABLE(coefficientIndex, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
 	
@@ -52,25 +35,26 @@ int populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 	// reg number to byte number
 	order = order << 1;
 	// get filter order
-	order = modbus_buffer_data [order + 1];
-	if (order > FILTER_MAX_ORDER) {
-	  order = FILTER_MAX_ORDER;
+	result = modbus_buffer_data [order + 1];
+	if (result != 61) {
+		result = 0;
 	}
-	for (i = 0; i<order && i<FILTER_MAX_ORDER; i++) {
+	for (i = 0; i<result; i++) {
 		temp = coefficientIndex + i;
 		hi = modbus_buffer_data [temp << 1];
 		lo = modbus_buffer_data [(temp << 1) + 1];
 		coefficients [i].u16 = (hi << 8) + lo;
 	}
-	return order;
+	return result;
 }
 
+#pragma NOAREGS
 void putRms2Modbus(int value, int number) {
 	uint8_t * modbus_buffer_data;
 	SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
-	SI_SEGMENT_VARIABLE(address, int, xdata);
-	SI_SEGMENT_VARIABLE(amplitude_reference, int, xdata);
+	SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
+	SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
 	SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
 	
 	if (number > 11 || number < 0) {
@@ -129,7 +113,7 @@ void putRms2Modbus(int value, int number) {
 // The above routine skips the first <TAPS> samples where the filter hasn't quite
 // settled.
 //---------------------------------------------------------------------------*/
-/*
+#pragma NOAREGS
 int RMS_Calc (int *input_samples, int num_samples, int TAPS)
 {
    int count = 0;
@@ -138,7 +122,6 @@ int RMS_Calc (int *input_samples, int num_samples, int TAPS)
    float RMS_Value;
    float temp;
 	
-	 //EA = 0;
    // Calculate the average value (x_avg) of the <input_samples> array
    average = 0.0;
 
@@ -161,8 +144,10 @@ int RMS_Calc (int *input_samples, int num_samples, int TAPS)
    }
    // Calculate sum from above / N
    RMS_summation = (float)RMS_summation / (num_samples-TAPS);
-	 RMS_Value = RMS_summation / 20000;
-	 //EA = 1;
+#if defined __C51__
+   RMS_Value = sqrt(RMS_summation);
+#elif defined SDCC
+   RMS_Value = sqrtf(RMS_summation);
+#endif
 	 return (int)RMS_Value;
 }
-*/

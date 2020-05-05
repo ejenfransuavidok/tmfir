@@ -31,7 +31,7 @@
 
 #define PHASE_PRECISION  65536         // Range of phase accumulator
 
-#define OUTPUT_RATE_DAC  20000L        // DAC output rate in Hz
+#define OUTPUT_RATE_DAC  24000L        // DAC output rate in Hz
 
 #define START_FREQUENCY  10            // Define the starting frequency
 #define STOP_FREQUENCY   4999          // Define the ending frequency
@@ -85,7 +85,7 @@
 //idata SI_UU16_t x[TAPS];
 SI_SEGMENT_VARIABLE(x[FILTER_MAX_ORDER], SI_UU16_t, xdata);
 SI_SEGMENT_VARIABLE(B_FIR[FILTER_MAX_ORDER], SI_UU16_t, xdata);
-SI_SEGMENT_VARIABLE(TAPS, unsigned int, xdata);
+SI_SEGMENT_VARIABLE(TAPS, uint8_t, xdata);
 SI_SEGMENT_VARIABLE(data_for_filter[N], SI_UU16_t, xdata);
 SI_SEGMENT_VARIABLE(data_for_filter_counter, int, xdata);
 SI_SEGMENT_VARIABLE(filtered_samples[N], int, xdata);
@@ -190,13 +190,8 @@ void main (void)
 	 SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(i, int, xdata);
-	 //-----------------------------------------------------------------------------
-	 int count = 0;
-   float average = 0;
-   float RMS_summation = 0;
-   float RMS_Value;
-   float temp;
-	 //-----------------------------------------------------------------------------
+	 unsigned int RMS_Value = 0; 
+	//-----------------------------------------------------------------------------
 	 void (*init_func_pointer)(void) = init_after_flash_reload;
 	 //-----------------------------------------------------------------------------
 	 
@@ -251,101 +246,77 @@ void main (void)
 					  for (i = 0; i < N; i ++)
 					  {
 						   filtered_samples[i] = 0;
-					  }		
+					  }
+            EA = 0;						
 					  TAPS = populateFirCoefficients(B_FIR, freq_number);
-					  if (TAPS > FILTER_MAX_ORDER || TAPS == 0) {
-						   TAPS = 10;
-					  }
-					  for (i=0; i<N; i++) {					
-						   // Store ADC result in the delay line
-						   x[delay_index].u16 = data_for_filter[i].u16;
-						   // Sample_index points to newest data
-						   sample_index = delay_index;         
-						   // Update delay index
-						   if (delay_index == (TAPS - 1))
-						   {
-							    delay_index = 0;
-						   }
-						   else
-						   {
-							    delay_index++;
-						   }
+					  EA = 1;
+						if (TAPS == 61) {
+							for (i=0; i<N; i++) {					
+								 // Store ADC result in the delay line
+								 x[delay_index].u16 = data_for_filter[i].u16;
+								 // Sample_index points to newest data
+								 sample_index = delay_index;         
+								 // Update delay index
+								 if (delay_index == (TAPS - 1))
+								 {
+										delay_index = 0;
+								 }
+								 else
+								 {
+										delay_index++;
+								 }
 
-						   MAC0CF |= 0x08;                  // Clear accumulator
-					
-						   // Mirror algorithm
-						   if (sample_index == TAPS - 1)
-						   {
-							    opposite_sample_index = 0;
-						   }
-						   else
-						   {
-							    opposite_sample_index = sample_index + 1;
-						   }
-						   for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
-						   {
-							    //EA=0;
-								  FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
-							    x[opposite_sample_index]);
-						      //EA=1;
-								 
-							    if (sample_index == 0)
-							    {
-								     sample_index = TAPS - 1;
-							    }
-							    else
-							    {
-								     sample_index--;
-							    }
+								 MAC0CF |= 0x08;                  // Clear accumulator
+						
+								 // Mirror algorithm
+								 if (sample_index == TAPS - 1)
+								 {
+										opposite_sample_index = 0;
+								 }
+								 else
+								 {
+										opposite_sample_index = sample_index + 1;
+								 }
+								 for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
+								 {
+										FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
+										x[opposite_sample_index]);
+									 
+										if (sample_index == 0)
+										{
+											 sample_index = TAPS - 1;
+										}
+										else
+										{
+											 sample_index--;
+										}
 
-							    if (opposite_sample_index == TAPS - 1)
-							    {
-								     opposite_sample_index = 0;
-							    }
-							    else
-							    {
-								     opposite_sample_index++;
-							    }
-						   }		
-						   if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
-						   {
-								  //EA=0;
-							    FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
-								  //EA=1;
-							    NOP ();
-							    NOP ();
-							    NOP ();
-						   }
-						   Sample.u16 = MAC0RND;
-						   filtered_samples[i] = Sample.u16;
-					  }
-						//---------------------------------------------------------------------
-						average = 0.0;
-
-						for (count = TAPS; count < N; count++)
-						{
-							average += (float) filtered_samples[count];
+										if (opposite_sample_index == TAPS - 1)
+										{
+											 opposite_sample_index = 0;
+										}
+										else
+										{
+											 opposite_sample_index++;
+										}
+								 }
+								 if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
+								 {
+										FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
+										NOP ();
+										NOP ();
+										NOP ();
+								 }
+								 Sample.u16 = MAC0RND;
+								 filtered_samples[i] = Sample.u16;
+							}
+							EA = 0;
+							RMS_Value = RMS_Calc(filtered_samples, N, TAPS);
+							EA = 1;
+							putRms2Modbus(RMS_Value, freq_number);
+							delay_index_arr [freq_number] = delay_index;
 						}
-						average = (float)(average / (N-TAPS));
-
-						// Calculate the RMS Value using the average computed above
-						// Calculate the sum from 1 to N of (x-x_avg)^2
-						for (count = TAPS; count < N; count++)
-						{
-							// calculate difference from mean
-							temp = filtered_samples[count] - average;
-							// square it
-							temp *= temp;
-							// and add it to sum
-							RMS_summation += temp;
-						}
-						// Calculate sum from above / N
-						RMS_summation = (float)RMS_summation / (N-TAPS);
-						RMS_Value = RMS_summation / 20000;
-						//---------------------------------------------------------------------
-					  putRms2Modbus(RMS_Value, freq_number);
-					  delay_index_arr [freq_number] = delay_index;
-			   }
+				 }
 			   LED = !LED;
 			   data_for_filter_counter = 0;
 			}
@@ -697,6 +668,7 @@ void Timer4_Init (int counts)
 //
 //-----------------------------------------------------------------------------
 //void ADC0_ISR (void) interrupt 15
+#pragma NOAREGS
 SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
 {
 	 volatile SI_UU16_t input;
@@ -712,6 +684,7 @@ SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
 	 }
 }
 
+#pragma NOAREGS
 SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
 {
 	unsigned char SFRPAGE_save = SFRPAGE;
@@ -727,6 +700,7 @@ SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
 	SFRPAGE = SFRPAGE_save;
 }
 
+#pragma NOAREGS
 SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
 {
 	unsigned char SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
@@ -760,6 +734,7 @@ SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
 //
 //-----------------------------------------------------------------------------
 //void Timer4_ISR (void) interrupt 16
+#pragma NOAREGS
 SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
 { 
 	 char number = 0;
@@ -785,6 +760,8 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
 
    DAC0 = 0x8000 ^ temp1;              // Write to DAC0
 }
+
+#pragma NOAREGS
 void init_after_flash_reload() {
 	 //-----------------------------------------------------------------------
 	 SI_SEGMENT_VARIABLE(i, char, xdata);

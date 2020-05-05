@@ -22,7 +22,7 @@
  * @number - sign of frequency [0-12]
  * @return - filter order
  */
-int populateFirCoefficients(SI_UU16_t * coefficients, int number);
+uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number);
 
 void putRms2Modbus(int value, int number);
 

@@ -18,10 +18,12 @@ SI_SEGMENT_VARIABLE(modbus_buffer_data[MODBUS_DATA_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_error_response[5], uint8_t, xdata);
 void (*init_after_flash_reload_func_pointer)(void);
 
+#pragma NOAREGS
 uint8_t * getModbusBufferData() {
 	return modbus_buffer_data;
 }
 
+#pragma NOAREGS
 void restore_fir() {
 	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
 	SFRPAGE_save = SFRPAGE;
@@ -32,12 +34,14 @@ void restore_fir() {
 	SFRPAGE = SFRPAGE_save;
 }
 
+#pragma NOAREGS
 void modbus_init_from_flash(void (*init_after_flash_reload)(void)) {
 	FLASH_Read (modbus_buffer_data, MODBUS_FLASH_ADDRESS, 3000, 0);
 	init_after_flash_reload_func_pointer = init_after_flash_reload;
 	init_after_flash_reload_func_pointer();
 }
 
+#pragma NOAREGS
 void resetFlashUpdate() {
 	modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_0] = 0;
   modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_1] = 0; 
@@ -45,6 +49,7 @@ void resetFlashUpdate() {
   modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_3] = 0; 
 }
 
+#pragma NOAREGS
 bool isNeedFlashUpdate() {
 	return
 	modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_0] == 0x11 &&
@@ -53,6 +58,7 @@ bool isNeedFlashUpdate() {
   modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_3] == 0x22;
 }
 
+#pragma NOAREGS
 uint16_t crc16_update(uint16_t crc, uint8_t a) {
 	SI_SEGMENT_VARIABLE(i, int, xdata);
 	crc ^= (uint16_t)a;
@@ -65,6 +71,7 @@ uint16_t crc16_update(uint16_t crc, uint8_t a) {
 	return crc;
 }
 
+#pragma NOAREGS
 uint16_t calc_crc(uint8_t * command, int size_command) {
 	SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(i, int, xdata);
@@ -76,6 +83,7 @@ uint16_t calc_crc(uint8_t * command, int size_command) {
 	return crc;
 }
 
+#pragma NOAREGS
 bool modbus_check_crc(uint8_t * command_receiver, int receiver_pointer) {
 	if(receiver_pointer > 2) {
 		uint16_t crc_calc = calc_crc(command_receiver, receiver_pointer - 2);
@@ -86,19 +94,23 @@ bool modbus_check_crc(uint8_t * command_receiver, int receiver_pointer) {
 	return false;
 }
 
+#pragma NOAREGS
 uint8_t modbus_get_address() {
 	return modbus_buffer_data [MODBUS_ADDRESS_IN_MEMORY];
 }
 
+#pragma NOAREGS
 bool modbus_check_address() {
 	return modbus_get_address() == modbus_command_receiver [MODBUS_ADDRESS]
 		|| modbus_command_receiver [MODBUS_ADDRESS] == MODBUS_BROADCAST_ADDRESS;
 }
 
+#pragma NOAREGS
 uint8_t modbus_get_function() {
 	return modbus_command_receiver [MODBUS_FUNCTION];
 }
 
+#pragma NOAREGS
 void modbus_response_error(uint8_t error) {
 	SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(i, int, xdata);
@@ -115,6 +127,7 @@ void modbus_response_error(uint8_t error) {
 	}
 }
 
+#pragma NOAREGS
 int modbus_process_function_3() {
 	SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(i, uint16_t, xdata);
@@ -172,10 +185,12 @@ int modbus_process_function_3() {
 	}
 }
 
+#pragma NOAREGS
 bool modbus_check_size_of_func16(int registers_num) {
 	return modbus_receiver_pointer == (MODBUS_FUNCTION_16_BASE_LENGTH + (registers_num << 1));
 }
 
+#pragma NOAREGS
 int modbus_process_function_16() {
 	SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
 	SI_SEGMENT_VARIABLE(i, uint16_t, xdata);
@@ -257,6 +272,7 @@ int modbus_process_function_16() {
 	}
 }
 
+#pragma NOAREGS
 void modbus_command_received() {
 	SI_SEGMENT_VARIABLE(modbus_result, char, xdata);
 	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
@@ -291,18 +307,22 @@ void modbus_command_received() {
 	}
 }
 
+#pragma NOAREGS
 int get_modbus_receiver_counter() {
 	return sender_pause_timer;
 }
 
+#pragma NOAREGS
 void set_modbus_receiver_counter(int mrc) {
 	sender_pause_timer = mrc;
 }
 
+#pragma NOAREGS
 void inc_modbus_receiver_counter() {
 	sender_pause_timer++;
 }
 
+#pragma NOAREGS
 void modbus_byte_receive(uint8_t input) {
 	sender_pause_timer = 0;
 	modbus_command_receiver [modbus_receiver_pointer++] = input;
@@ -311,6 +331,7 @@ void modbus_byte_receive(uint8_t input) {
 	}
 }
 
+#pragma NOAREGS
 void modbus_transmit_byte() {
 	if(modbus_transmitter_pointer_right > 0) {
 		SBUF0 = modbus_command_transmitter [modbus_transmitter_pointer_left++];
@@ -324,6 +345,7 @@ void modbus_transmit_byte() {
 	}
 }
 
+#pragma NOAREGS
 void modbus_push_transmit_buffer(uint8_t output) {
 	 /*
 	 if(output == '\n') {
@@ -339,19 +361,23 @@ void modbus_push_transmit_buffer(uint8_t output) {
 	 }
 }
 
+#pragma NOAREGS
 bool modbus_was_sendind_received() {
 	sender_pause_timer++;
 	return (sender_pause_timer > 6 && modbus_receiver_pointer > 0);
 }
 
+#pragma NOAREGS
 bool modbus_transmit_buffer_is_empty() {
 	return modbus_transmitter_pointer_right == 0;
 }
 
+#pragma NOAREGS
 unsigned char modbus_get_freq_divider() {
 	return modbus_buffer_data [MODBUS_FREQ_DIVIDER_ADDRESS];
 }
 
+#pragma NOAREGS
 void modbus_init_freqs(unsigned long * freqs) {
 	 SI_SEGMENT_VARIABLE(i, char, xdata);
 	 SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
