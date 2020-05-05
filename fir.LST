@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 11:18:48 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 21:25:39 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -62,7 +62,7 @@ line level    source
   53   1        uint8_t * modbus_buffer_data;
   54   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
   55   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
-C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 11:18:48 PAGE 2   
+C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 21:25:39 PAGE 2   
 
   56   1        SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
   57   1        SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
@@ -126,7 +126,7 @@ line level    source
  115          //---------------------------------------------------------------------------*/
  116          #pragma NOAREGS
  117          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
-C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 11:18:48 PAGE 3   
+C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 21:25:39 PAGE 3   
 
  118          {
  119   1         int count = 0;

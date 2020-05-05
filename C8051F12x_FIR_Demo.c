@@ -31,7 +31,7 @@
 
 #define PHASE_PRECISION  65536         // Range of phase accumulator
 
-#define OUTPUT_RATE_DAC  24000L        // DAC output rate in Hz
+#define OUTPUT_RATE_DAC  20000L        // DAC output rate in Hz
 
 #define START_FREQUENCY  10            // Define the starting frequency
 #define STOP_FREQUENCY   4999          // Define the ending frequency

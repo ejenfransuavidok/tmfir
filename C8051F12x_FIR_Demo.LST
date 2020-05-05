@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 1   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE C8051F12X_FIR_DEMO
@@ -40,7 +40,7 @@ line level    source
   31          
   32          #define PHASE_PRECISION  65536         // Range of phase accumulator
   33          
-  34          #define OUTPUT_RATE_DAC  24000L        // DAC output rate in Hz
+  34          #define OUTPUT_RATE_DAC  20000L        // DAC output rate in Hz
   35          
   36          #define START_FREQUENCY  10            // Define the starting frequency
   37          #define STOP_FREQUENCY   4999          // Define the ending frequency
@@ -62,7 +62,7 @@ line level    source
                  _asm \
                  nop \
                  _endasm;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 2   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 2   
 
               #endif // defined SDCC
   56          
@@ -126,7 +126,7 @@ line level    source
  113          void DAC0_Init(void);                  // Configure DAC0
  114          void DAC1_Init(void);                  // Configure DAC1
  115          void Timer3_Init (int counts);         // Configure Timer 3
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 3   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 3   
 
  116          void Timer4_Init (int counts);         // Configure Timer 4
  117          void Set_DAC_Frequency (unsigned long frequency);
@@ -190,7 +190,7 @@ line level    source
                  WDTCN = 0xAD;
               }
               #endif // defined SDCC
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 4   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 4   
 
  178          
  179          //-----------------------------------------------------------------------------
@@ -254,7 +254,7 @@ line level    source
  237   2            if (data_for_filter_counter == N) {
  238   3               for (freq_number=0; freq_number<12; freq_number++) {
  239   4                  delay_index = delay_index_arr [freq_number];
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 5   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 5   
 
  240   4                  // Initialize the delay line for the FIR filter
  241   4                  for (i = 0; i < FILTER_MAX_ORDER; i++)
@@ -318,7 +318,7 @@ line level    source
  299   7                          {
  300   8                             opposite_sample_index++;
  301   8                          }
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 6   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 6   
 
  302   7                       }
  303   6                       if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
@@ -382,7 +382,7 @@ line level    source
  361   1         SFRPAGE = LEGACY_PAGE;
  362   1         FLSCL |= 0x30;                      // >= 100 MHz
  363   1         SFRPAGE = CONFIG_PAGE;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 7   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 7   
 
  364   1      
  365   1         // Step 4. Enable power to the PLL by setting PLLPWR (PLL0CN.0) to ‘1’.
@@ -446,7 +446,7 @@ line level    source
  423          void PORT_Init (void)
  424          {
  425   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 8   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 8   
 
  426   1         SFRPAGE_save = SFRPAGE;             // Save the current SFRPAGE
  427   1      
@@ -510,7 +510,7 @@ line level    source
  485   1         
  486   1         PS0    = 1;
  487   1        
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 9   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 9   
 
  488   1         ES0    = 1; 
  489   1        
@@ -574,7 +574,7 @@ line level    source
  547          // Parameters:    None
  548          //
  549          // Configures ADC0 to make single-ended analog measurements on pin AIN0.0 for
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 10  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 10  
 
  550          // the FIR filter.  Timer3 overflows are the conversion source and the data is
  551          // left-justified.  This function also enables the ADC end-of-conversion
@@ -638,7 +638,7 @@ line level    source
  609   1         TMR3    = RCAP3;                    // set to reload immediately
  610   1         EIE2   &= ~0x01;                    // Disable Timer3 interrupts
  611   1         TR3 = 1;                            // Start Timer3
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 11  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 11  
 
  612   1      
  613   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
@@ -702,7 +702,7 @@ line level    source
  671          #pragma NOAREGS
  672          SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
  673          {
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 12  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 12  
 
  674   1         volatile SI_UU16_t input;
  675   1        
@@ -766,7 +766,7 @@ line level    source
  733          // actually transferred to DAC1 at the next Timer4 overflow.
  734          //
  735          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 13  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 13  
 
  736          //void Timer4_ISR (void) interrupt 16
  737          #pragma NOAREGS
@@ -830,7 +830,7 @@ line level    source
  795          //   1) char c - the character to be printed
  796          //
  797          // Print the character <c> using UART0 at <BAUDRATE>.
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 11:18:47 PAGE 14  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/05/2020 21:25:38 PAGE 14  
 
  798          //
  799          //-----------------------------------------------------------------------------
