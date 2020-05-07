@@ -140,9 +140,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>316</LineNumber>
+          <LineNumber>254</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>-16773814</Address>
+          <Address>-16774257</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -151,7 +151,39 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>C8051F12X_FIR_DEMO.C</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\newprj\C8051F12X_FIR_DEMO\316</Expression>
+          <Expression>\\newprj\C8051F12X_FIR_DEMO\254</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>253</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>-16774261</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C8051F12X_FIR_DEMO.C</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\newprj\C8051F12X_FIR_DEMO\253</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
+          <LineNumber>251</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>-16774282</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C8051F12X_FIR_DEMO.C</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\newprj\C8051F12X_FIR_DEMO\251</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -171,6 +203,13 @@
           <ItemText>TAPS</ItemText>
         </Ww>
       </WatchWindow1>
+      <MemoryWindow1>
+        <Mm>
+          <WinNumber>1</WinNumber>
+          <SubType>0</SubType>
+          <ItemText>X:0x000400</ItemText>
+        </Mm>
+      </MemoryWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
       </Tracepoint>

@@ -45,8 +45,12 @@ uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 		lo = modbus_buffer_data [(temp << 1) + 1];
 		coefficients [i].u16 = (hi << 8) + lo;
 	}
+	if (result != 61) {
+		NOP();
+	}
 	return result;
 }
+
 
 #pragma NOAREGS
 void putRms2Modbus(int value, int number) {

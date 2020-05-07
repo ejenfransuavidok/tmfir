@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/05/2020 21:25:38 PAGE 1   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/07/2020 07:38:28 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MODBUS
@@ -62,7 +62,7 @@ line level    source
   53          bool isNeedFlashUpdate() {
   54   1        return
   55   1        modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_0] == 0x11 &&
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/05/2020 21:25:38 PAGE 2   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/07/2020 07:38:28 PAGE 2   
 
   56   1        modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_1] == 0x11 &&
   57   1        modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_2] == 0x22 &&
@@ -126,7 +126,7 @@ line level    source
  115   1        SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
  116   1        SI_SEGMENT_VARIABLE(i, int, xdata);
  117   1        crc = 0xFFFF;
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/05/2020 21:25:38 PAGE 3   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/07/2020 07:38:28 PAGE 3   
 
  118   1        i = 0;
  119   1        modbus_error_response [MODBUS_ADDRESS] = modbus_get_address();
@@ -190,7 +190,7 @@ line level    source
  177   3            crc = crc16_update(crc, modbus_data);
  178   3            modbus_push_transmit_buffer(modbus_data);
  179   3          }
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/05/2020 21:25:38 PAGE 4   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/07/2020 07:38:28 PAGE 4   
 
  180   2          modbus_push_transmit_buffer((uint8_t)(crc));
  181   2          modbus_push_transmit_buffer((uint8_t)(crc >> 8));
@@ -254,7 +254,7 @@ line level    source
  239   2          
  240   2          modbus_data = 16;
  241   2          crc = crc16_update(crc, modbus_data);
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/05/2020 21:25:38 PAGE 5   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/07/2020 07:38:28 PAGE 5   
 
  242   2          modbus_push_transmit_buffer(modbus_data);
  243   2          
@@ -282,136 +282,137 @@ line level    source
  265   4              // 4 - pages (one page size is 1024)
  266   4              FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
  267   4            }
- 268   3          }
- 269   2          TI0 = 1;
- 270   2          return MODBUS_GOOD;
- 271   2          //AD0EN = 1;
- 272   2        }
- 273   1      }
- 274          
- 275          #pragma NOAREGS
- 276          void modbus_command_received() {
- 277   1        SI_SEGMENT_VARIABLE(modbus_result, char, xdata);
- 278   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
- 279   1        
- 280   1        modbus_result = MODBUS_FAIL;
- 281   1        SFRPAGE_save = SFRPAGE;
- 282   1        
- 283   1        if(modbus_check_crc(modbus_command_receiver, modbus_receiver_pointer) && modbus_check_address()) {
- 284   2          uint8_t function = modbus_get_function();
- 285   2          if(function == 3 || function == 16) {
- 286   3            if(function ==3) {
- 287   4              modbus_result = modbus_process_function_3();
- 288   4            }
- 289   3            else {
- 290   4              modbus_result = modbus_process_function_16();
- 291   4            }
- 292   3            if (modbus_receiver_pointer < 0xFF) {
- 293   4              restore_fir();
- 294   4            }
- 295   3          }
- 296   2          else {
- 297   3            modbus_response_error(MODBUS_ERROR_ILLEGAL_FUNCTION_CODE);
- 298   3          }
- 299   2          //modbus_receiver_pointer = 0;
- 300   2        }
- 301   1        sender_pause_timer = 0;
- 302   1        modbus_receiver_pointer = 0;
- 303   1        if (modbus_result == MODBUS_FAIL) {
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/05/2020 21:25:38 PAGE 6   
+ 268   3            init_after_flash_reload_func_pointer();
+ 269   3          }
+ 270   2          TI0 = 1;
+ 271   2          return MODBUS_GOOD;
+ 272   2          //AD0EN = 1;
+ 273   2        }
+ 274   1      }
+ 275          
+ 276          #pragma NOAREGS
+ 277          void modbus_command_received() {
+ 278   1        SI_SEGMENT_VARIABLE(modbus_result, char, xdata);
+ 279   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+ 280   1        
+ 281   1        modbus_result = MODBUS_FAIL;
+ 282   1        SFRPAGE_save = SFRPAGE;
+ 283   1        
+ 284   1        if(modbus_check_crc(modbus_command_receiver, modbus_receiver_pointer) && modbus_check_address()) {
+ 285   2          uint8_t function = modbus_get_function();
+ 286   2          if(function == 3 || function == 16) {
+ 287   3            if(function ==3) {
+ 288   4              modbus_result = modbus_process_function_3();
+ 289   4            }
+ 290   3            else {
+ 291   4              modbus_result = modbus_process_function_16();
+ 292   4            }
+ 293   3            if (modbus_receiver_pointer < 0xFF) {
+ 294   4              restore_fir();
+ 295   4            }
+ 296   3          }
+ 297   2          else {
+ 298   3            modbus_response_error(MODBUS_ERROR_ILLEGAL_FUNCTION_CODE);
+ 299   3          }
+ 300   2          //modbus_receiver_pointer = 0;
+ 301   2        }
+ 302   1        sender_pause_timer = 0;
+ 303   1        modbus_receiver_pointer = 0;
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/07/2020 07:38:28 PAGE 6   
 
- 304   2          restore_fir();
- 305   2        } else {
- 306   2          init_after_flash_reload_func_pointer();
- 307   2        }
- 308   1      }
- 309          
- 310          #pragma NOAREGS
- 311          int get_modbus_receiver_counter() {
- 312   1        return sender_pause_timer;
- 313   1      }
- 314          
- 315          #pragma NOAREGS
- 316          void set_modbus_receiver_counter(int mrc) {
- 317   1        sender_pause_timer = mrc;
- 318   1      }
- 319          
- 320          #pragma NOAREGS
- 321          void inc_modbus_receiver_counter() {
- 322   1        sender_pause_timer++;
- 323   1      }
- 324          
- 325          #pragma NOAREGS
- 326          void modbus_byte_receive(uint8_t input) {
- 327   1        sender_pause_timer = 0;
- 328   1        modbus_command_receiver [modbus_receiver_pointer++] = input;
- 329   1        if(modbus_receiver_pointer == MODBUS_RECEIVER_LENGTH) {
- 330   2          modbus_receiver_pointer = 0;
- 331   2        }
- 332   1      }
- 333          
- 334          #pragma NOAREGS
- 335          void modbus_transmit_byte() {
- 336   1        if(modbus_transmitter_pointer_right > 0) {
- 337   2          SBUF0 = modbus_command_transmitter [modbus_transmitter_pointer_left++];
- 338   2          if (modbus_transmitter_pointer_left == MODBUS_TRANSMITTER_LENGTH) {
- 339   3            modbus_transmitter_pointer_left = 0;
- 340   3          }
- 341   2        }
- 342   1        if(modbus_transmitter_pointer_right == modbus_transmitter_pointer_left) {
- 343   2          modbus_transmitter_pointer_right = 0;
- 344   2          modbus_transmitter_pointer_left = 0;
- 345   2        }
- 346   1      }
- 347          
- 348          #pragma NOAREGS
- 349          void modbus_push_transmit_buffer(uint8_t output) {
- 350   1         /*
- 351   1         if(output == '\n') {
- 352   1           modbus_command_transmitter[modbus_transmitter_pointer_right++] = 0x0d;
- 353   1         }
- 354   1         else {
- 355   1           modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
- 356   1         }
- 357   1         */
- 358   1         modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
- 359   1         if(modbus_transmitter_pointer_right == MODBUS_TRANSMITTER_LENGTH) {
- 360   2              modbus_transmitter_pointer_right = 0;
- 361   2         }
- 362   1      }
- 363          
- 364          #pragma NOAREGS
- 365          bool modbus_was_sendind_received() {
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/05/2020 21:25:38 PAGE 7   
+ 304   1        if (modbus_result == MODBUS_FAIL) {
+ 305   2          restore_fir();
+ 306   2        } else {
+ 307   2          //init_after_flash_reload_func_pointer();
+ 308   2        }
+ 309   1      }
+ 310          
+ 311          #pragma NOAREGS
+ 312          int get_modbus_receiver_counter() {
+ 313   1        return sender_pause_timer;
+ 314   1      }
+ 315          
+ 316          #pragma NOAREGS
+ 317          void set_modbus_receiver_counter(int mrc) {
+ 318   1        sender_pause_timer = mrc;
+ 319   1      }
+ 320          
+ 321          #pragma NOAREGS
+ 322          void inc_modbus_receiver_counter() {
+ 323   1        sender_pause_timer++;
+ 324   1      }
+ 325          
+ 326          #pragma NOAREGS
+ 327          void modbus_byte_receive(uint8_t input) {
+ 328   1        sender_pause_timer = 0;
+ 329   1        modbus_command_receiver [modbus_receiver_pointer++] = input;
+ 330   1        if(modbus_receiver_pointer == MODBUS_RECEIVER_LENGTH) {
+ 331   2          modbus_receiver_pointer = 0;
+ 332   2        }
+ 333   1      }
+ 334          
+ 335          #pragma NOAREGS
+ 336          void modbus_transmit_byte() {
+ 337   1        if(modbus_transmitter_pointer_right > 0) {
+ 338   2          SBUF0 = modbus_command_transmitter [modbus_transmitter_pointer_left++];
+ 339   2          if (modbus_transmitter_pointer_left == MODBUS_TRANSMITTER_LENGTH) {
+ 340   3            modbus_transmitter_pointer_left = 0;
+ 341   3          }
+ 342   2        }
+ 343   1        if(modbus_transmitter_pointer_right == modbus_transmitter_pointer_left) {
+ 344   2          modbus_transmitter_pointer_right = 0;
+ 345   2          modbus_transmitter_pointer_left = 0;
+ 346   2        }
+ 347   1      }
+ 348          
+ 349          #pragma NOAREGS
+ 350          void modbus_push_transmit_buffer(uint8_t output) {
+ 351   1         /*
+ 352   1         if(output == '\n') {
+ 353   1           modbus_command_transmitter[modbus_transmitter_pointer_right++] = 0x0d;
+ 354   1         }
+ 355   1         else {
+ 356   1           modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
+ 357   1         }
+ 358   1         */
+ 359   1         modbus_command_transmitter[modbus_transmitter_pointer_right++] = output;
+ 360   1         if(modbus_transmitter_pointer_right == MODBUS_TRANSMITTER_LENGTH) {
+ 361   2              modbus_transmitter_pointer_right = 0;
+ 362   2         }
+ 363   1      }
+ 364          
+ 365          #pragma NOAREGS
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/07/2020 07:38:28 PAGE 7   
 
- 366   1        sender_pause_timer++;
- 367   1        return (sender_pause_timer > 6 && modbus_receiver_pointer > 0);
- 368   1      }
- 369          
- 370          #pragma NOAREGS
- 371          bool modbus_transmit_buffer_is_empty() {
- 372   1        return modbus_transmitter_pointer_right == 0;
- 373   1      }
- 374          
- 375          #pragma NOAREGS
- 376          unsigned char modbus_get_freq_divider() {
- 377   1        return modbus_buffer_data [MODBUS_FREQ_DIVIDER_ADDRESS];
- 378   1      }
- 379          
- 380          #pragma NOAREGS
- 381          void modbus_init_freqs(unsigned long * freqs) {
- 382   1         SI_SEGMENT_VARIABLE(i, char, xdata);
- 383   1         SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
- 384   1         SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
- 385   1         SI_SEGMENT_VARIABLE(address, unsigned short int, xdata);
- 386   1         address = MODBUS_FREQ_VALUES_START_ADDRESS;
- 387   1         for (i=0; i<12; i++) {
- 388   2            hi = modbus_buffer_data [address];
- 389   2            lo = modbus_buffer_data [address + 1];
- 390   2            freqs [i] = (hi << 8) + lo;
- 391   2            address += 2;
- 392   2         }
- 393   1      }
+ 366          bool modbus_was_sendind_received() {
+ 367   1        sender_pause_timer++;
+ 368   1        return (sender_pause_timer > 6 && modbus_receiver_pointer > 0);
+ 369   1      }
+ 370          
+ 371          #pragma NOAREGS
+ 372          bool modbus_transmit_buffer_is_empty() {
+ 373   1        return modbus_transmitter_pointer_right == 0;
+ 374   1      }
+ 375          
+ 376          #pragma NOAREGS
+ 377          unsigned char modbus_get_freq_divider() {
+ 378   1        return modbus_buffer_data [MODBUS_FREQ_DIVIDER_ADDRESS];
+ 379   1      }
+ 380          
+ 381          #pragma NOAREGS
+ 382          void modbus_init_freqs(unsigned long * freqs) {
+ 383   1         SI_SEGMENT_VARIABLE(i, char, xdata);
+ 384   1         SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+ 385   1         SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+ 386   1         SI_SEGMENT_VARIABLE(address, unsigned short int, xdata);
+ 387   1         address = MODBUS_FREQ_VALUES_START_ADDRESS;
+ 388   1         for (i=0; i<12; i++) {
+ 389   2            hi = modbus_buffer_data [address];
+ 390   2            lo = modbus_buffer_data [address + 1];
+ 391   2            freqs [i] = (hi << 8) + lo;
+ 392   2            address += 2;
+ 393   2         }
+ 394   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

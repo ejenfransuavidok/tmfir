@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 21:25:39 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               05/07/2020 07:38:28 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -54,120 +54,124 @@ line level    source
   45   2          lo = modbus_buffer_data [(temp << 1) + 1];
   46   2          coefficients [i].u16 = (hi << 8) + lo;
   47   2        }
-  48   1        return result;
-  49   1      }
-  50          
-  51          #pragma NOAREGS
-  52          void putRms2Modbus(int value, int number) {
-  53   1        uint8_t * modbus_buffer_data;
-  54   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
-  55   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
-C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 21:25:39 PAGE 2   
+  48   1        if (result != 61) {
+  49   2          NOP();
+  50   2        }
+  51   1        return result;
+  52   1      }
+  53          
+  54          
+  55          #pragma NOAREGS
+C51 COMPILER V9.53.0.0   FIR                                                               05/07/2020 07:38:28 PAGE 2   
 
-  56   1        SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
-  57   1        SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
-  58   1        SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
-  59   1        
-  60   1        if (number > 11 || number < 0) {
-  61   2          return;
-  62   2        }
-  63   1        //---------------------- PUT FIR RESULT TO MODBUS ----------------------
-  64   1        address = MODBUS_FREQUENCY_AMPLITUDES_VALUE_START + number;
-  65   1        address = address << 1;
-  66   1        hi = (value >> 8);
-  67   1        lo = (value & 0xFF);
-  68   1        modbus_buffer_data = getModbusBufferData();
-  69   1        modbus_buffer_data [address] = hi;
-  70   1        modbus_buffer_data [address + 1] = lo;
-  71   1        //---------------------- READ REFERENCE FROM MODBUS ----------------------
-  72   1        address = MODBUS_AMPLITUDES_THREASHOLS_VALUE_START + number;
-  73   1        address = address << 1;
-  74   1        hi = modbus_buffer_data [address];
-  75   1        lo = modbus_buffer_data [address + 1];
-  76   1        amplitude_reference = (hi << 8) + lo;
-  77   1        //---------------------- COMPARE FIR RESULT AND REFEREBCE ----------------------
-  78   1        if (value > amplitude_reference) {
-  79   2           flag = 1;
-  80   2        } else {
-  81   2           flag = 0;
-  82   2        }
-  83   1        //---------------------- PUT COMPARATIVE TO MODBUS LIKE A FLAG ----------------------
-  84   1        address = MODBUS_FREQUENCY_VALUE_START + number;
-  85   1        address = address << 1;
-  86   1        modbus_buffer_data [address] = 0;
-  87   1        modbus_buffer_data [address + 1] = flag;
-  88   1      }
-  89          
-  90          /*-----------------------------------------------------------------------------
-  91          // RMS_Calc
-  92          //-----------------------------------------------------------------------------
-  93          //
-  94          // Return Value : None
-  95          // Parameters   :
-  96          //   1) input_samples - pointer to an array of the data to be used for the RMS
-  97          //                        Value calculations
-  98          //   2) num_samples - the number of data elements in the <input_samples> array
-  99          //
- 100          // This routine takes a pointer to an array and a number of samples and first
- 101          // computes the average value of the data.  Then, it uses this average to
- 102          // calculate the RMS Value by using the following equation:
+  56          void putRms2Modbus(int value, int number) {
+  57   1        uint8_t * modbus_buffer_data;
+  58   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+  59   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+  60   1        SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
+  61   1        SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
+  62   1        SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
+  63   1        
+  64   1        if (number > 11 || number < 0) {
+  65   2          return;
+  66   2        }
+  67   1        //---------------------- PUT FIR RESULT TO MODBUS ----------------------
+  68   1        address = MODBUS_FREQUENCY_AMPLITUDES_VALUE_START + number;
+  69   1        address = address << 1;
+  70   1        hi = (value >> 8);
+  71   1        lo = (value & 0xFF);
+  72   1        modbus_buffer_data = getModbusBufferData();
+  73   1        modbus_buffer_data [address] = hi;
+  74   1        modbus_buffer_data [address + 1] = lo;
+  75   1        //---------------------- READ REFERENCE FROM MODBUS ----------------------
+  76   1        address = MODBUS_AMPLITUDES_THREASHOLS_VALUE_START + number;
+  77   1        address = address << 1;
+  78   1        hi = modbus_buffer_data [address];
+  79   1        lo = modbus_buffer_data [address + 1];
+  80   1        amplitude_reference = (hi << 8) + lo;
+  81   1        //---------------------- COMPARE FIR RESULT AND REFEREBCE ----------------------
+  82   1        if (value > amplitude_reference) {
+  83   2           flag = 1;
+  84   2        } else {
+  85   2           flag = 0;
+  86   2        }
+  87   1        //---------------------- PUT COMPARATIVE TO MODBUS LIKE A FLAG ----------------------
+  88   1        address = MODBUS_FREQUENCY_VALUE_START + number;
+  89   1        address = address << 1;
+  90   1        modbus_buffer_data [address] = 0;
+  91   1        modbus_buffer_data [address + 1] = flag;
+  92   1      }
+  93          
+  94          /*-----------------------------------------------------------------------------
+  95          // RMS_Calc
+  96          //-----------------------------------------------------------------------------
+  97          //
+  98          // Return Value : None
+  99          // Parameters   :
+ 100          //   1) input_samples - pointer to an array of the data to be used for the RMS
+ 101          //                        Value calculations
+ 102          //   2) num_samples - the number of data elements in the <input_samples> array
  103          //
- 104          //                 N
- 105          //                 __
- 106          //                 \
- 107          //                 /_  (x-x_avg)^2
- 108          //                 n=10
- 109          // RMS_Value^2 =  -----------------
- 110          //                       N-10
- 111          //
- 112          //
- 113          // The above routine skips the first <TAPS> samples where the filter hasn't quite
- 114          // settled.
- 115          //---------------------------------------------------------------------------*/
- 116          #pragma NOAREGS
- 117          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
-C51 COMPILER V9.53.0.0   FIR                                                               05/05/2020 21:25:39 PAGE 3   
+ 104          // This routine takes a pointer to an array and a number of samples and first
+ 105          // computes the average value of the data.  Then, it uses this average to
+ 106          // calculate the RMS Value by using the following equation:
+ 107          //
+ 108          //                 N
+ 109          //                 __
+ 110          //                 \
+ 111          //                 /_  (x-x_avg)^2
+ 112          //                 n=10
+ 113          // RMS_Value^2 =  -----------------
+ 114          //                       N-10
+ 115          //
+ 116          //
+ 117          // The above routine skips the first <TAPS> samples where the filter hasn't quite
+C51 COMPILER V9.53.0.0   FIR                                                               05/07/2020 07:38:28 PAGE 3   
 
- 118          {
- 119   1         int count = 0;
- 120   1         float average = 0;
- 121   1         float RMS_summation = 0;
- 122   1         float RMS_Value;
- 123   1         float temp;
- 124   1        
- 125   1         // Calculate the average value (x_avg) of the <input_samples> array
- 126   1         average = 0.0;
- 127   1      
- 128   1         for (count = TAPS; count < num_samples; count++)
- 129   1         {
- 130   2            average += (float) input_samples[count];
- 131   2         }
- 132   1         average = (float)(average / (num_samples-TAPS));
- 133   1      
- 134   1         // Calculate the RMS Value using the average computed above
- 135   1         // Calculate the sum from 1 to N of (x-x_avg)^2
- 136   1         for (count = TAPS; count < num_samples; count++)
- 137   1         {
- 138   2            // calculate difference from mean
- 139   2            temp = input_samples[count] - average;
- 140   2            // square it
- 141   2            temp *= temp;
- 142   2            // and add it to sum
- 143   2            RMS_summation += temp;
- 144   2         }
- 145   1         // Calculate sum from above / N
- 146   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
- 147   1      #if defined __C51__
- 148   1         RMS_Value = sqrt(RMS_summation);
- 149   1      #elif defined SDCC
+ 118          // settled.
+ 119          //---------------------------------------------------------------------------*/
+ 120          #pragma NOAREGS
+ 121          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
+ 122          {
+ 123   1         int count = 0;
+ 124   1         float average = 0;
+ 125   1         float RMS_summation = 0;
+ 126   1         float RMS_Value;
+ 127   1         float temp;
+ 128   1        
+ 129   1         // Calculate the average value (x_avg) of the <input_samples> array
+ 130   1         average = 0.0;
+ 131   1      
+ 132   1         for (count = TAPS; count < num_samples; count++)
+ 133   1         {
+ 134   2            average += (float) input_samples[count];
+ 135   2         }
+ 136   1         average = (float)(average / (num_samples-TAPS));
+ 137   1      
+ 138   1         // Calculate the RMS Value using the average computed above
+ 139   1         // Calculate the sum from 1 to N of (x-x_avg)^2
+ 140   1         for (count = TAPS; count < num_samples; count++)
+ 141   1         {
+ 142   2            // calculate difference from mean
+ 143   2            temp = input_samples[count] - average;
+ 144   2            // square it
+ 145   2            temp *= temp;
+ 146   2            // and add it to sum
+ 147   2            RMS_summation += temp;
+ 148   2         }
+ 149   1         // Calculate sum from above / N
+ 150   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
+ 151   1      #if defined __C51__
+ 152   1         RMS_Value = sqrt(RMS_summation);
+ 153   1      #elif defined SDCC
                  RMS_Value = sqrtf(RMS_summation);
               #endif
- 152   1         return (int)RMS_Value;
- 153   1      }
+ 156   1         return (int)RMS_Value;
+ 157   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1006    ----
+   CODE SIZE        =   1015    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----      17
    PDATA SIZE       =   ----    ----

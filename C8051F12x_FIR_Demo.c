@@ -247,9 +247,12 @@ void main (void)
 					  {
 						   filtered_samples[i] = 0;
 					  }
-            EA = 0;						
+            //EA = 0;						
 					  TAPS = populateFirCoefficients(B_FIR, freq_number);
-					  EA = 1;
+					  //EA = 1;
+						if (TAPS != 61) {
+						   NOP();
+						}
 						if (TAPS == 61) {
 							for (i=0; i<N; i++) {					
 								 // Store ADC result in the delay line
@@ -310,9 +313,9 @@ void main (void)
 								 Sample.u16 = MAC0RND;
 								 filtered_samples[i] = Sample.u16;
 							}
-							EA = 0;
+							//EA = 0;
 							RMS_Value = RMS_Calc(filtered_samples, N, TAPS);
-							EA = 1;
+							//EA = 1;
 							putRms2Modbus(RMS_Value, freq_number);
 							delay_index_arr [freq_number] = delay_index;
 						}

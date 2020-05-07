@@ -265,6 +265,7 @@ int modbus_process_function_16() {
 				// 4 - pages (one page size is 1024)
 				FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
 			}
+			init_after_flash_reload_func_pointer();
 		}
 		TI0 = 1;
 		return MODBUS_GOOD;
@@ -303,7 +304,7 @@ void modbus_command_received() {
 	if (modbus_result == MODBUS_FAIL) {
 		restore_fir();
 	} else {
-	  init_after_flash_reload_func_pointer();
+	  //init_after_flash_reload_func_pointer();
 	}
 }
 
