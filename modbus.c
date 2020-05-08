@@ -266,10 +266,10 @@ int modbus_process_function_16() {
 			}
 			init_after_flash_reload_func_pointer();
 		}
-		TI0 = 1;
 		EA = 0;
 		init_after_flash_reload_func_pointer();
 		EA = 1;
+		TI0 = 1;
 		return MODBUS_GOOD;
 	}
 }
