@@ -179,9 +179,11 @@ int modbus_process_function_3() {
 		}
 		modbus_push_transmit_buffer((uint8_t)(crc));
 		modbus_push_transmit_buffer((uint8_t)(crc >> 8));
+		EA = 0;
+		init_after_flash_reload_func_pointer();
+		EA = 1;
 		TI0 = 1;
 		return MODBUS_GOOD;
-		//AD0EN = 1;
 	}
 }
 
