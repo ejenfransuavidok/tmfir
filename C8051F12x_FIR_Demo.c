@@ -38,7 +38,15 @@
 #define FREQ_STEP        10            // Define the number of Hz the frequency
                                        // will step for the frequency sweep
 #define DAC1_VALUE       0x8000        // value for DAC1																			 
-																			 
+//-----------------------------------------------------------------------------
+// Commands
+//-----------------------------------------------------------------------------
+const uint8_t CMD_1     =0x22;
+const uint8_t CMD_2     =0x05;
+const uint8_t CMD_3     =0x09;
+const uint8_t CMD_4     =0x06;
+const uint8_t CMD_5     =0x11;
+const uint8_t CMD_6     =0x12;
 //-----------------------------------------------------------------------------
 // Macros
 //-----------------------------------------------------------------------------
@@ -98,6 +106,7 @@ SI_SEGMENT_VARIABLE(freq_divider, unsigned char, xdata);
 SI_SEGMENT_VARIABLE(freq_dac_flags[12], unsigned char, xdata);
 
 sbit LED = P1^6;                                     // LED='1' means ON
+sbit LED485 = P7^7;                                  // LED for 485
 
 SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);       // Filter output
 SI_SEGMENT_VARIABLE(Phase_Add[12], unsigned int, xdata); // For the frequency sweep
@@ -116,6 +125,8 @@ void Timer3_Init (int counts);         // Configure Timer 3
 void Timer4_Init (int counts);         // Configure Timer 4
 void Set_DAC_Frequency (unsigned long frequency);
 void init_after_flash_reload();
+void bit_set(uint8_t d, uint8_t position);
+void bit_clear(uint8_t d, uint8_t position);
 
 // Define the UART printing functions
 #if defined __C51__
@@ -313,9 +324,7 @@ void main (void)
 								 Sample.u16 = MAC0RND;
 								 filtered_samples[i] = Sample.u16;
 							}
-							//EA = 0;
 							RMS_Value = RMS_Calc(filtered_samples, N, TAPS);
-							//EA = 1;
 							putRms2Modbus(RMS_Value, freq_number);
 							delay_index_arr [freq_number] = delay_index;
 						}
@@ -437,6 +446,9 @@ void PORT_Init (void)
 
    P0MDOUT |= 0x01;                    // Set TX1 pin to push-pull
    P1MDOUT |= 0x40;                    // Set P1.6(LED) to push-pull
+	 P5MDOUT |= 0xFF;
+	 P6MDOUT |= 0xFF;
+	 P7MDOUT |= 0xFF;
 	
    SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
 }
@@ -698,7 +710,7 @@ SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
 	SFRPAGE = SFRPAGE_save;
 	if(modbus_was_sendind_received()) {
 		modbus_command_received();
-		LED 		= !LED;
+		LED485 	= !LED485;
 	}
 	SFRPAGE = SFRPAGE_save;
 }
@@ -709,10 +721,6 @@ SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
 	unsigned char SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
   SFRPAGE = UART0_PAGE;
 	if(RI0 == 1) {
-		//SFRPAGE = TMR4_PAGE;
-		//TR4 = 0;
-		//SFRPAGE = UART0_PAGE;
-		//AD0EN = 0;
 		modbus_byte_receive(SBUF0);
 		RI0 = 0;
 	}
@@ -752,9 +760,7 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
 				temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
 	 		}
 	 }
-	
-	 //LED = !LED;
-	 
+		 
    SFRPAGE = DAC0_PAGE;
 
    // Add a DC bias to make the rails 0 to 65535
@@ -767,8 +773,8 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
 #pragma NOAREGS
 void init_after_flash_reload() {
 	 //-----------------------------------------------------------------------
-	 SI_SEGMENT_VARIABLE(i, char, xdata);
-   //----------------------- FREQ DIVIDER INIT -----------------------------
+	 SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
+	 //----------------------- FREQ DIVIDER INIT -----------------------------
    freq_divider = modbus_get_freq_divider();
 	 if (freq_divider == 0) {
       freq_divider = 1;
@@ -776,6 +782,10 @@ void init_after_flash_reload() {
    //--------------------------- FREQ INIT ---------------------------------
    modbus_init_freqs(FREQS);
    //-----------------------------------------------------------------------
+	 // CLEAR - INVERSE LOGIC
+	 P5 =  0xFF;
+	 P6 |= 0x03;
+	 P7 =  0xFF;
 	 for (i=0; i<12; i++) {
 	    Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
                 PHASE_PRECISION) / OUTPUT_RATE_DAC));
@@ -784,10 +794,46 @@ void init_after_flash_reload() {
 			} else {
 			   freq_dac_flags [i] = 0;
 			}
+			if (i < 8) {
+				 // INVERSE LOGIG
+				 freq_dac_flags [i] == 1 ? bit_clear(P5, i) : bit_set(P5, i);
+			} else {
+				 // INVERSE LOGIG
+				 freq_dac_flags [i] == 1 ? bit_clear(P6, i - 8) : bit_set(P6, i - 8);
+			}
+	 }
+	 if (P5 & (uint8_t)CMD_1 == (uint8_t)CMD_1) {
+	    bit_clear(P7, 0);
+	 }
+	 if (P5 & CMD_2 == CMD_2) {
+		  bit_clear(P7, 1);
+	 }
+	 if (P5 & CMD_3 == CMD_3) {
+			bit_clear(P7, 2);
+	 }
+	 if (P5 & CMD_4 == CMD_4) {
+			bit_clear(P7, 3);
+	 }
+	 if (P5 & CMD_5 == CMD_5) {
+			bit_clear(P7, 4);
+	 }
+	 if (P5 & CMD_6 == CMD_5) {
+	    bit_clear(P7, 5);
 	 }
 	 //-----------------------------------------------------------------------
 }
+//-----------------------------------------------------------------------------
+// bits operations
+//-----------------------------------------------------------------------------
 
+void bit_set(uint8_t d, uint8_t position)
+{
+    d |= (1u<<position);
+}
+void bit_clear(uint8_t d, uint8_t position)
+{
+    d &= ~(1u<<position);
+}
 //-----------------------------------------------------------------------------
 // putchar
 //-----------------------------------------------------------------------------

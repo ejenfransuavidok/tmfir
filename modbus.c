@@ -24,17 +24,6 @@ uint8_t * getModbusBufferData() {
 }
 
 #pragma NOAREGS
-void restore_fir() {
-	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
-	SFRPAGE_save = SFRPAGE;
-	SFRPAGE = TMR4_PAGE;
-	TR4 = 1;
-	SFRPAGE = UART0_PAGE;
-	AD0EN = 1;
-	SFRPAGE = SFRPAGE_save;
-}
-
-#pragma NOAREGS
 void modbus_init_from_flash(void (*init_after_flash_reload)(void)) {
 	FLASH_Read (modbus_buffer_data, MODBUS_FLASH_ADDRESS, 3000, 0);
 	init_after_flash_reload_func_pointer = init_after_flash_reload;
@@ -181,7 +170,6 @@ int modbus_process_function_3() {
 		modbus_push_transmit_buffer((uint8_t)(crc >> 8));
 		TI0 = 1;
 		return MODBUS_GOOD;
-		//AD0EN = 1;
 	}
 }
 
@@ -265,11 +253,12 @@ int modbus_process_function_16() {
 				// 4 - pages (one page size is 1024)
 				FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
 			}
-			init_after_flash_reload_func_pointer();
 		}
+		EA = 0;
+		init_after_flash_reload_func_pointer();
+		EA = 1;
 		TI0 = 1;
 		return MODBUS_GOOD;
-		//AD0EN = 1;
 	}
 }
 
@@ -290,22 +279,13 @@ void modbus_command_received() {
 			else {
 				modbus_result = modbus_process_function_16();
 			}
-			if (modbus_receiver_pointer < 0xFF) {
-				restore_fir();
-			}
 		}
 		else {
 			modbus_response_error(MODBUS_ERROR_ILLEGAL_FUNCTION_CODE);
 		}
-		//modbus_receiver_pointer = 0;
 	}
 	sender_pause_timer = 0;
 	modbus_receiver_pointer = 0;
-	if (modbus_result == MODBUS_FAIL) {
-		restore_fir();
-	} else {
-	  //init_after_flash_reload_func_pointer();
-	}
 }
 
 #pragma NOAREGS

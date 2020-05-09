@@ -147,7 +147,7 @@
             <UsePdscDebugDescription>1</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>9</TargetSelection>
+          <TargetSelection>4</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -161,7 +161,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>BIN\SiC8051F.dll</Driver>
+            <Driver>BIN\UL2UPSD.DLL</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -169,11 +169,11 @@
             <UseTargetDll>1</UseTargetDll>
             <UseExternalTool>0</UseExternalTool>
             <RunIndependent>0</RunIndependent>
-            <UpdateFlashBeforeDebugging>0</UpdateFlashBeforeDebugging>
+            <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
             <DriverSelection>4101</DriverSelection>
           </Flash1>
-          <bUseTDR>0</bUseTDR>
+          <bUseTDR>1</bUseTDR>
           <Flash2>BIN\SiC8051F.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
@@ -441,16 +441,6 @@
               <FileName>freqs.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\freqs.h</FilePath>
-            </File>
-            <File>
-              <FileName>bn.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\bn.c</FilePath>
-            </File>
-            <File>
-              <FileName>bn.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\bn.h</FilePath>
             </File>
           </Files>
         </Group>
