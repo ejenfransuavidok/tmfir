@@ -784,7 +784,7 @@ void init_after_flash_reload() {
    //-----------------------------------------------------------------------
 	 // CLEAR - INVERSE LOGIC
 	 P5 =  0xFF;
-	 P6 |= 0x03;
+	 P6 |= 0xF0;
 	 P7 =  0xFF;
 	 for (i=0; i<12; i++) {
 	    Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
@@ -799,7 +799,7 @@ void init_after_flash_reload() {
 				 freq_dac_flags [i] == 1 ? bit_clear(P5, i) : bit_set(P5, i);
 			} else {
 				 // INVERSE LOGIG
-				 freq_dac_flags [i] == 1 ? bit_clear(P6, i - 8) : bit_set(P6, i - 8);
+				 freq_dac_flags [i] == 1 ? bit_clear(P6, i - 4) : bit_set(P6, i - 4);
 			}
 	 }
 	 if (P5 & (uint8_t)CMD_1 == (uint8_t)CMD_1) {

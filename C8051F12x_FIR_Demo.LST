@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 1   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE C8051F12X_FIR_DEMO
@@ -62,7 +62,7 @@ line level    source
   53          
   54          #if defined __C51__
   55          #include <intrins.h>
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 2   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 2   
 
   56          #define NOP() \
 *** WARNING C317 IN LINE 57 OF C8051F12x_FIR_Demo.c: attempt to redefine macro 'NOP'
@@ -126,7 +126,7 @@ line level    source
  113          //-----------------------------------------------------------------------------
  114          // Function Prototypes
  115          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 3   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 3   
 
  116          
  117          void SYSCLK_Init (void);               // Configure system clock
@@ -190,7 +190,7 @@ line level    source
  175             0xe708, 0xea1e, 0xed38, 0xf055, 0xf375, 0xf696, 0xf9b9, 0xfcdc,
  176          };
  177          
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 4   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 4   
 
  178          // Similar to STARTUP.A51 for Keil, this function stub for SDCC allows us to
  179          // disable the WDT before memory is initialized.
@@ -254,7 +254,7 @@ line level    source
  237   1         //
  238   1         freq_number = 0;
  239   1         
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 5   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 5   
 
  240   1         frequency = START_FREQUENCY;
  241   1         
@@ -318,7 +318,7 @@ line level    source
  299   7                          if (sample_index == 0)
  300   7                          {
  301   8                             sample_index = TAPS - 1;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 6   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 6   
 
  302   8                          }
  303   7                          else
@@ -382,7 +382,7 @@ line level    source
  361   1      
  362   1         SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
  363   1      
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 7   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 7   
 
  364   1         OSCICN = 0x83;
  365   1      
@@ -446,7 +446,7 @@ line level    source
  423          // P0.0 - UART TX1 (push-pull)
  424          // P0.1 - UART RX1
  425          //
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 8   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 8   
 
  426          // P1.6 - LED (push-pull)
  427          //
@@ -510,7 +510,7 @@ line level    source
  485          void UART0_Init (void)
  486          {
  487   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata); 
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 9   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 9   
 
  488   1         SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
  489   1      
@@ -574,7 +574,7 @@ line level    source
  547   1         SFRPAGE = DAC1_PAGE;
  548   1      
  549   1         DAC1CN = 0x84;                      // Enable DAC1 in left-justified mode
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 10  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 10  
 
  550   1                                             // managed by write data to DAC1H
  551   1         
@@ -638,7 +638,7 @@ line level    source
  609          // Timer 3 overflow automatically triggers ADC0 conversion.
  610          //
  611          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 11  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 11  
 
  612          void Timer3_Init (int counts)
  613          {
@@ -702,7 +702,7 @@ line level    source
  671          // ADC0 end-of-conversion ISR
  672          //
  673          // This interrupt service routine is called on ADC0 conversion complete.
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 12  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 12  
 
  674          // The ADC result is converted to signed and stored in the FIR delay line.
  675          //
@@ -766,7 +766,7 @@ line level    source
  733   3          }
  734   2        }
  735   1        SFRPAGE = SFRPAGE_save;               // Restore the SFRPAGE  
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 13  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 13  
 
  736   1      }
  737          //-----------------------------------------------------------------------------
@@ -819,7 +819,7 @@ line level    source
  784   1         //-----------------------------------------------------------------------
  785   1         // CLEAR - INVERSE LOGIC
  786   1         P5 =  0xFF;
- 787   1         P6 |= 0x03;
+ 787   1         P6 |= 0xF0;
  788   1         P7 =  0xFF;
  789   1         for (i=0; i<12; i++) {
  790   2            Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
@@ -830,13 +830,13 @@ line level    source
  795   3               freq_dac_flags [i] = 0;
  796   3            }
  797   2            if (i < 8) {
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 14  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 14  
 
  798   3               // INVERSE LOGIG
  799   3               freq_dac_flags [i] == 1 ? bit_clear(P5, i) : bit_set(P5, i);
  800   3            } else {
  801   3               // INVERSE LOGIG
- 802   3               freq_dac_flags [i] == 1 ? bit_clear(P6, i - 8) : bit_set(P6, i - 8);
+ 802   3               freq_dac_flags [i] == 1 ? bit_clear(P6, i - 4) : bit_set(P6, i - 4);
  803   3            }
  804   2         }
  805   1         if (P5 & (uint8_t)CMD_1 == (uint8_t)CMD_1) {
@@ -894,7 +894,7 @@ line level    source
  857   1         return c;                           // Print the character
  858   1      #endif
  859   1      }
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:37:20 PAGE 15  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                05/09/2020 22:50:56 PAGE 15  
 
  860          //-----------------------------------------------------------------------------
  861          // End Of File

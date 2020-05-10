@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        05/09/2020  22:37:21  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        05/09/2020  22:50:57  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -59,7 +59,7 @@ LINK MAP OF MODULE:  newprj (?C_STARTUP)
             DATA    0013H     0009H     UNIT         ?DT?_FLASH_FILL?F120_FLASHUTILS
             DATA    001CH     0001H     UNIT         ?DT?_PUTCHAR?C8051F12X_FIR_DEMO
                     001DH     0003H                  *** GAP ***
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 2
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 2
 
 
             BIT     0020H.0   0001H.1   UNIT         _BIT_GROUP_
@@ -119,7 +119,7 @@ LINK MAP OF MODULE:  newprj (?C_STARTUP)
             CODE    22D3H     0048H     UNIT         ?PR?SYSCLK_INIT?C8051F12X_FIR_DEMO
             CODE    231BH     0047H     UNIT         ?PR?MODBUS_TRANSMIT_BYTE?MODBUS
             CODE    2362H     0044H     UNIT         ?PR?_GETFREQFROMMODBUSFORDAC?FIR
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 3
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 3
 
 
             CODE    23A6H     0036H     UNIT         ?PR?_FLASH_UPDATE?F120_FLASHUTILS
@@ -179,7 +179,7 @@ SEGMENT                                             BIT_GROUP          DATA_GROU
   +--> ?PR?MODBUS_GET_FREQ_DIVIDER?MODBUS
   +--> ?PR?_MODBUS_INIT_FREQS?MODBUS
   +--> ?PR?_GETFREQFROMMODBUSFORDAC?FIR
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 4
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 4
 
 
   +--> ?PR?_BIT_CLEAR?C8051F12X_FIR_DEMO
@@ -239,7 +239,7 @@ SEGMENT                                             BIT_GROUP          DATA_GROU
 
 ?PR?MODBUS_COMMAND_RECEIVED?MODBUS               -----    -----      0043H    0001H      1D13H    0002H
   +--> ?PR?_MODBUS_CHECK_CRC?MODBUS
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 5
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 5
 
 
   +--> ?PR?MODBUS_CHECK_ADDRESS?MODBUS
@@ -299,7 +299,7 @@ SEGMENT                                             BIT_GROUP          DATA_GROU
 ?PR?_FLASH_WRITE?F120_FLASHUTILS                 0020H.4  0000H.1    004DH    0009H      1D2DH    0004H
   +--> ?PR?_FLASH_BYTEWRITE?F120_FLASHPRIMIT...
 
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 6
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 6
 
 
 *** NEW ROOT ***************************************************
@@ -359,7 +359,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:0000H         SYMBOL        _ICE_DUMMY_
   D:0090H         PUBLIC        P1
   D:008FH         PUBLIC        PLL0FLT
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 7
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 7
 
 
   D:00FFH         PUBLIC        WDTCN
@@ -419,7 +419,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   D:0097H         PUBLIC        CLKSEL
   D:008AH         PUBLIC        OSCICN
   D:00C1H         PUBLIC        MAC0A
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 8
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 8
 
 
   C:21BCH         PUBLIC        ADC0_ISR
@@ -479,7 +479,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   X:1D07H         SYMBOL        i
   D:0022H         SYMBOL        RMS_Value
   D:0024H         SYMBOL        init_func_pointer
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 9
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 9
 
 
   -------         ENDDO         
@@ -539,7 +539,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:0BFFH         LINE#         287
   C:0BFFH         LINE#         288
   C:0C02H         LINE#         289
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 10
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 10
 
 
   C:0C04H         LINE#         291
@@ -599,7 +599,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:22E8H         LINE#         375
   C:22EBH         LINE#         378
   C:22EEH         LINE#         382
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 11
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 11
 
 
   C:22F1H         LINE#         386
@@ -659,7 +659,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:2504H         LINE#         490
   C:2507H         LINE#         492
   C:250AH         LINE#         493
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 12
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 12
 
 
   C:250DH         LINE#         494
@@ -719,7 +719,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:2466H         LINE#         612
   C:2466H         LINE#         613
   C:2466H         LINE#         616
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 13
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 13
 
 
   C:246CH         LINE#         618
@@ -779,7 +779,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:225DH         LINE#         714
   C:225DH         LINE#         715
   C:2260H         LINE#         716
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 14
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 14
 
 
   -------         ENDPROC       TIMER0_ISR
@@ -839,7 +839,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:150AH         LINE#         788
   C:150DH         LINE#         789
   C:151FH         LINE#         790
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 15
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 15
 
 
   C:1560H         LINE#         792
@@ -899,7 +899,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   -------         ENDPROC       _PUTCHAR
   -------         ENDMOD        C8051F12X_FIR_DEMO
 
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 16
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 16
 
 
   -------         MODULE        MODBUS
@@ -959,7 +959,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:25D9H         LINE#         35
   C:25DEH         LINE#         36
   C:25E0H         LINE#         37
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 17
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 17
 
 
   C:25E2H         LINE#         38
@@ -1019,7 +1019,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   D:0049H         SYMBOL        crc_calc
   D:004BH         SYMBOL        crc
   -------         ENDDO         
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 18
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 18
 
 
   C:2077H         LINE#         76
@@ -1079,7 +1079,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   X:1D22H         SYMBOL        address
   X:1D24H         SYMBOL        registers_hi
   X:1D26H         SYMBOL        registers_lo
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 19
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 19
 
 
   X:1D28H         SYMBOL        registers
@@ -1139,7 +1139,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   X:1D1BH         SYMBOL        register_hi
   X:1D1DH         SYMBOL        register_lo
   X:1D1FH         SYMBOL        register_in_hi
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 20
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 20
 
 
   X:1D20H         SYMBOL        register_in_lo
@@ -1199,7 +1199,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:0F08H         LINE#         249
   C:0F10H         LINE#         251
   C:0F15H         LINE#         252
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 21
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 21
 
 
   C:0F2CH         LINE#         254
@@ -1259,7 +1259,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:25F8H         LINE#         304
   -------         ENDPROC       INC_MODBUS_RECEIVER_COUNTER
   -------         PROC          _MODBUS_BYTE_RECEIVE
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 22
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 22
 
 
   D:0007H         SYMBOL        input
@@ -1319,7 +1319,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   -------         DO            
   X:1D0AH         SYMBOL        i
   X:1D0BH         SYMBOL        hi
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 23
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 23
 
 
   X:1D0CH         SYMBOL        lo
@@ -1379,7 +1379,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:1B61H         LINE#         92
   C:1B61H         LINE#         94
   C:1B64H         LINE#         95
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 24
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 24
 
 
   C:1B67H         LINE#         97
@@ -1439,7 +1439,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:1D63H         LINE#         160
   C:1D63H         LINE#         161
   -------         ENDPROC       _FLASH_BYTEREAD
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 25
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 25
 
 
   -------         PROC          _FLASH_PAGEERASE
@@ -1499,7 +1499,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:18E2H         PUBLIC        _FLASH_Copy
   -------         PROC          _FLASH_CLEAR
   D:004DH         SYMBOL        dest
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 26
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 26
 
 
   D:0051H         SYMBOL        numbytes
@@ -1559,7 +1559,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:09F7H         LINE#         170
   C:0A0AH         LINE#         171
   C:0A0DH         LINE#         174
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 27
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 27
 
 
   C:0A22H         LINE#         177
@@ -1619,7 +1619,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:18AAH         SYMBOL        L?0029
   C:18CCH         SYMBOL        L?0030
   -------         PROC          _FLASH_COPY
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 28
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 28
 
 
   D:0053H         SYMBOL        dest
@@ -1679,7 +1679,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   D:002AH         SYMBOL        number
   -------         DO            
   X:1D09H         SYMBOL        i
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 29
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 29
 
 
   X:1D0AH         SYMBOL        order
@@ -1739,7 +1739,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:16EBH         LINE#         76
   C:16F5H         LINE#         77
   C:16FFH         LINE#         78
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 30
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 30
 
 
   C:170FH         LINE#         79
@@ -1799,7 +1799,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   C:017EH         PUBLIC        ?C?FPMUL
   -------         ENDMOD        ?C?FPMUL
 
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 31
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 31
 
 
   -------         MODULE        ?C?FPDIV
@@ -1859,7 +1859,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
   -------         MODULE        ?C?ISTOPTR
   C:0509H         PUBLIC        ?C?ISTOPTR
   -------         ENDMOD        ?C?ISTOPTR
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 32
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 32
 
 
 
@@ -1919,7 +1919,7 @@ SYMBOL TABLE OF MODULE:  newprj (?C_STARTUP)
 
 *** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
     SEGMENT: ?PR?INC_MODBUS_RECEIVER_COUNTER?MODBUS
-BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:37:21  PAGE 33
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/09/2020  22:50:57  PAGE 33
 
 
 
