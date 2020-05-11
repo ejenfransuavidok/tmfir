@@ -28,6 +28,10 @@ void putRms2Modbus(int value, int number);
 
 int getFreqFromModbusForDAC(int number);
 
+void bit_set(uint8_t d, uint8_t position);
+
+void bit_clear(uint8_t d, uint8_t position);
+
 /*-----------------------------------------------------------------------------
 // RMS_Calc
 //-----------------------------------------------------------------------------

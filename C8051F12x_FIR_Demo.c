@@ -125,8 +125,6 @@ void Timer3_Init (int counts);         // Configure Timer 3
 void Timer4_Init (int counts);         // Configure Timer 4
 void Set_DAC_Frequency (unsigned long frequency);
 void init_after_flash_reload();
-void bit_set(uint8_t d, uint8_t position);
-void bit_clear(uint8_t d, uint8_t position);
 
 // Define the UART printing functions
 #if defined __C51__
@@ -449,6 +447,9 @@ void PORT_Init (void)
 	 P5MDOUT |= 0xFF;
 	 P6MDOUT |= 0xFF;
 	 P7MDOUT |= 0xFF;
+	 P5 =  0xFF;
+	 P6 |= 0xF0;
+	 P7 =  0xFF;
 	
    SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
 }
@@ -783,8 +784,6 @@ void init_after_flash_reload() {
    modbus_init_freqs(FREQS);
    //-----------------------------------------------------------------------
 	 // CLEAR - INVERSE LOGIC
-	 P5 =  0xFF;
-	 P6 |= 0xF0;
 	 P7 =  0xFF;
 	 for (i=0; i<12; i++) {
 	    Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
@@ -793,13 +792,6 @@ void init_after_flash_reload() {
 				 freq_dac_flags [i] = 1;
 			} else {
 			   freq_dac_flags [i] = 0;
-			}
-			if (i < 8) {
-				 // INVERSE LOGIG
-				 freq_dac_flags [i] == 1 ? bit_clear(P5, i) : bit_set(P5, i);
-			} else {
-				 // INVERSE LOGIG
-				 freq_dac_flags [i] == 1 ? bit_clear(P6, i - 4) : bit_set(P6, i - 4);
 			}
 	 }
 	 if (P5 & (uint8_t)CMD_1 == (uint8_t)CMD_1) {
@@ -821,18 +813,6 @@ void init_after_flash_reload() {
 	    bit_clear(P7, 5);
 	 }
 	 //-----------------------------------------------------------------------
-}
-//-----------------------------------------------------------------------------
-// bits operations
-//-----------------------------------------------------------------------------
-
-void bit_set(uint8_t d, uint8_t position)
-{
-    d |= (1u<<position);
-}
-void bit_clear(uint8_t d, uint8_t position)
-{
-    d &= ~(1u<<position);
 }
 //-----------------------------------------------------------------------------
 // putchar

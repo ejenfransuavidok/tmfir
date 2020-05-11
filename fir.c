@@ -89,8 +89,29 @@ void putRms2Modbus(int value, int number) {
 	address = address << 1;
 	modbus_buffer_data [address] = 0;
 	modbus_buffer_data [address + 1] = flag;
+	//---------------------------------------- FLASH -------------------------------------
+	if (number < 8) {
+	   // INVERSE LOGIG
+		 flag == 1 ? bit_clear(P5, number) : bit_set(P5, number);
+  } else {
+		 // INVERSE LOGIG
+		 flag == 1 ? bit_clear(P6, number - 4) : bit_set(P6, number - 4);
+  }
+	//-------------------------------------------------------------------------------------		
 }
-
+//-----------------------------------------------------------------------------
+// bits operations
+//-----------------------------------------------------------------------------
+#pragma NOAREGS
+void bit_set(uint8_t d, uint8_t position)
+{
+    d |= (1u<<position);
+}
+#pragma NOAREGS
+void bit_clear(uint8_t d, uint8_t position)
+{
+    d &= ~(1u<<position);
+}
 /*-----------------------------------------------------------------------------
 // RMS_Calc
 //-----------------------------------------------------------------------------

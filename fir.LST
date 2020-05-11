@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               05/09/2020 22:50:57 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               05/11/2020 08:37:58 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -62,7 +62,7 @@ line level    source
   53          
   54          
   55          #pragma NOAREGS
-C51 COMPILER V9.53.0.0   FIR                                                               05/09/2020 22:50:57 PAGE 2   
+C51 COMPILER V9.53.0.0   FIR                                                               05/11/2020 08:37:58 PAGE 2   
 
   56          void putRms2Modbus(int value, int number) {
   57   1        uint8_t * modbus_buffer_data;
@@ -100,78 +100,101 @@ line level    source
   89   1        address = address << 1;
   90   1        modbus_buffer_data [address] = 0;
   91   1        modbus_buffer_data [address + 1] = flag;
-  92   1      }
-  93          
-  94          /*-----------------------------------------------------------------------------
-  95          // RMS_Calc
-  96          //-----------------------------------------------------------------------------
-  97          //
-  98          // Return Value : None
-  99          // Parameters   :
- 100          //   1) input_samples - pointer to an array of the data to be used for the RMS
- 101          //                        Value calculations
- 102          //   2) num_samples - the number of data elements in the <input_samples> array
- 103          //
- 104          // This routine takes a pointer to an array and a number of samples and first
- 105          // computes the average value of the data.  Then, it uses this average to
- 106          // calculate the RMS Value by using the following equation:
- 107          //
- 108          //                 N
- 109          //                 __
- 110          //                 \
- 111          //                 /_  (x-x_avg)^2
- 112          //                 n=10
- 113          // RMS_Value^2 =  -----------------
- 114          //                       N-10
- 115          //
- 116          //
- 117          // The above routine skips the first <TAPS> samples where the filter hasn't quite
-C51 COMPILER V9.53.0.0   FIR                                                               05/09/2020 22:50:57 PAGE 3   
+  92   1        //---------------------------------------- FLASH -------------------------------------
+  93   1        if (number < 8) {
+  94   2           // INVERSE LOGIG
+  95   2           flag == 1 ? bit_clear(P5, number) : bit_set(P5, number);
+  96   2        } else {
+  97   2           // INVERSE LOGIG
+  98   2           flag == 1 ? bit_clear(P6, number - 4) : bit_set(P6, number - 4);
+  99   2        }
+ 100   1        //-------------------------------------------------------------------------------------   
+ 101   1      }
+ 102          //-----------------------------------------------------------------------------
+ 103          // bits operations
+ 104          //-----------------------------------------------------------------------------
+ 105          #pragma NOAREGS
+ 106          void bit_set(uint8_t d, uint8_t position)
+ 107          {
+ 108   1          d |= (1u<<position);
+ 109   1      }
+ 110          #pragma NOAREGS
+ 111          void bit_clear(uint8_t d, uint8_t position)
+ 112          {
+ 113   1          d &= ~(1u<<position);
+ 114   1      }
+ 115          /*-----------------------------------------------------------------------------
+ 116          // RMS_Calc
+ 117          //-----------------------------------------------------------------------------
+C51 COMPILER V9.53.0.0   FIR                                                               05/11/2020 08:37:58 PAGE 3   
 
- 118          // settled.
- 119          //---------------------------------------------------------------------------*/
- 120          #pragma NOAREGS
- 121          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
- 122          {
- 123   1         int count = 0;
- 124   1         float average = 0;
- 125   1         float RMS_summation = 0;
- 126   1         float RMS_Value;
- 127   1         float temp;
- 128   1        
- 129   1         // Calculate the average value (x_avg) of the <input_samples> array
- 130   1         average = 0.0;
- 131   1      
- 132   1         for (count = TAPS; count < num_samples; count++)
- 133   1         {
- 134   2            average += (float) input_samples[count];
- 135   2         }
- 136   1         average = (float)(average / (num_samples-TAPS));
- 137   1      
- 138   1         // Calculate the RMS Value using the average computed above
- 139   1         // Calculate the sum from 1 to N of (x-x_avg)^2
- 140   1         for (count = TAPS; count < num_samples; count++)
- 141   1         {
- 142   2            // calculate difference from mean
- 143   2            temp = input_samples[count] - average;
- 144   2            // square it
- 145   2            temp *= temp;
- 146   2            // and add it to sum
- 147   2            RMS_summation += temp;
- 148   2         }
- 149   1         // Calculate sum from above / N
- 150   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
- 151   1      #if defined __C51__
- 152   1         RMS_Value = sqrt(RMS_summation);
- 153   1      #elif defined SDCC
+ 118          //
+ 119          // Return Value : None
+ 120          // Parameters   :
+ 121          //   1) input_samples - pointer to an array of the data to be used for the RMS
+ 122          //                        Value calculations
+ 123          //   2) num_samples - the number of data elements in the <input_samples> array
+ 124          //
+ 125          // This routine takes a pointer to an array and a number of samples and first
+ 126          // computes the average value of the data.  Then, it uses this average to
+ 127          // calculate the RMS Value by using the following equation:
+ 128          //
+ 129          //                 N
+ 130          //                 __
+ 131          //                 \
+ 132          //                 /_  (x-x_avg)^2
+ 133          //                 n=10
+ 134          // RMS_Value^2 =  -----------------
+ 135          //                       N-10
+ 136          //
+ 137          //
+ 138          // The above routine skips the first <TAPS> samples where the filter hasn't quite
+ 139          // settled.
+ 140          //---------------------------------------------------------------------------*/
+ 141          #pragma NOAREGS
+ 142          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
+ 143          {
+ 144   1         int count = 0;
+ 145   1         float average = 0;
+ 146   1         float RMS_summation = 0;
+ 147   1         float RMS_Value;
+ 148   1         float temp;
+ 149   1        
+ 150   1         // Calculate the average value (x_avg) of the <input_samples> array
+ 151   1         average = 0.0;
+ 152   1      
+ 153   1         for (count = TAPS; count < num_samples; count++)
+ 154   1         {
+ 155   2            average += (float) input_samples[count];
+ 156   2         }
+ 157   1         average = (float)(average / (num_samples-TAPS));
+ 158   1      
+ 159   1         // Calculate the RMS Value using the average computed above
+ 160   1         // Calculate the sum from 1 to N of (x-x_avg)^2
+ 161   1         for (count = TAPS; count < num_samples; count++)
+ 162   1         {
+ 163   2            // calculate difference from mean
+ 164   2            temp = input_samples[count] - average;
+ 165   2            // square it
+ 166   2            temp *= temp;
+ 167   2            // and add it to sum
+ 168   2            RMS_summation += temp;
+ 169   2         }
+ 170   1         // Calculate sum from above / N
+ 171   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
+ 172   1      #if defined __C51__
+ 173   1         RMS_Value = sqrt(RMS_summation);
+ 174   1      #elif defined SDCC
                  RMS_Value = sqrtf(RMS_summation);
               #endif
- 156   1         return (int)RMS_Value;
- 157   1      }
+ 177   1         return (int)RMS_Value;
+ 178   1      }
+
+C51 COMPILER V9.53.0.0   FIR                                                               05/11/2020 08:37:58 PAGE 4   
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1015    ----
+   CODE SIZE        =   1100    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----      17
    PDATA SIZE       =   ----    ----
