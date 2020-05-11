@@ -447,8 +447,8 @@ void PORT_Init (void)
 	 P5MDOUT |= 0xFF;
 	 P6MDOUT |= 0xFF;
 	 P7MDOUT |= 0xFF;
-	 P5 =  0xFF;
-	 P6 |= 0xF0;
+	 P5 =  0x00;
+	 P6 |= 0x0F;
 	 P7 =  0xFF;
 	
    SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
@@ -711,6 +711,7 @@ SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
 	SFRPAGE = SFRPAGE_save;
 	if(modbus_was_sendind_received()) {
 		modbus_command_received();
+		SFRPAGE = CONFIG_PAGE;
 		LED485 	= !LED485;
 	}
 	SFRPAGE = SFRPAGE_save;
@@ -795,22 +796,22 @@ void init_after_flash_reload() {
 			}
 	 }
 	 if (P5 & (uint8_t)CMD_1 == (uint8_t)CMD_1) {
-	    bit_clear(P7, 0);
+	    bit_clear_P7(0);
 	 }
 	 if (P5 & CMD_2 == CMD_2) {
-		  bit_clear(P7, 1);
+		  bit_clear_P7(1);
 	 }
 	 if (P5 & CMD_3 == CMD_3) {
-			bit_clear(P7, 2);
+			bit_clear_P7(2);
 	 }
 	 if (P5 & CMD_4 == CMD_4) {
-			bit_clear(P7, 3);
+			bit_clear_P7(3);
 	 }
 	 if (P5 & CMD_5 == CMD_5) {
-			bit_clear(P7, 4);
+			bit_clear_P7(4);
 	 }
 	 if (P5 & CMD_6 == CMD_5) {
-	    bit_clear(P7, 5);
+	    bit_clear_P7(5);
 	 }
 	 //-----------------------------------------------------------------------
 }

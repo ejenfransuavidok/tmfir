@@ -24,13 +24,21 @@
  */
 uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number);
 
-void putRms2Modbus(int value, int number);
+void putRms2Modbus(int value, uint8_t number);
 
 int getFreqFromModbusForDAC(int number);
 
-void bit_set(uint8_t d, uint8_t position);
+void bit_set_P5(uint8_t position);
 
-void bit_clear(uint8_t d, uint8_t position);
+void bit_clear_P5(uint8_t position);
+
+void bit_set_P6(uint8_t position);
+
+void bit_clear_P6(uint8_t position);
+
+void bit_set_P7(uint8_t position);
+
+void bit_clear_P7(uint8_t position);
 
 /*-----------------------------------------------------------------------------
 // RMS_Calc

@@ -53,13 +53,16 @@ uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 
 
 #pragma NOAREGS
-void putRms2Modbus(int value, int number) {
+void putRms2Modbus(int value, uint8_t number) {
 	uint8_t * modbus_buffer_data;
 	SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
 	SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
 	SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
+	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+	
+	SFRPAGE_save = SFRPAGE;
 	
 	if (number > 11 || number < 0) {
 		return;
@@ -91,11 +94,9 @@ void putRms2Modbus(int value, int number) {
 	modbus_buffer_data [address + 1] = flag;
 	//---------------------------------------- FLASH -------------------------------------
 	if (number < 8) {
-	   // INVERSE LOGIG
-		 flag == 1 ? bit_clear(P5, number) : bit_set(P5, number);
+		 flag == 1 ? bit_set_P5(number) : bit_clear_P5(number);
   } else {
-		 // INVERSE LOGIG
-		 flag == 1 ? bit_clear(P6, number - 4) : bit_set(P6, number - 4);
+		 flag == 1 ? bit_set_P6(number - 4) : bit_clear_P6(number - 4);
   }
 	//-------------------------------------------------------------------------------------		
 }
@@ -103,14 +104,70 @@ void putRms2Modbus(int value, int number) {
 // bits operations
 //-----------------------------------------------------------------------------
 #pragma NOAREGS
-void bit_set(uint8_t d, uint8_t position)
+void bit_set_P5(uint8_t position)
 {
-    d |= (1u<<position);
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+	 SFRPAGE_save = SFRPAGE;
+	 SFRPAGE = CONFIG_PAGE;
+   d = (0x01<<position);
+	 P5|= d;
+	 SFRPAGE = SFRPAGE_save;
 }
 #pragma NOAREGS
-void bit_clear(uint8_t d, uint8_t position)
+void bit_clear_P5(uint8_t position)
 {
-    d &= ~(1u<<position);
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+	 SFRPAGE_save = SFRPAGE;
+	 SFRPAGE = CONFIG_PAGE;
+   d = (1u<<position);
+	 P5&= ~d;
+	 SFRPAGE = SFRPAGE_save;
+}
+#pragma NOAREGS
+void bit_set_P6(uint8_t position)
+{
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+	 SFRPAGE_save = SFRPAGE;
+	 SFRPAGE = CONFIG_PAGE;
+   d = (1u<<position);
+	 P6|= d;
+	 SFRPAGE = SFRPAGE_save;
+}
+#pragma NOAREGS
+void bit_clear_P6(uint8_t position)
+{
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+	 SFRPAGE_save = SFRPAGE;
+	 SFRPAGE = CONFIG_PAGE;
+   d = (1u<<position);
+	 P6&= ~d;
+	 SFRPAGE = SFRPAGE_save;
+}
+#pragma NOAREGS
+void bit_set_P7(uint8_t position)
+{
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+	 SFRPAGE_save = SFRPAGE;
+	 SFRPAGE = CONFIG_PAGE;
+   d = (1u<<position);
+	 P7|= d;
+	 SFRPAGE = SFRPAGE_save;
+}
+#pragma NOAREGS
+void bit_clear_P7(uint8_t position)
+{
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+	 SFRPAGE_save = SFRPAGE;
+	 SFRPAGE = CONFIG_PAGE;
+   d = (1u<<position);
+	 P7&= ~d;
+	 SFRPAGE = SFRPAGE_save;
 }
 /*-----------------------------------------------------------------------------
 // RMS_Calc
