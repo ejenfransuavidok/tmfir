@@ -204,11 +204,11 @@ void main (void)
 	 SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(i, int, xdata);
+	 SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
 	 unsigned int RMS_Value = 0;
-	//-----------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
 	 void (*init_func_pointer)(void) = init_after_flash_reload;
 	 //-----------------------------------------------------------------------------
-	 
    WDTCN = 0xDE;                       // Disable watchdog timer
    WDTCN = 0xAD;
 
@@ -248,11 +248,16 @@ void main (void)
 	 
 //-----------------------------------------------------------------------------	 
    while (1) {
+		  //-----------------------------------------------------------------------
+		  SFRPAGE_SAVE = SFRPAGE;
+		  SFRPAGE = CONFIG_PAGE;
 		  if (DC24INPUT == 0) {
 		    setDC24InputRegister(1);
 			} else {
 			  setDC24InputRegister(0);
 			}
+			SFRPAGE = SFRPAGE_SAVE;
+			//------------------------------------------------------------------------
       if (data_for_filter_counter == N) {
 			   for (freq_number=0; freq_number<12; freq_number++) {
             delay_index = delay_index_arr [freq_number];
@@ -732,6 +737,7 @@ SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
 		SFRPAGE = CONFIG_PAGE;
 		LED485 	= !LED485;
 	}
+	SFRPAGE = CONFIG_PAGE;
 	if (DC24OUTPUT == 0) {
 	  if (TimerForDC24Output++ % DividerForDC24Output == 0) {
 	    DC24OUTPUT = 1;

@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:16:07 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:36:25 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -62,7 +62,7 @@ line level    source
   53          
   54          
   55          #pragma NOAREGS
-C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:16:07 PAGE 2   
+C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:36:25 PAGE 2   
 
   56          void putRms2Modbus(int value, uint8_t number) {
   57   1        uint8_t * modbus_buffer_data;
@@ -126,7 +126,7 @@ line level    source
  115   1         SFRPAGE = SFRPAGE_save;
  116   1      }
  117          #pragma NOAREGS
-C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:16:07 PAGE 3   
+C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:36:25 PAGE 3   
 
  118          void bit_clear_P5(uint8_t position)
  119          {
@@ -190,7 +190,7 @@ line level    source
  177   1      }
  178          #pragma NOAREGS
  179          uint8_t bit_clear(uint8_t d, uint8_t position)
-C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:16:07 PAGE 4   
+C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:36:25 PAGE 4   
 
  180          {
  181   1         d &= ~(1u<<position);
@@ -254,7 +254,7 @@ line level    source
  239   1         // Calculate sum from above / N
  240   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
  241   1      #if defined __C51__
-C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:16:07 PAGE 5   
+C51 COMPILER V9.53.0.0   FIR                                                               05/18/2020 01:36:25 PAGE 5   
 
  242   1         RMS_Value = sqrt(RMS_summation);
  243   1      #elif defined SDCC

@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:16:06 PAGE 1   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:36:25 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MODBUS
@@ -62,7 +62,7 @@ line level    source
   53   1        crc ^= (uint16_t)a;
   54   1        for (i = 0; i < 8; ++i) {
   55   2          if (crc & 1)
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:16:06 PAGE 2   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:36:25 PAGE 2   
 
   56   2            crc = (crc >> 1) ^ 0xA001;
   57   2          else
@@ -126,7 +126,7 @@ line level    source
  115   2          modbus_push_transmit_buffer(modbus_error_response [i]);
  116   2        }
  117   1      }
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:16:06 PAGE 3   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:36:25 PAGE 3   
 
  118          
  119          #pragma NOAREGS
@@ -190,7 +190,7 @@ line level    source
  177          bool modbus_check_size_of_func16(int registers_num) {
  178   1        return modbus_receiver_pointer == (MODBUS_FUNCTION_16_BASE_LENGTH + (registers_num << 1));
  179   1      }
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:16:06 PAGE 4   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:36:25 PAGE 4   
 
  180          
  181          #pragma NOAREGS
@@ -254,7 +254,7 @@ line level    source
  239   2          
  240   2          modbus_data = registers_hi;
  241   2          crc = crc16_update(crc, modbus_data);
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:16:06 PAGE 5   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:36:25 PAGE 5   
 
  242   2          modbus_push_transmit_buffer(modbus_data);
  243   2          
@@ -318,7 +318,7 @@ line level    source
  301   2          temp = temp << 1;
  302   2          // 10 secons - is MAX
  303   2          if (modbus_buffer_data [temp + 1] > 10 || modbus_buffer_data [temp + 1] <= 0) {
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:16:06 PAGE 6   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:36:25 PAGE 6   
 
  304   3            return 10;
  305   3          } else {
@@ -382,7 +382,7 @@ line level    source
  363          void modbus_push_transmit_buffer(uint8_t output) {
  364   1         /*
  365   1         if(output == '\n') {
-C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:16:06 PAGE 7   
+C51 COMPILER V9.53.0.0   MODBUS                                                            05/18/2020 01:36:25 PAGE 7   
 
  366   1           modbus_command_transmitter[modbus_transmitter_pointer_right++] = 0x0d;
  367   1         }
