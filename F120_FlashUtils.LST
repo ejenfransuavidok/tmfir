@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/11/2020 11:41:23 PAGE 1   
+C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/18/2020 01:16:07 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE F120_FLASHUTILS
@@ -62,7 +62,7 @@ line level    source
   53                           unsigned numbytes);
   54          
   55          // FLASH test routines
-C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/11/2020 11:41:23 PAGE 2   
+C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/18/2020 01:16:07 PAGE 2   
 
   56          void FLASH_Fill (FLADDR addr, ULONG length, UCHAR fill, bit SFLE);
   57          
@@ -126,7 +126,7 @@ line level    source
  115   2            FLASH_PageErase (FLASH_TEMP, 0);
  116   2      
  117   2            // 2. Copy bytes from first byte of dest page to dest-1 to Scratch page
-C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/11/2020 11:41:23 PAGE 3   
+C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/18/2020 01:16:07 PAGE 3   
 
  118   2      
  119   2            wptr = FLASH_TEMP;
@@ -190,7 +190,7 @@ line level    source
  177   2            wptr = dest_2_page_start;
  178   2            rptr = FLASH_TEMP;
  179   2            length = FLASH_pagesize;
-C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/11/2020 11:41:23 PAGE 4   
+C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/18/2020 01:16:07 PAGE 4   
 
  180   2            FLASH_Copy (wptr, SFLE, rptr, 0, length);
  181   2         }
@@ -254,7 +254,7 @@ line level    source
  239          //-----------------------------------------------------------------------------
  240          // FLASH_Copy
  241          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/11/2020 11:41:23 PAGE 5   
+C51 COMPILER V9.53.0.0   F120_FLASHUTILS                                                   05/18/2020 01:16:07 PAGE 5   
 
  242          //
  243          // This routine copies <numbytes> from <src> to the linear FLASH address

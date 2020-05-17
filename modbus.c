@@ -289,6 +289,39 @@ void modbus_command_received() {
 }
 
 #pragma NOAREGS
+uint8_t getDC24DurationTimeIfEnabed() {
+  SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);	  
+  temp = MODBUS_DC24_ENABLED_REGISTER_ADDRESS;
+	temp = temp << 1;
+	// low byte
+	if (modbus_buffer_data [temp + 1] == 1) {
+	  modbus_buffer_data [temp] = 0;
+		modbus_buffer_data [temp + 1] = 0;
+    temp = MODBUS_DC24_OUTPUT_DURATION_REGISTER_ADDRESS;
+    temp = temp << 1;
+		// 10 secons - is MAX
+		if (modbus_buffer_data [temp + 1] > 10 || modbus_buffer_data [temp + 1] <= 0) {
+		  return 10;
+		} else {
+		  return modbus_buffer_data [temp + 1];
+		}
+	}
+	else {
+	  return 0;
+	}
+}
+
+void setDC24InputRegister(uint8_t value) {
+  SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);	  
+  temp = MODBUS_DC24_INPUT_ENABLED_REGISTER_ADDRESS;
+	temp = temp << 1;
+	modbus_buffer_data [temp] = 0;
+	modbus_buffer_data [temp + 1] = value;
+}
+
+
+
+#pragma NOAREGS
 int get_modbus_receiver_counter() {
 	return sender_pause_timer;
 }

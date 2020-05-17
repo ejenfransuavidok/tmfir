@@ -166,8 +166,20 @@ void bit_clear_P7(uint8_t position)
 	 SFRPAGE_save = SFRPAGE;
 	 SFRPAGE = CONFIG_PAGE;
    d = (1u<<position);
-	 P7&= ~d;
+	 P7&=~d;
 	 SFRPAGE = SFRPAGE_save;
+}
+#pragma NOAREGS
+uint8_t bit_set(uint8_t d, uint8_t position)
+{
+   d |= (1u<<position);
+	 return d;
+}
+#pragma NOAREGS
+uint8_t bit_clear(uint8_t d, uint8_t position)
+{
+	 d &= ~(1u<<position);
+	 return d;
 }
 /*-----------------------------------------------------------------------------
 // RMS_Calc

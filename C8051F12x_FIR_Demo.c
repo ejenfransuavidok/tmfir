@@ -37,7 +37,8 @@
 #define STOP_FREQUENCY   4999          // Define the ending frequency
 #define FREQ_STEP        10            // Define the number of Hz the frequency
                                        // will step for the frequency sweep
-#define DAC1_VALUE       0x8000        // value for DAC1																			 
+#define DAC1_VALUE       0x8000        // value for DAC1
+#define SECOND_INTERVAL  1024
 //-----------------------------------------------------------------------------
 // Commands
 //-----------------------------------------------------------------------------
@@ -105,11 +106,15 @@ SI_SEGMENT_VARIABLE(delay_index_arr[12], unsigned char, xdata) = {0, 0, 0, 0, 0,
 SI_SEGMENT_VARIABLE(freq_divider, unsigned char, xdata);
 SI_SEGMENT_VARIABLE(freq_dac_flags[12], unsigned char, xdata);
 
-sbit LED = P1^6;                                     // LED='1' means ON
-sbit LED485 = P7^7;                                  // LED for 485
+sbit LED = P1^6;                                         // LED='1' means ON
+sbit LED485 = P7^7;                                      // LED for 485
+sbit DC24OUTPUT = P4^2;
+sbit DC24INPUT = P4^3;
 
-SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);       // Filter output
+SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);           // Filter output
 SI_SEGMENT_VARIABLE(Phase_Add[12], unsigned int, xdata); // For the frequency sweep
+SI_SEGMENT_VARIABLE(TimerForDC24Output, unsigned int, xdata);
+SI_SEGMENT_VARIABLE(DividerForDC24Output, unsigned int, xdata);
 //-----------------------------------------------------------------------------
 // Function Prototypes
 //-----------------------------------------------------------------------------
@@ -199,7 +204,7 @@ void main (void)
 	 SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(i, int, xdata);
-	 unsigned int RMS_Value = 0; 
+	 unsigned int RMS_Value = 0;
 	//-----------------------------------------------------------------------------
 	 void (*init_func_pointer)(void) = init_after_flash_reload;
 	 //-----------------------------------------------------------------------------
@@ -243,6 +248,11 @@ void main (void)
 	 
 //-----------------------------------------------------------------------------	 
    while (1) {
+		  if (DC24INPUT == 0) {
+		    setDC24InputRegister(1);
+			} else {
+			  setDC24InputRegister(0);
+			}
       if (data_for_filter_counter == N) {
 			   for (freq_number=0; freq_number<12; freq_number++) {
             delay_index = delay_index_arr [freq_number];
@@ -255,10 +265,12 @@ void main (void)
 					  for (i = 0; i < N; i ++)
 					  {
 						   filtered_samples[i] = 0;
+							 //printf("%d\n", data_for_filter[i].u16); 
 					  }
-            //EA = 0;						
+						//printf("--");
+						//printf("--");
+						//TI0 = 1;					
 					  TAPS = populateFirCoefficients(B_FIR, freq_number);
-					  //EA = 1;
 						if (TAPS != 61) {
 						   NOP();
 						}
@@ -444,12 +456,18 @@ void PORT_Init (void)
 
    P0MDOUT |= 0x01;                    // Set TX1 pin to push-pull
    P1MDOUT |= 0x40;                    // Set P1.6(LED) to push-pull
+	 
+	 P4MDOUT |= 0x04;                    // Set P4.2 to push-pull
+	 P4MDOUT &= ~0x08;                   // Set P4.3 to input
+	
 	 P5MDOUT |= 0xFF;
 	 P6MDOUT |= 0xFF;
 	 P7MDOUT |= 0xFF;
 	 P5 =  0x00;
 	 P6 |= 0x0F;
 	 P7 =  0xFF;
+	 DC24OUTPUT = 1;
+	 DC24INPUT = 1;
 	
    SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
 }
@@ -714,6 +732,11 @@ SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
 		SFRPAGE = CONFIG_PAGE;
 		LED485 	= !LED485;
 	}
+	if (DC24OUTPUT == 0) {
+	  if (TimerForDC24Output++ % DividerForDC24Output == 0) {
+	    DC24OUTPUT = 1;
+		}
+  }
 	SFRPAGE = SFRPAGE_save;
 }
 
@@ -776,6 +799,11 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
 void init_after_flash_reload() {
 	 //-----------------------------------------------------------------------
 	 SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 //-----------------------------------------------------------------------
+	 SFRPAGE_save = SFRPAGE;
+	 d = 0;
 	 //----------------------- FREQ DIVIDER INIT -----------------------------
    freq_divider = modbus_get_freq_divider();
 	 if (freq_divider == 0) {
@@ -783,37 +811,49 @@ void init_after_flash_reload() {
    }
    //--------------------------- FREQ INIT ---------------------------------
    modbus_init_freqs(FREQS);
-   //-----------------------------------------------------------------------
-	 // CLEAR - INVERSE LOGIC
-	 P7 =  0xFF;
 	 for (i=0; i<12; i++) {
 	    Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
                 PHASE_PRECISION) / OUTPUT_RATE_DAC));
 	    if (getFreqFromModbusForDAC(i) != 0) {
 				 freq_dac_flags [i] = 1;
+			   if (i < 8) {
+				    d = bit_set(d, i);
+				 }
 			} else {
 			   freq_dac_flags [i] = 0;
 			}
 	 }
-	 if (P5 & (uint8_t)CMD_1 == (uint8_t)CMD_1) {
+	 SFRPAGE = CONFIG_PAGE;
+	 //-----------------------------------------------------------------------
+	 // CLEAR - INVERSE LOGIC
+	 P7 =  0xFF;
+	 if ((d & CMD_1) == (uint8_t)CMD_1) {
 	    bit_clear_P7(0);
 	 }
-	 if (P5 & CMD_2 == CMD_2) {
+	 if ((d & CMD_2) == CMD_2) {
 		  bit_clear_P7(1);
 	 }
-	 if (P5 & CMD_3 == CMD_3) {
+	 if ((d & CMD_3) == CMD_3) {
 			bit_clear_P7(2);
 	 }
-	 if (P5 & CMD_4 == CMD_4) {
+	 if ((d & CMD_4) == CMD_4) {
 			bit_clear_P7(3);
 	 }
-	 if (P5 & CMD_5 == CMD_5) {
+	 if ((d & CMD_5) == CMD_5) {
 			bit_clear_P7(4);
 	 }
-	 if (P5 & CMD_6 == CMD_5) {
+	 if ((d & CMD_6) == CMD_6) {
 	    bit_clear_P7(5);
 	 }
-	 //-----------------------------------------------------------------------
+	 //--------------------------------------------------------------------------
+	 d = getDC24DurationTimeIfEnabed();
+	 if (d != 0) {
+     DC24OUTPUT = 0;
+		 DividerForDC24Output = d * SECOND_INTERVAL;
+		 TimerForDC24Output = 1;
+	 }
+	 SFRPAGE = SFRPAGE_save;
+	 //--------------------------------------------------------------------------
 }
 //-----------------------------------------------------------------------------
 // putchar

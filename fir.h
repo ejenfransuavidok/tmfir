@@ -40,6 +40,10 @@ void bit_set_P7(uint8_t position);
 
 void bit_clear_P7(uint8_t position);
 
+uint8_t bit_set(uint8_t d, uint8_t position);
+
+uint8_t bit_clear(uint8_t d, uint8_t position);
+
 /*-----------------------------------------------------------------------------
 // RMS_Calc
 //-----------------------------------------------------------------------------
