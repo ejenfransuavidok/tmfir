@@ -289,6 +289,19 @@ void modbus_command_received() {
 }
 
 #pragma NOAREGS
+uint8_t isNeedGetADCValues() {
+	SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);	  
+  temp = MODBUS_NEED_GET_ADC_VALUES_FLAG_REGISTER_ADDRESS;
+	temp = temp << 1;
+	if(modbus_buffer_data [temp + 1] == 1) {
+	  modbus_buffer_data [temp] = 0;
+		modbus_buffer_data [temp + 1] = 0;
+		return 1;
+	}
+	return 0;
+}
+
+#pragma NOAREGS
 uint8_t getDC24DurationTimeIfEnabed() {
   SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);	  
   temp = MODBUS_DC24_ENABLED_REGISTER_ADDRESS;
@@ -318,8 +331,6 @@ void setDC24InputRegister(uint8_t value) {
 	modbus_buffer_data [temp] = 0;
 	modbus_buffer_data [temp + 1] = value;
 }
-
-
 
 #pragma NOAREGS
 int get_modbus_receiver_counter() {

@@ -35,6 +35,7 @@
 #define MODBUS_DC24_ENABLED_REGISTER_ADDRESS 1274
 #define MODBUS_DC24_OUTPUT_DURATION_REGISTER_ADDRESS 1275
 #define MODBUS_DC24_INPUT_ENABLED_REGISTER_ADDRESS 1276
+#define MODBUS_NEED_GET_ADC_VALUES_FLAG_REGISTER_ADDRESS 1277
 #define MODBUS_GOOD 1
 #define MODBUS_FAIL 0
 
@@ -69,5 +70,7 @@ void modbus_init_freqs(unsigned long * freqs);
 uint8_t getDC24DurationTimeIfEnabed();
 
 void setDC24InputRegister(uint8_t value);
+
+uint8_t isNeedGetADCValues();
 
 #endif

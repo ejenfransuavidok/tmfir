@@ -115,6 +115,8 @@ SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);           // Filter output
 SI_SEGMENT_VARIABLE(Phase_Add[12], unsigned int, xdata); // For the frequency sweep
 SI_SEGMENT_VARIABLE(TimerForDC24Output, unsigned int, xdata);
 SI_SEGMENT_VARIABLE(DividerForDC24Output, unsigned int, xdata);
+SI_SEGMENT_VARIABLE(isNeedGetADCValuesFlag, unsigned int, xdata);
+SI_SEGMENT_VARIABLE(TIMER, unsigned short, xdata);
 //-----------------------------------------------------------------------------
 // Function Prototypes
 //-----------------------------------------------------------------------------
@@ -130,6 +132,7 @@ void Timer3_Init (int counts);         // Configure Timer 3
 void Timer4_Init (int counts);         // Configure Timer 4
 void Set_DAC_Frequency (unsigned long frequency);
 void init_after_flash_reload();
+void delay(unsigned short timer);
 
 // Define the UART printing functions
 #if defined __C51__
@@ -205,6 +208,8 @@ void main (void)
 	 SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
 	 SI_SEGMENT_VARIABLE(i, int, xdata);
 	 SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+	 SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
 	 unsigned int RMS_Value = 0;
 	//------------------------------------------------------------------------------
 	 void (*init_func_pointer)(void) = init_after_flash_reload;
@@ -242,6 +247,8 @@ void main (void)
 	 
 	 frequency = START_FREQUENCY;
 	 
+	 isNeedGetADCValuesFlag = 0;
+	 
 	 EA = 1;
 	
 	 modbus_init_from_flash(init_func_pointer);
@@ -270,12 +277,29 @@ void main (void)
 					  for (i = 0; i < N; i ++)
 					  {
 						   filtered_samples[i] = 0;
-							 //printf("%d\n", data_for_filter[i].u16); 
+						   //--------------------------------------------------------------------------------------------------
+							 if (isNeedGetADCValuesFlag != 0) {
+							   SFRPAGE_SAVE = SFRPAGE;
+								 SFRPAGE = UART0_PAGE;
+								 hi = ((data_for_filter [i].u16 >> 8) & 0x00FF);
+								 lo = (data_for_filter [i].u16 & 0x00FF);
+								 modbus_push_transmit_buffer(hi);
+                 modbus_push_transmit_buffer(lo);								 
+								 if ((i + 1) % 128 == 0) {
+							     TI0 = 1;
+									 delay(100);
+							   }
+								 if (i == N - 1) {
+								   isNeedGetADCValuesFlag = 0;
+									 TI0 = 1;
+									 delay(100);
+								 }
+								 SFRPAGE = SFRPAGE_SAVE;
+							 }
+							 //--------------------------------------------------------------------------------------------------
 					  }
-						//printf("--");
-						//printf("--");
-						//TI0 = 1;					
-					  TAPS = populateFirCoefficients(B_FIR, freq_number);
+						//--------------------------------------------------------------------------------------------------
+						TAPS = populateFirCoefficients(B_FIR, freq_number);
 						if (TAPS != 61) {
 						   NOP();
 						}
@@ -743,6 +767,7 @@ SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
 	    DC24OUTPUT = 1;
 		}
   }
+	TIMER++;
 	SFRPAGE = SFRPAGE_save;
 }
 
@@ -858,9 +883,20 @@ void init_after_flash_reload() {
 		 DividerForDC24Output = d * SECOND_INTERVAL;
 		 TimerForDC24Output = 1;
 	 }
+	 //--------------------------------------------------------------------------
+	 if (isNeedGetADCValues() == 1) {
+	   isNeedGetADCValuesFlag = 1;
+	 }
 	 SFRPAGE = SFRPAGE_save;
 	 //--------------------------------------------------------------------------
 }
+//-----------------------------------------------------------------------------
+// delay
+void delay(unsigned short timer) {
+	TIMER = 0;
+	while(TIMER < timer); 
+}
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // putchar
 //-----------------------------------------------------------------------------
