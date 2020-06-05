@@ -110,6 +110,7 @@ sbit LED = P1^6;                                         // LED='1' means ON
 sbit LED485 = P7^7;                                      // LED for 485
 sbit DC24OUTPUT = P4^2;
 sbit DC24INPUT = P4^3;
+sbit SELECT485 = P4^4;																	 // Select 485 transmit/receive
 
 SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);           // Filter output
 SI_SEGMENT_VARIABLE(Phase_Add[12], unsigned int, xdata); // For the frequency sweep
@@ -133,6 +134,8 @@ void Timer4_Init (int counts);         // Configure Timer 4
 void Set_DAC_Frequency (unsigned long frequency);
 void init_after_flash_reload();
 void delay(unsigned short timer);
+void toTransmit485();
+void toReceive485();
 
 // Define the UART printing functions
 #if defined __C51__
@@ -281,6 +284,10 @@ void main (void)
 							 if (isNeedGetADCValuesFlag != 0) {
 							   SFRPAGE_SAVE = SFRPAGE;
 								 SFRPAGE = UART0_PAGE;
+								 if(i == 0) {
+								   modbus_push_transmit_buffer(0xAA);
+									 modbus_push_transmit_buffer(0xAA);
+								 }
 								 hi = ((data_for_filter [i].u16 >> 8) & 0x00FF);
 								 lo = (data_for_filter [i].u16 & 0x00FF);
 								 modbus_push_transmit_buffer(hi);
@@ -290,7 +297,9 @@ void main (void)
 									 delay(100);
 							   }
 								 if (i == N - 1) {
-								   isNeedGetADCValuesFlag = 0;
+								   modbus_push_transmit_buffer(0xBB);
+									 modbus_push_transmit_buffer(0xBB);
+									 isNeedGetADCValuesFlag = 0;
 									 TI0 = 1;
 									 delay(100);
 								 }
@@ -487,6 +496,7 @@ void PORT_Init (void)
    P1MDOUT |= 0x40;                    // Set P1.6(LED) to push-pull
 	 
 	 P4MDOUT |= 0x04;                    // Set P4.2 to push-pull
+	 P4MDOUT |= 0x10;                    // Set P4.4 to push-pull
 	 P4MDOUT &= ~0x08;                   // Set P4.3 to input
 	
 	 P5MDOUT |= 0xFF;
@@ -497,7 +507,8 @@ void PORT_Init (void)
 	 P7 =  0xFF;
 	 DC24OUTPUT = 1;
 	 DC24INPUT = 1;
-	
+	 SELECT485 = 0;											 // to receive
+	 
    SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
 }
 
@@ -782,7 +793,9 @@ SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
 	}
 	if(TI0 == 1) {
 		TI0 = 0;
+		toTransmit485();
 		if (modbus_transmit_buffer_is_empty()) {
+			toReceive485();
 		}
 		else {
 			modbus_transmit_byte();
@@ -897,6 +910,23 @@ void delay(unsigned short timer) {
 	while(TIMER < timer); 
 }
 //-----------------------------------------------------------------------------
+// transmit 485
+void toTransmit485() {
+	SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	SFRPAGE_save = SFRPAGE;
+	SFRPAGE = CONFIG_PAGE;
+	SELECT485 = 1;
+	SFRPAGE = SFRPAGE_save;
+}
+//-----------------------------------------------------------------------------
+// receive 485
+void toReceive485() {
+  SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	SFRPAGE_save = SFRPAGE;
+	SFRPAGE = CONFIG_PAGE;
+	SELECT485 = 0;
+	SFRPAGE = SFRPAGE_save;
+}
 //-----------------------------------------------------------------------------
 // putchar
 //-----------------------------------------------------------------------------
