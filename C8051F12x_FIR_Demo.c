@@ -40,15 +40,6 @@
 #define DAC1_VALUE       0x8000        // value for DAC1
 #define SECOND_INTERVAL  1024
 //-----------------------------------------------------------------------------
-// Commands
-//-----------------------------------------------------------------------------
-const uint8_t CMD_1     =0x22;
-const uint8_t CMD_2     =0x05;
-const uint8_t CMD_3     =0x09;
-const uint8_t CMD_4     =0x06;
-const uint8_t CMD_5     =0x11;
-const uint8_t CMD_6     =0x12;
-//-----------------------------------------------------------------------------
 // Macros
 //-----------------------------------------------------------------------------
 
@@ -378,7 +369,7 @@ void main (void)
 						}
 				 }
 			   LED = !LED;
-			   data_for_filter_counter = 0;
+				 data_for_filter_counter = 0;
 			}
    }
 //-----------------------------------------------------------------------------	 
@@ -495,6 +486,8 @@ void PORT_Init (void)
    P0MDOUT |= 0x01;                    // Set TX1 pin to push-pull
    P1MDOUT |= 0x40;                    // Set P1.6(LED) to push-pull
 	 
+	 P3MDOUT &= ~0x80;									 // Set P3.7 to input
+	 
 	 P4MDOUT |= 0x04;                    // Set P4.2 to push-pull
 	 P4MDOUT |= 0x10;                    // Set P4.4 to push-pull
 	 P4MDOUT &= ~0x08;                   // Set P4.3 to input
@@ -508,6 +501,7 @@ void PORT_Init (void)
 	 DC24OUTPUT = 1;
 	 DC24INPUT = 1;
 	 SELECT485 = 0;											 // to receive
+	 CONDSELECTOR = 1;                   // set to KP condition
 	 
    SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
 }
@@ -867,29 +861,7 @@ void init_after_flash_reload() {
 			   freq_dac_flags [i] = 0;
 			}
 	 }
-	 SFRPAGE = CONFIG_PAGE;
-	 //-----------------------------------------------------------------------
-	 // CLEAR - INVERSE LOGIC
-	 P7 =  0xFF;
-	 if ((d & CMD_1) == (uint8_t)CMD_1) {
-	    bit_clear_P7(0);
-	 }
-	 if ((d & CMD_2) == CMD_2) {
-		  bit_clear_P7(1);
-	 }
-	 if ((d & CMD_3) == CMD_3) {
-			bit_clear_P7(2);
-	 }
-	 if ((d & CMD_4) == CMD_4) {
-			bit_clear_P7(3);
-	 }
-	 if ((d & CMD_5) == CMD_5) {
-			bit_clear_P7(4);
-	 }
-	 if ((d & CMD_6) == CMD_6) {
-	    bit_clear_P7(5);
-	 }
-	 //--------------------------------------------------------------------------
+	 flashDiodesOnCommand(d);
 	 d = getDC24DurationTimeIfEnabed();
 	 if (d != 0) {
      DC24OUTPUT = 0;

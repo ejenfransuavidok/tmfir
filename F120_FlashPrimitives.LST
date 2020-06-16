@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/05/2020 06:56:12 PAGE 1   
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/16/2020 16:01:09 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE F120_FLASHPRIMITIVES
@@ -62,7 +62,7 @@ line level    source
   52          
   53          //-----------------------------------------------------------------------------
   54          // FLASH Routines
-C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/05/2020 06:56:12 PAGE 2   
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/16/2020 16:01:09 PAGE 2   
 
   55          //-----------------------------------------------------------------------------
   56          
@@ -126,7 +126,7 @@ line level    source
  114          
  115          //-----------------------------------------------------------------------------
  116          // FLASH_ByteRead
-C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/05/2020 06:56:12 PAGE 3   
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/16/2020 16:01:09 PAGE 3   
 
  117          //-----------------------------------------------------------------------------
  118          //
@@ -190,7 +190,7 @@ line level    source
  176   1      
  177   1         EA = 0;                             // disable interrupts
  178   1      
-C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/05/2020 06:56:12 PAGE 4   
+C51 COMPILER V9.53.0.0   F120_FLASHPRIMITIVES                                              06/16/2020 16:01:09 PAGE 4   
 
  179   1         SFRPAGE = LEGACY_PAGE;
  180   1      

@@ -1,6 +1,35 @@
 #include "fir.h"
 
 #pragma NOAREGS
+void flashDiodesOnCommand(uint8_t d) {
+	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	 SFRPAGE_save = SFRPAGE;
+	 SFRPAGE = CONFIG_PAGE;
+	 //-----------------------------------------------------------------------
+	 // CLEAR - INVERSE LOGIC
+	 P7 =  0xFF;
+	 if ((d & CMD_1) == (uint8_t)CMD_1) {
+	    bit_clear_P7(0);
+	 }
+	 if ((d & CMD_2) == CMD_2) {
+		  bit_clear_P7(1);
+	 }
+	 if ((d & CMD_3) == CMD_3) {
+			bit_clear_P7(2);
+	 }
+	 if ((d & CMD_4) == CMD_4) {
+			bit_clear_P7(3);
+	 }
+	 if ((d & CMD_5) == CMD_5) {
+			bit_clear_P7(4);
+	 }
+	 if ((d & CMD_6) == CMD_6) {
+	    bit_clear_P7(5);
+	 }
+	 SFRPAGE = SFRPAGE_save;
+}
+
+#pragma NOAREGS
 int getFreqFromModbusForDAC(int number) {
 	uint8_t hi;
 	uint8_t lo;
@@ -55,12 +84,14 @@ uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 #pragma NOAREGS
 void putRms2Modbus(int value, uint8_t number) {
 	uint8_t * modbus_buffer_data;
+	SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
 	SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
 	SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
 	SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+	SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
 	
 	SFRPAGE_save = SFRPAGE;
 	
@@ -98,7 +129,20 @@ void putRms2Modbus(int value, uint8_t number) {
   } else {
 		 flag == 1 ? bit_set_P6(number - 4) : bit_clear_P6(number - 4);
   }
-	//-------------------------------------------------------------------------------------		
+	//-------------------------------------------------------------------------------------
+	//------------------------------- flash diodes DP -------------------------------------
+	if (getCondition() == 0) {
+	   address = MODBUS_FREQUENCY_VALUE_START;
+	   d = 0;
+	   for (i=0; i<8; i++) {
+	      address += ((2*i)+1);
+		    if (modbus_buffer_data [address] == 1) {
+		       d = bit_set(d, i);
+		    }
+	   }
+	   flashDiodesOnCommand(d);
+	}
+	//-------------------------------------------------------------------------------------
 }
 //-----------------------------------------------------------------------------
 // bits operations
@@ -180,6 +224,18 @@ uint8_t bit_clear(uint8_t d, uint8_t position)
 {
 	 d &= ~(1u<<position);
 	 return d;
+}
+//-----------------------------------------------------------------------------
+// KP - 1 / DP - 0
+#pragma NOAREGS
+int getCondition() {
+	SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	SI_SEGMENT_VARIABLE(result, int, xdata);
+	SFRPAGE_save = SFRPAGE;
+	SFRPAGE = CONFIG_PAGE;
+	result = CONDSELECTOR;
+	SFRPAGE = SFRPAGE_save;
+	return result;
 }
 /*-----------------------------------------------------------------------------
 // RMS_Calc

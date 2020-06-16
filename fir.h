@@ -7,6 +7,8 @@
 #include "C8051F120_defs.h"
 #include "modbus.h"
 
+sbit CONDSELECTOR = P3^7;	// 0 - DP; 1 - KP
+
 #define MODBUS_FILTER_ORDER_START_REGISTER 36
 #define FILTER_MAX_ORDER 61
 #define FILTER_MAX_ORDER_IN_MODBUS 100
@@ -14,8 +16,31 @@
 #define MODBUS_FREQUENCY_VALUE_START 12
 #define MODBUS_FREQUENCY_AMPLITUDES_VALUE_START 1262
 #define MODBUS_AMPLITUDES_THREASHOLS_VALUE_START 0
-
 #define MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET 24
+
+//-----------------------------------------------------------------------------
+// Commands
+//-----------------------------------------------------------------------------
+#define CMD_1 0x22
+#define CMD_2 0x05
+#define CMD_3 0x09
+#define CMD_4 0x06
+#define CMD_5 0x11
+#define CMD_6 0x12
+
+/**
+ *
+ * is it DP = 0 or KP = 1
+ *
+ */
+int getCondition();
+
+/**
+ *
+ * Flash diodes on command
+ *
+ */
+void flashDiodesOnCommand(uint8_t d);
 
 /**
  * @coefficients - FIR-coeffincients for populate
