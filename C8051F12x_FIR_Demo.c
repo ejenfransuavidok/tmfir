@@ -39,6 +39,7 @@
                                        // will step for the frequency sweep
 #define DAC1_VALUE       0x8000        // value for DAC1
 #define SECOND_INTERVAL  1024
+#define MILLISECONDS_10  10
 //-----------------------------------------------------------------------------
 // Macros
 //-----------------------------------------------------------------------------
@@ -99,8 +100,6 @@ SI_SEGMENT_VARIABLE(freq_dac_flags[12], unsigned char, xdata);
 
 sbit LED = P1^6;                                         // LED='1' means ON
 sbit LED485 = P7^7;                                      // LED for 485
-sbit DC24OUTPUT = P4^2;
-sbit DC24INPUT = P4^3;
 sbit SELECT485 = P4^4;																	 // Select 485 transmit/receive
 
 SI_SEGMENT_VARIABLE(Sample, SI_UU16_t, xdata);           // Filter output
@@ -204,6 +203,7 @@ void main (void)
 	 SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
 	 SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
 	 SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+	 SI_SEGMENT_VARIABLE(freq_quantity, uint8_t, xdata);
 	 unsigned int RMS_Value = 0;
 	//------------------------------------------------------------------------------
 	 void (*init_func_pointer)(void) = init_after_flash_reload;
@@ -250,17 +250,20 @@ void main (void)
 //-----------------------------------------------------------------------------	 
    while (1) {
 		  //-----------------------------------------------------------------------
-		  SFRPAGE_SAVE = SFRPAGE;
-		  SFRPAGE = CONFIG_PAGE;
-		  if (DC24INPUT == 0) {
+		  if (getDC24INPUT() == 0) {
 		    setDC24InputRegister(1);
 			} else {
 			  setDC24InputRegister(0);
 			}
-			SFRPAGE = SFRPAGE_SAVE;
+			if (getCondition() == DP_CONDITION) {
+			  freq_quantity = 6;
+			}
+			else {
+				freq_quantity = 12;
+			}
 			//------------------------------------------------------------------------
       if (data_for_filter_counter == N) {
-			   for (freq_number=0; freq_number<12; freq_number++) {
+			   for (freq_number = 0; freq_number < freq_quantity; freq_number++) {
             delay_index = delay_index_arr [freq_number];
 					  // Initialize the delay line for the FIR filter
 					  for (i = 0; i < FILTER_MAX_ORDER; i++)
@@ -860,13 +863,20 @@ void init_after_flash_reload() {
 			} else {
 			   freq_dac_flags [i] = 0;
 			}
+			if (getCondition() == DP_CONDITION) {
+			   // DP
+			   flashP5P6(i, freq_dac_flags [i]);
+	    }
 	 }
-	 flashDiodesOnCommand(d);
+	 if (getCondition() == KP_CONDITION) {
+	    // KP
+			flashDiodesOnCommand(d, KP_CONDITION);
+	 }
 	 d = getDC24DurationTimeIfEnabed();
 	 if (d != 0) {
-     DC24OUTPUT = 0;
-		 DividerForDC24Output = d * SECOND_INTERVAL;
-		 TimerForDC24Output = 1;
+		  setDC24OUTPUT(0);
+		  DividerForDC24Output = d * MILLISECONDS_10;
+		  TimerForDC24Output = 1;
 	 }
 	 //--------------------------------------------------------------------------
 	 if (isNeedGetADCValues() == 1) {

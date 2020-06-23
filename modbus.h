@@ -73,4 +73,6 @@ void setDC24InputRegister(uint8_t value);
 
 uint8_t isNeedGetADCValues();
 
+void modbus_write_register(unsigned int address, uint8_t value);
+
 #endif

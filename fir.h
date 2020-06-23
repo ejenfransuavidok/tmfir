@@ -7,7 +7,11 @@
 #include "C8051F120_defs.h"
 #include "modbus.h"
 
+#define KP_CONDITION 1
+#define DP_CONDITION 0
 sbit CONDSELECTOR = P3^7;	// 0 - DP; 1 - KP
+sbit DC24OUTPUT = P4^2;
+sbit DC24INPUT = P4^3;
 
 #define MODBUS_FILTER_ORDER_START_REGISTER 36
 #define FILTER_MAX_ORDER 61
@@ -28,6 +32,24 @@ sbit CONDSELECTOR = P3^7;	// 0 - DP; 1 - KP
 #define CMD_5 0x11
 #define CMD_6 0x12
 
+#define CMD_ADDRESS_1 1278
+#define CMD_ADDRESS_2 1279
+#define CMD_ADDRESS_3 1280
+#define CMD_ADDRESS_4 1281
+#define CMD_ADDRESS_5 1282
+#define CMD_ADDRESS_6 1283
+
+void setDC24OUTPUT(uint8_t value);
+
+uint8_t getDC24INPUT();
+
+/**
+ *
+ * FLASH P5 && P6 DIODES by number
+ *
+ */
+void flashP5P6(uint8_t number, uint8_t flag);
+
 /**
  *
  * is it DP = 0 or KP = 1
@@ -38,9 +60,10 @@ int getCondition();
 /**
  *
  * Flash diodes on command
+ * MUST WRITE COMMAND TO MODBUS FROM 1278 TO 1283 FOR DP
  *
  */
-void flashDiodesOnCommand(uint8_t d);
+void flashDiodesOnCommand(uint8_t d, uint8_t kp_or_dp);
 
 /**
  * @coefficients - FIR-coeffincients for populate

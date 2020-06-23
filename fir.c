@@ -1,7 +1,12 @@
 #include "fir.h"
 
+/**
+ *
+ * MUST WRITE COMMAND TO MODBUS FROM 1278 TO 1283 FOR DP
+ *
+ */
 #pragma NOAREGS
-void flashDiodesOnCommand(uint8_t d) {
+void flashDiodesOnCommand(uint8_t d, uint8_t kp_or_dp) {
 	 SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
 	 SFRPAGE_save = SFRPAGE;
 	 SFRPAGE = CONFIG_PAGE;
@@ -10,21 +15,39 @@ void flashDiodesOnCommand(uint8_t d) {
 	 P7 =  0xFF;
 	 if ((d & CMD_1) == (uint8_t)CMD_1) {
 	    bit_clear_P7(0);
+		  if (kp_or_dp == DP_CONDITION) {
+				 modbus_write_register(CMD_ADDRESS_1, 1);
+			}
 	 }
 	 if ((d & CMD_2) == CMD_2) {
 		  bit_clear_P7(1);
+		  if (kp_or_dp == DP_CONDITION) {
+				 modbus_write_register(CMD_ADDRESS_2, 1);
+			}
 	 }
 	 if ((d & CMD_3) == CMD_3) {
 			bit_clear_P7(2);
+		  if (kp_or_dp == DP_CONDITION) {
+				 modbus_write_register(CMD_ADDRESS_3, 1);
+			}
 	 }
 	 if ((d & CMD_4) == CMD_4) {
 			bit_clear_P7(3);
+		  if (kp_or_dp == DP_CONDITION) {
+				 modbus_write_register(CMD_ADDRESS_4, 1);
+			}
 	 }
 	 if ((d & CMD_5) == CMD_5) {
 			bit_clear_P7(4);
+		  if (kp_or_dp == DP_CONDITION) {
+				 modbus_write_register(CMD_ADDRESS_5, 1);
+			}
 	 }
 	 if ((d & CMD_6) == CMD_6) {
 	    bit_clear_P7(5);
+		  if (kp_or_dp == DP_CONDITION) {
+				 modbus_write_register(CMD_ADDRESS_6, 1);
+			}
 	 }
 	 SFRPAGE = SFRPAGE_save;
 }
@@ -124,23 +147,24 @@ void putRms2Modbus(int value, uint8_t number) {
 	modbus_buffer_data [address] = 0;
 	modbus_buffer_data [address + 1] = flag;
 	//---------------------------------------- FLASH -------------------------------------
-	if (number < 8) {
-		 flag == 1 ? bit_set_P5(number) : bit_clear_P5(number);
-  } else {
-		 flag == 1 ? bit_set_P6(number - 4) : bit_clear_P6(number - 4);
-  }
+	// KP
+	if (getCondition() == KP_CONDITION) {
+	    // KP
+			flashP5P6(number, flag);
+	}
 	//-------------------------------------------------------------------------------------
-	//------------------------------- flash diodes DP -------------------------------------
-	if (getCondition() == 0) {
-	   address = MODBUS_FREQUENCY_VALUE_START;
+	// DP
+	if (getCondition() == DP_CONDITION) {
 	   d = 0;
 	   for (i=0; i<8; i++) {
-	      address += ((2*i)+1);
+			  address = MODBUS_FREQUENCY_VALUE_START + i;
+		    address = address << 1;
+	      address += 1;
 		    if (modbus_buffer_data [address] == 1) {
 		       d = bit_set(d, i);
 		    }
 	   }
-	   flashDiodesOnCommand(d);
+	   flashDiodesOnCommand(d, DP_CONDITION);
 	}
 	//-------------------------------------------------------------------------------------
 }
@@ -236,6 +260,38 @@ int getCondition() {
 	result = CONDSELECTOR;
 	SFRPAGE = SFRPAGE_save;
 	return result;
+}
+//-----------------------------------------------------------------------------
+// FLASH DIODES P5 and P6
+#pragma NOAREGS
+void flashP5P6(uint8_t number, uint8_t flag) {
+	if (number < 8) {
+		 flag == 1 ? bit_set_P5(number) : bit_clear_P5(number);
+  } else {
+		 flag == 1 ? bit_set_P6(number - 4) : bit_clear_P6(number - 4);
+  }
+}
+//-----------------------------------------------------------------------------
+// get DC24 input P4^3 value
+#pragma NOAREGS
+uint8_t getDC24INPUT() {
+	SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	SI_SEGMENT_VARIABLE(value, uint8_t, xdata);
+	SFRPAGE_save = SFRPAGE;
+  SFRPAGE = CONFIG_PAGE;
+	value = DC24INPUT;
+	SFRPAGE = SFRPAGE_save;
+	return value;
+}
+//-----------------------------------------------------------------------------
+// set DC24 output P4^2 value
+#pragma NOAREGS
+void setDC24OUTPUT(uint8_t value) {
+  SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+	SFRPAGE_save = SFRPAGE;
+  SFRPAGE = CONFIG_PAGE;
+	DC24OUTPUT = value;
+	SFRPAGE = SFRPAGE_save;
 }
 /*-----------------------------------------------------------------------------
 // RMS_Calc

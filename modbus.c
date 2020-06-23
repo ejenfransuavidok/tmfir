@@ -312,9 +312,9 @@ uint8_t getDC24DurationTimeIfEnabed() {
 		modbus_buffer_data [temp + 1] = 0;
     temp = MODBUS_DC24_OUTPUT_DURATION_REGISTER_ADDRESS;
     temp = temp << 1;
-		// 10 secons - is MAX
-		if (modbus_buffer_data [temp + 1] > 10 || modbus_buffer_data [temp + 1] <= 0) {
-		  return 10;
+		// Default = 10 ms
+		if (modbus_buffer_data [temp + 1] == 0) {
+		  return 1;
 		} else {
 		  return modbus_buffer_data [temp + 1];
 		}
@@ -324,6 +324,7 @@ uint8_t getDC24DurationTimeIfEnabed() {
 	}
 }
 
+#pragma NOAREGS
 void setDC24InputRegister(uint8_t value) {
   SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);	  
   temp = MODBUS_DC24_INPUT_ENABLED_REGISTER_ADDRESS;
@@ -415,4 +416,10 @@ void modbus_init_freqs(unsigned long * freqs) {
 		  freqs [i] = (hi << 8) + lo;
 		  address += 2;
 	 }
+}
+
+#pragma NOAREGS
+void modbus_write_register(unsigned int address, uint8_t value) {
+	 address = address << 1;
+	 modbus_buffer_data [address + 1] = value;
 }
