@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 1   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE C8051F12X_FIR_DEMO
@@ -62,7 +62,7 @@ line level    source
               #define NOP() \
                  _asm \
                  nop \
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 2   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 2   
 
                  _endasm;
               #endif // defined SDCC
@@ -121,79 +121,80 @@ line level    source
  108          SI_SEGMENT_VARIABLE(DividerForDC24Output, unsigned int, xdata);
  109          SI_SEGMENT_VARIABLE(isNeedGetADCValuesFlag, unsigned int, xdata);
  110          SI_SEGMENT_VARIABLE(TIMER, unsigned short, xdata);
- 111          //-----------------------------------------------------------------------------
- 112          // Function Prototypes
- 113          //-----------------------------------------------------------------------------
- 114          
- 115          void SYSCLK_Init (void);               // Configure system clock
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 3   
+ 111          SI_SEGMENT_VARIABLE(modbus_16_post_func_invoke_flag, uint8_t, xdata);
+ 112          //-----------------------------------------------------------------------------
+ 113          // Function Prototypes
+ 114          //-----------------------------------------------------------------------------
+ 115          
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 3   
 
- 116          void PORT_Init (void);                 // Configure port output
- 117          void UART0_Init (void);                // Configure UART operation
- 118          void Timer0_Init(void);                // Configure Timer0
- 119          void ADC0_Init (void);                 // Configure ADC
- 120          void DAC0_Init(void);                  // Configure DAC0
- 121          void DAC1_Init(void);                  // Configure DAC1
- 122          void Timer3_Init (int counts);         // Configure Timer 3
- 123          void Timer4_Init (int counts);         // Configure Timer 4
- 124          void Set_DAC_Frequency (unsigned long frequency);
- 125          void init_after_flash_reload();
- 126          void delay(unsigned short timer);
- 127          void toTransmit485();
- 128          void toReceive485();
- 129          
- 130          // Define the UART printing functions
- 131          #if defined __C51__
- 132          char putchar (char c);                 // Define putchar for Keil
- 133          #elif defined SDCC
+ 116          void SYSCLK_Init (void);               // Configure system clock
+ 117          void PORT_Init (void);                 // Configure port output
+ 118          void UART0_Init (void);                // Configure UART operation
+ 119          void Timer0_Init(void);                // Configure Timer0
+ 120          void ADC0_Init (void);                 // Configure ADC
+ 121          void DAC0_Init(void);                  // Configure DAC0
+ 122          void DAC1_Init(void);                  // Configure DAC1
+ 123          void Timer3_Init (int counts);         // Configure Timer 3
+ 124          void Timer4_Init (int counts);         // Configure Timer 4
+ 125          void Set_DAC_Frequency (unsigned long frequency);
+ 126          void init_after_flash_reload();
+ 127          void delay(unsigned short timer);
+ 128          void toTransmit485();
+ 129          void toReceive485();
+ 130          
+ 131          // Define the UART printing functions
+ 132          #if defined __C51__
+ 133          char putchar (char c);                 // Define putchar for Keil
+ 134          #elif defined SDCC
               void putchar (char c);
               #endif // defined SDCC
- 136          
- 137          SI_INTERRUPT_PROTO(UART0_ISR, INTERRUPT_UART0);
- 138          SI_INTERRUPT_PROTO(TIMER0_ISR, INTERRUPT_TIMER0);
- 139          SI_INTERRUPT_PROTO(ADC0_ISR, INTERRUPT_ADC0_EOC);
- 140          // A full cycle, 16-bit, 2's complement sine wave lookup table
- 141          //int code SINE_TABLE[256] = {
- 142          SI_SEGMENT_VARIABLE(SINE_TABLE[256], int, code) = {
- 143             0x0000, 0x0324, 0x0647, 0x096a, 0x0c8b, 0x0fab, 0x12c8, 0x15e2,
- 144             0x18f8, 0x1c0b, 0x1f19, 0x2223, 0x2528, 0x2826, 0x2b1f, 0x2e11,
- 145             0x30fb, 0x33de, 0x36ba, 0x398c, 0x3c56, 0x3f17, 0x41ce, 0x447a,
- 146             0x471c, 0x49b4, 0x4c3f, 0x4ebf, 0x5133, 0x539b, 0x55f5, 0x5842,
- 147             0x5a82, 0x5cb4, 0x5ed7, 0x60ec, 0x62f2, 0x64e8, 0x66cf, 0x68a6,
- 148             0x6a6d, 0x6c24, 0x6dca, 0x6f5f, 0x70e2, 0x7255, 0x73b5, 0x7504,
- 149             0x7641, 0x776c, 0x7884, 0x798a, 0x7a7d, 0x7b5d, 0x7c29, 0x7ce3,
- 150             0x7d8a, 0x7e1d, 0x7e9d, 0x7f09, 0x7f62, 0x7fa7, 0x7fd8, 0x7ff6,
- 151             0x7fff, 0x7ff6, 0x7fd8, 0x7fa7, 0x7f62, 0x7f09, 0x7e9d, 0x7e1d,
- 152             0x7d8a, 0x7ce3, 0x7c29, 0x7b5d, 0x7a7d, 0x798a, 0x7884, 0x776c,
- 153             0x7641, 0x7504, 0x73b5, 0x7255, 0x70e2, 0x6f5f, 0x6dca, 0x6c24,
- 154             0x6a6d, 0x68a6, 0x66cf, 0x64e8, 0x62f2, 0x60ec, 0x5ed7, 0x5cb4,
- 155             0x5a82, 0x5842, 0x55f5, 0x539b, 0x5133, 0x4ebf, 0x4c3f, 0x49b4,
- 156             0x471c, 0x447a, 0x41ce, 0x3f17, 0x3c56, 0x398c, 0x36ba, 0x33de,
- 157             0x30fb, 0x2e11, 0x2b1f, 0x2826, 0x2528, 0x2223, 0x1f19, 0x1c0b,
- 158             0x18f8, 0x15e2, 0x12c8, 0x0fab, 0x0c8b, 0x096a, 0x0647, 0x0324,
- 159             0x0000, 0xfcdc, 0xf9b9, 0xf696, 0xf375, 0xf055, 0xed38, 0xea1e,
- 160             0xe708, 0xe3f5, 0xe0e7, 0xdddd, 0xdad8, 0xd7da, 0xd4e1, 0xd1ef,
- 161             0xcf05, 0xcc22, 0xc946, 0xc674, 0xc3aa, 0xc0e9, 0xbe32, 0xbb86,
- 162             0xb8e4, 0xb64c, 0xb3c1, 0xb141, 0xaecd, 0xac65, 0xaa0b, 0xa7be,
- 163             0xa57e, 0xa34c, 0xa129, 0x9f14, 0x9d0e, 0x9b18, 0x9931, 0x975a,
- 164             0x9593, 0x93dc, 0x9236, 0x90a1, 0x8f1e, 0x8dab, 0x8c4b, 0x8afc,
- 165             0x89bf, 0x8894, 0x877c, 0x8676, 0x8583, 0x84a3, 0x83d7, 0x831d,
- 166             0x8276, 0x81e3, 0x8163, 0x80f7, 0x809e, 0x8059, 0x8028, 0x800a,
- 167             0x8000, 0x800a, 0x8028, 0x8059, 0x809e, 0x80f7, 0x8163, 0x81e3,
- 168             0x8276, 0x831d, 0x83d7, 0x84a3, 0x8583, 0x8676, 0x877c, 0x8894,
- 169             0x89bf, 0x8afc, 0x8c4b, 0x8dab, 0x8f1e, 0x90a1, 0x9236, 0x93dc,
- 170             0x9593, 0x975a, 0x9931, 0x9b18, 0x9d0e, 0x9f14, 0xa129, 0xa34c,
- 171             0xa57e, 0xa7be, 0xaa0b, 0xac65, 0xaecd, 0xb141, 0xb3c1, 0xb64c,
- 172             0xb8e4, 0xbb86, 0xbe32, 0xc0e9, 0xc3aa, 0xc674, 0xc946, 0xcc22,
- 173             0xcf05, 0xd1ef, 0xd4e1, 0xd7da, 0xdad8, 0xdddd, 0xe0e7, 0xe3f5,
- 174             0xe708, 0xea1e, 0xed38, 0xf055, 0xf375, 0xf696, 0xf9b9, 0xfcdc,
- 175          };
- 176          
- 177          // Similar to STARTUP.A51 for Keil, this function stub for SDCC allows us to
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 4   
+ 137          
+ 138          SI_INTERRUPT_PROTO(UART0_ISR, INTERRUPT_UART0);
+ 139          SI_INTERRUPT_PROTO(TIMER0_ISR, INTERRUPT_TIMER0);
+ 140          SI_INTERRUPT_PROTO(ADC0_ISR, INTERRUPT_ADC0_EOC);
+ 141          // A full cycle, 16-bit, 2's complement sine wave lookup table
+ 142          //int code SINE_TABLE[256] = {
+ 143          SI_SEGMENT_VARIABLE(SINE_TABLE[256], int, code) = {
+ 144             0x0000, 0x0324, 0x0647, 0x096a, 0x0c8b, 0x0fab, 0x12c8, 0x15e2,
+ 145             0x18f8, 0x1c0b, 0x1f19, 0x2223, 0x2528, 0x2826, 0x2b1f, 0x2e11,
+ 146             0x30fb, 0x33de, 0x36ba, 0x398c, 0x3c56, 0x3f17, 0x41ce, 0x447a,
+ 147             0x471c, 0x49b4, 0x4c3f, 0x4ebf, 0x5133, 0x539b, 0x55f5, 0x5842,
+ 148             0x5a82, 0x5cb4, 0x5ed7, 0x60ec, 0x62f2, 0x64e8, 0x66cf, 0x68a6,
+ 149             0x6a6d, 0x6c24, 0x6dca, 0x6f5f, 0x70e2, 0x7255, 0x73b5, 0x7504,
+ 150             0x7641, 0x776c, 0x7884, 0x798a, 0x7a7d, 0x7b5d, 0x7c29, 0x7ce3,
+ 151             0x7d8a, 0x7e1d, 0x7e9d, 0x7f09, 0x7f62, 0x7fa7, 0x7fd8, 0x7ff6,
+ 152             0x7fff, 0x7ff6, 0x7fd8, 0x7fa7, 0x7f62, 0x7f09, 0x7e9d, 0x7e1d,
+ 153             0x7d8a, 0x7ce3, 0x7c29, 0x7b5d, 0x7a7d, 0x798a, 0x7884, 0x776c,
+ 154             0x7641, 0x7504, 0x73b5, 0x7255, 0x70e2, 0x6f5f, 0x6dca, 0x6c24,
+ 155             0x6a6d, 0x68a6, 0x66cf, 0x64e8, 0x62f2, 0x60ec, 0x5ed7, 0x5cb4,
+ 156             0x5a82, 0x5842, 0x55f5, 0x539b, 0x5133, 0x4ebf, 0x4c3f, 0x49b4,
+ 157             0x471c, 0x447a, 0x41ce, 0x3f17, 0x3c56, 0x398c, 0x36ba, 0x33de,
+ 158             0x30fb, 0x2e11, 0x2b1f, 0x2826, 0x2528, 0x2223, 0x1f19, 0x1c0b,
+ 159             0x18f8, 0x15e2, 0x12c8, 0x0fab, 0x0c8b, 0x096a, 0x0647, 0x0324,
+ 160             0x0000, 0xfcdc, 0xf9b9, 0xf696, 0xf375, 0xf055, 0xed38, 0xea1e,
+ 161             0xe708, 0xe3f5, 0xe0e7, 0xdddd, 0xdad8, 0xd7da, 0xd4e1, 0xd1ef,
+ 162             0xcf05, 0xcc22, 0xc946, 0xc674, 0xc3aa, 0xc0e9, 0xbe32, 0xbb86,
+ 163             0xb8e4, 0xb64c, 0xb3c1, 0xb141, 0xaecd, 0xac65, 0xaa0b, 0xa7be,
+ 164             0xa57e, 0xa34c, 0xa129, 0x9f14, 0x9d0e, 0x9b18, 0x9931, 0x975a,
+ 165             0x9593, 0x93dc, 0x9236, 0x90a1, 0x8f1e, 0x8dab, 0x8c4b, 0x8afc,
+ 166             0x89bf, 0x8894, 0x877c, 0x8676, 0x8583, 0x84a3, 0x83d7, 0x831d,
+ 167             0x8276, 0x81e3, 0x8163, 0x80f7, 0x809e, 0x8059, 0x8028, 0x800a,
+ 168             0x8000, 0x800a, 0x8028, 0x8059, 0x809e, 0x80f7, 0x8163, 0x81e3,
+ 169             0x8276, 0x831d, 0x83d7, 0x84a3, 0x8583, 0x8676, 0x877c, 0x8894,
+ 170             0x89bf, 0x8afc, 0x8c4b, 0x8dab, 0x8f1e, 0x90a1, 0x9236, 0x93dc,
+ 171             0x9593, 0x975a, 0x9931, 0x9b18, 0x9d0e, 0x9f14, 0xa129, 0xa34c,
+ 172             0xa57e, 0xa7be, 0xaa0b, 0xac65, 0xaecd, 0xb141, 0xb3c1, 0xb64c,
+ 173             0xb8e4, 0xbb86, 0xbe32, 0xc0e9, 0xc3aa, 0xc674, 0xc946, 0xcc22,
+ 174             0xcf05, 0xd1ef, 0xd4e1, 0xd7da, 0xdad8, 0xdddd, 0xe0e7, 0xe3f5,
+ 175             0xe708, 0xea1e, 0xed38, 0xf055, 0xf375, 0xf696, 0xf9b9, 0xfcdc,
+ 176          };
+ 177          
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 4   
 
- 178          // disable the WDT before memory is initialized.
- 179          #if defined SDCC
+ 178          // Similar to STARTUP.A51 for Keil, this function stub for SDCC allows us to
+ 179          // disable the WDT before memory is initialized.
+ 180          #if defined SDCC
               void _sdcc_external_startup (void);
               
               void _sdcc_external_startup (void)
@@ -202,788 +203,796 @@ line level    source
                  WDTCN = 0xAD;
               }
               #endif // defined SDCC
- 188          
- 189          //-----------------------------------------------------------------------------
- 190          // MAIN Routine
- 191          //-----------------------------------------------------------------------------
- 192          
- 193          void main (void)
- 194          {
- 195   1         //-----------------------------------------------------------------------------
- 196   1         // FIR VARIABLES
- 197   1         //-----------------------------------------------------------------------------
- 198   1         static unsigned char delay_index = 0;
- 199   1         SI_SEGMENT_VARIABLE(coeff_index, unsigned char, xdata);
- 200   1         SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
- 201   1         SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
- 202   1         SI_SEGMENT_VARIABLE(i, int, xdata);
- 203   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
- 204   1         SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
- 205   1         SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
- 206   1         SI_SEGMENT_VARIABLE(freq_quantity, uint8_t, xdata);
- 207   1         unsigned int RMS_Value = 0;
- 208   1        //------------------------------------------------------------------------------
- 209   1         void (*init_func_pointer)(void) = init_after_flash_reload;
- 210   1         //-----------------------------------------------------------------------------
- 211   1         WDTCN = 0xDE;                       // Disable watchdog timer
- 212   1         WDTCN = 0xAD;
- 213   1      
- 214   1         SYSCLK_Init ();                     // Initialize oscillator
- 215   1         PORT_Init ();                       // Initialize crossbar and GPIO
- 216   1         UART0_Init ();                      // Initialize UART0
- 217   1         Timer0_Init ();
- 218   1        
- 219   1         // Initialize Timer3 to overflow at the ADC sample rate
- 220   1         Timer3_Init (SYSCLK/SAMPLE_RATE);
- 221   1        
- 222   1         // Initialize Timer4 to overflow at the DAC sample rate
- 223   1         Timer4_Init (SYSCLK/OUTPUT_RATE_DAC);  
- 224   1        
- 225   1         DAC0_Init ();                       // Initialize the DAC0
- 226   1         DAC1_Init ();                       // Initialize the DAC1
- 227   1         ADC0_Init ();                       // Initialize the ADC  
- 228   1        
- 229   1         SFRPAGE = ADC0_PAGE;
- 230   1      
- 231   1         AD0EN = 1;                          // Enable ADC
- 232   1      
- 233   1         SFRPAGE = MAC0_PAGE;
- 234   1      
- 235   1         MAC0CF = 0x06;                      // Fractional mode; Saturate
- 236   1                                             // enabled
- 237   1         data_for_filter_counter = 0;
- 238   1         
- 239   1         //
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 5   
+ 189          
+ 190          //-----------------------------------------------------------------------------
+ 191          // MAIN Routine
+ 192          //-----------------------------------------------------------------------------
+ 193          
+ 194          void main (void)
+ 195          {
+ 196   1         //-----------------------------------------------------------------------------
+ 197   1         // FIR VARIABLES
+ 198   1         //-----------------------------------------------------------------------------
+ 199   1         static unsigned char delay_index = 0;
+ 200   1         SI_SEGMENT_VARIABLE(coeff_index, unsigned char, xdata);
+ 201   1         SI_SEGMENT_VARIABLE(sample_index, unsigned char, xdata);
+ 202   1         SI_SEGMENT_VARIABLE(opposite_sample_index, unsigned char, xdata);
+ 203   1         SI_SEGMENT_VARIABLE(i, int, xdata);
+ 204   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+ 205   1         SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+ 206   1         SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+ 207   1         SI_SEGMENT_VARIABLE(freq_quantity, uint8_t, xdata);
+ 208   1         unsigned int RMS_Value = 0;
+ 209   1        //------------------------------------------------------------------------------
+ 210   1         void (*init_func_pointer)(void) = init_after_flash_reload;
+ 211   1         //-----------------------------------------------------------------------------
+ 212   1         WDTCN = 0xDE;                       // Disable watchdog timer
+ 213   1         WDTCN = 0xAD;
+ 214   1      
+ 215   1         SYSCLK_Init ();                     // Initialize oscillator
+ 216   1         PORT_Init ();                       // Initialize crossbar and GPIO
+ 217   1         UART0_Init ();                      // Initialize UART0
+ 218   1         Timer0_Init ();
+ 219   1        
+ 220   1         // Initialize Timer3 to overflow at the ADC sample rate
+ 221   1         Timer3_Init (SYSCLK/SAMPLE_RATE);
+ 222   1        
+ 223   1         // Initialize Timer4 to overflow at the DAC sample rate
+ 224   1         Timer4_Init (SYSCLK/OUTPUT_RATE_DAC);  
+ 225   1        
+ 226   1         DAC0_Init ();                       // Initialize the DAC0
+ 227   1         DAC1_Init ();                       // Initialize the DAC1
+ 228   1         ADC0_Init ();                       // Initialize the ADC  
+ 229   1        
+ 230   1         SFRPAGE = ADC0_PAGE;
+ 231   1      
+ 232   1         AD0EN = 1;                          // Enable ADC
+ 233   1      
+ 234   1         SFRPAGE = MAC0_PAGE;
+ 235   1      
+ 236   1         MAC0CF = 0x06;                      // Fractional mode; Saturate
+ 237   1                                             // enabled
+ 238   1         data_for_filter_counter = 0;
+ 239   1         
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 5   
 
- 240   1         freq_number = 0;
- 241   1         
- 242   1         frequency = START_FREQUENCY;
- 243   1         
- 244   1         isNeedGetADCValuesFlag = 0;
- 245   1         
- 246   1         EA = 1;
- 247   1        
- 248   1         modbus_init_from_flash(init_func_pointer);
- 249   1         
- 250   1      //-----------------------------------------------------------------------------  
- 251   1         while (1) {
- 252   2            //-----------------------------------------------------------------------
- 253   2            if (getDC24INPUT() == 0) {
- 254   3              setDC24InputRegister(1);
- 255   3            } else {
- 256   3              setDC24InputRegister(0);
- 257   3            }
- 258   2            if (getCondition() == DP_CONDITION) {
- 259   3              freq_quantity = 6;
- 260   3            }
- 261   2            else {
- 262   3              freq_quantity = 12;
- 263   3            }
- 264   2            //------------------------------------------------------------------------
- 265   2            if (data_for_filter_counter == N) {
- 266   3               for (freq_number = 0; freq_number < freq_quantity; freq_number++) {
- 267   4                  delay_index = delay_index_arr [freq_number];
- 268   4                  // Initialize the delay line for the FIR filter
- 269   4                  for (i = 0; i < FILTER_MAX_ORDER; i++)
- 270   4                  {
- 271   5                     x[i].s16 = 0;
- 272   5                  }
- 273   4                  // Initialize the sample array
- 274   4                  for (i = 0; i < N; i ++)
- 275   4                  {
- 276   5                     filtered_samples[i] = 0;
- 277   5                     //-----------------------------------------------------------------------------------------------
+ 240   1         //
+ 241   1         freq_number = 0;
+ 242   1         
+ 243   1         frequency = START_FREQUENCY;
+ 244   1         
+ 245   1         isNeedGetADCValuesFlag = 0;
+ 246   1         
+ 247   1         EA = 1;
+ 248   1        
+ 249   1         modbus_init_from_flash(init_func_pointer);
+ 250   1         
+ 251   1         modbus_16_post_func_invoke_flag = FALSE;
+ 252   1         
+ 253   1      //-----------------------------------------------------------------------------  
+ 254   1         while (1) {
+ 255   2            //-----------------------------------------------------------------------
+ 256   2            if (modbus_16_post_func_invoke_flag == TRUE) {
+ 257   3               EA = 0; EA = 0;
+ 258   3               init_after_flash_reload();
+ 259   3               EA = 1;
+ 260   3               modbus_16_post_func_invoke_flag = FALSE;
+ 261   3            }
+ 262   2            //-----------------------------------------------------------------------
+ 263   2            if (getDC24INPUT() == 0) {
+ 264   3              setDC24InputRegister(1);
+ 265   3            } else {
+ 266   3              setDC24InputRegister(0);
+ 267   3            }
+ 268   2            if (getCondition() == DP_CONDITION) {
+ 269   3              freq_quantity = 6;
+ 270   3            }
+ 271   2            else {
+ 272   3              freq_quantity = 12;
+ 273   3            }
+ 274   2            //------------------------------------------------------------------------
+ 275   2            if (data_for_filter_counter == N) {
+ 276   3               for (freq_number = 0; freq_number < freq_quantity; freq_number++) {
+ 277   4                  delay_index = delay_index_arr [freq_number];
+ 278   4                  // Initialize the delay line for the FIR filter
+ 279   4                  for (i = 0; i < FILTER_MAX_ORDER; i++)
+ 280   4                  {
+ 281   5                     x[i].s16 = 0;
+ 282   5                  }
+ 283   4                  // Initialize the sample array
+ 284   4                  for (i = 0; i < N; i ++)
+ 285   4                  {
+ 286   5                     filtered_samples[i] = 0;
+ 287   5                     //-----------------------------------------------------------------------------------------------
              ----
- 278   5                     if (isNeedGetADCValuesFlag != 0) {
- 279   6                       SFRPAGE_SAVE = SFRPAGE;
- 280   6                       SFRPAGE = UART0_PAGE;
- 281   6                       if(i == 0) {
- 282   7                         modbus_push_transmit_buffer(0xAA);
- 283   7                         modbus_push_transmit_buffer(0xAA);
- 284   7                       }
- 285   6                       hi = ((data_for_filter [i].u16 >> 8) & 0x00FF);
- 286   6                       lo = (data_for_filter [i].u16 & 0x00FF);
- 287   6                       modbus_push_transmit_buffer(hi);
- 288   6                       modbus_push_transmit_buffer(lo);                
- 289   6                       if ((i + 1) % 128 == 0) {
- 290   7                         TI0 = 1;
- 291   7                         delay(100);
- 292   7                       }
- 293   6                       if (i == N - 1) {
- 294   7                         modbus_push_transmit_buffer(0xBB);
- 295   7                         modbus_push_transmit_buffer(0xBB);
- 296   7                         isNeedGetADCValuesFlag = 0;
- 297   7                         TI0 = 1;
- 298   7                         delay(100);
- 299   7                       }
- 300   6                       SFRPAGE = SFRPAGE_SAVE;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 6   
+ 288   5                     if (isNeedGetADCValuesFlag != 0) {
+ 289   6                       SFRPAGE_SAVE = SFRPAGE;
+ 290   6                       SFRPAGE = UART0_PAGE;
+ 291   6                       if(i == 0) {
+ 292   7                         modbus_push_transmit_buffer(0xAA);
+ 293   7                         modbus_push_transmit_buffer(0xAA);
+ 294   7                       }
+ 295   6                       hi = ((data_for_filter [i].u16 >> 8) & 0x00FF);
+ 296   6                       lo = (data_for_filter [i].u16 & 0x00FF);
+ 297   6                       modbus_push_transmit_buffer(hi);
+ 298   6                       modbus_push_transmit_buffer(lo);                
+ 299   6                       if ((i + 1) % 128 == 0) {
+ 300   7                         TI0 = 1;
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 6   
 
- 301   6                     }
- 302   5                     //------------------------------------------------------------------------------------------------
+ 301   7                         delay(100);
+ 302   7                       }
+ 303   6                       if (i == N - 1) {
+ 304   7                         modbus_push_transmit_buffer(0xBB);
+ 305   7                         modbus_push_transmit_buffer(0xBB);
+ 306   7                         isNeedGetADCValuesFlag = 0;
+ 307   7                         TI0 = 1;
+ 308   7                         delay(100);
+ 309   7                       }
+ 310   6                       SFRPAGE = SFRPAGE_SAVE;
+ 311   6                     }
+ 312   5                     //------------------------------------------------------------------------------------------------
              ---
- 303   5                  }
- 304   4                  //--------------------------------------------------------------------------------------------------
- 305   4                  TAPS = populateFirCoefficients(B_FIR, freq_number);
- 306   4                  if (TAPS != 61) {
- 307   5                     NOP();
- 308   5                  }
- 309   4                  if (TAPS == 61) {
- 310   5                    for (i=0; i<N; i++) {         
- 311   6                       // Store ADC result in the delay line
- 312   6                       x[delay_index].u16 = data_for_filter[i].u16;
- 313   6                       // Sample_index points to newest data
- 314   6                       sample_index = delay_index;         
- 315   6                       // Update delay index
- 316   6                       if (delay_index == (TAPS - 1))
- 317   6                       {
- 318   7                          delay_index = 0;
- 319   7                       }
- 320   6                       else
- 321   6                       {
- 322   7                          delay_index++;
- 323   7                       }
- 324   6      
- 325   6                       MAC0CF |= 0x08;                  // Clear accumulator
- 326   6                  
- 327   6                       // Mirror algorithm
- 328   6                       if (sample_index == TAPS - 1)
- 329   6                       {
- 330   7                          opposite_sample_index = 0;
- 331   7                       }
- 332   6                       else
- 333   6                       {
- 334   7                          opposite_sample_index = sample_index + 1;
- 335   7                       }
- 336   6                       for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
- 337   6                       {
- 338   7                          FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
- 339   7                          x[opposite_sample_index]);
- 340   7                         
- 341   7                          if (sample_index == 0)
- 342   7                          {
- 343   8                             sample_index = TAPS - 1;
- 344   8                          }
- 345   7                          else
- 346   7                          {
- 347   8                             sample_index--;
- 348   8                          }
- 349   7      
- 350   7                          if (opposite_sample_index == TAPS - 1)
- 351   7                          {
- 352   8                             opposite_sample_index = 0;
- 353   8                          }
- 354   7                          else
- 355   7                          {
- 356   8                             opposite_sample_index++;
- 357   8                          }
- 358   7                       }
- 359   6                       if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
- 360   6                       {
- 361   7                          FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 7   
+ 313   5                  }
+ 314   4                  //--------------------------------------------------------------------------------------------------
+ 315   4                  TAPS = populateFirCoefficients(B_FIR, freq_number);
+ 316   4                  if (TAPS != 61) {
+ 317   5                     NOP();
+ 318   5                  }
+ 319   4                  if (TAPS == 61) {
+ 320   5                    for (i=0; i<N; i++) {         
+ 321   6                       // Store ADC result in the delay line
+ 322   6                       x[delay_index].u16 = data_for_filter[i].u16;
+ 323   6                       // Sample_index points to newest data
+ 324   6                       sample_index = delay_index;         
+ 325   6                       // Update delay index
+ 326   6                       if (delay_index == (TAPS - 1))
+ 327   6                       {
+ 328   7                          delay_index = 0;
+ 329   7                       }
+ 330   6                       else
+ 331   6                       {
+ 332   7                          delay_index++;
+ 333   7                       }
+ 334   6      
+ 335   6                       MAC0CF |= 0x08;                  // Clear accumulator
+ 336   6                  
+ 337   6                       // Mirror algorithm
+ 338   6                       if (sample_index == TAPS - 1)
+ 339   6                       {
+ 340   7                          opposite_sample_index = 0;
+ 341   7                       }
+ 342   6                       else
+ 343   6                       {
+ 344   7                          opposite_sample_index = sample_index + 1;
+ 345   7                       }
+ 346   6                       for (coeff_index = 0; coeff_index < (TAPS / 2); coeff_index++)
+ 347   6                       {
+ 348   7                          FIR_TAP_MIRROR (B_FIR[coeff_index].u16, x[sample_index],
+ 349   7                          x[opposite_sample_index]);
+ 350   7                         
+ 351   7                          if (sample_index == 0)
+ 352   7                          {
+ 353   8                             sample_index = TAPS - 1;
+ 354   8                          }
+ 355   7                          else
+ 356   7                          {
+ 357   8                             sample_index--;
+ 358   8                          }
+ 359   7      
+ 360   7                          if (opposite_sample_index == TAPS - 1)
+ 361   7                          {
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 7   
 
- 362   7                          NOP ();
- 363   7                          NOP ();
- 364   7                          NOP ();
- 365   7                       }
- 366   6                       Sample.u16 = MAC0RND;
- 367   6                       filtered_samples[i] = Sample.u16;
- 368   6                    }
- 369   5                    RMS_Value = RMS_Calc(filtered_samples, N, TAPS);
- 370   5                    putRms2Modbus(RMS_Value, freq_number);
- 371   5                    delay_index_arr [freq_number] = delay_index;
- 372   5                  }
- 373   4               }
- 374   3               LED = !LED;
- 375   3               data_for_filter_counter = 0;
- 376   3            }
- 377   2         }
- 378   1      //-----------------------------------------------------------------------------  
- 379   1      }
- 380          
- 381          //-----------------------------------------------------------------------------
- 382          // Initialization Subroutines
- 383          //-----------------------------------------------------------------------------
- 384          
- 385          //-----------------------------------------------------------------------------
- 386          // SYSCLK_Init
- 387          //-----------------------------------------------------------------------------
- 388          //
- 389          // Return Value:  None
- 390          // Parameters:    None
- 391          //
- 392          // This routine initializes the system clock to use the internal 24.5MHz*4
- 393          // oscillator as its clock source.
- 394          //
+ 362   8                             opposite_sample_index = 0;
+ 363   8                          }
+ 364   7                          else
+ 365   7                          {
+ 366   8                             opposite_sample_index++;
+ 367   8                          }
+ 368   7                       }
+ 369   6                       if ((TAPS % 2) == 1)             // Handle middle tap of odd order filter
+ 370   6                       {
+ 371   7                          FIR_TAP (B_FIR[coeff_index].u16, x[sample_index]);
+ 372   7                          NOP ();
+ 373   7                          NOP ();
+ 374   7                          NOP ();
+ 375   7                       }
+ 376   6                       Sample.u16 = MAC0RND;
+ 377   6                       filtered_samples[i] = Sample.u16;
+ 378   6                    }
+ 379   5                    RMS_Value = RMS_Calc(filtered_samples, N, TAPS);
+ 380   5                    putRms2Modbus(RMS_Value, freq_number);
+ 381   5                    delay_index_arr [freq_number] = delay_index;
+ 382   5                  }
+ 383   4               }
+ 384   3               LED = !LED;
+ 385   3               data_for_filter_counter = 0;
+ 386   3            }
+ 387   2         }
+ 388   1      //-----------------------------------------------------------------------------  
+ 389   1      }
+ 390          
+ 391          //-----------------------------------------------------------------------------
+ 392          // Initialization Subroutines
+ 393          //-----------------------------------------------------------------------------
+ 394          
  395          //-----------------------------------------------------------------------------
- 396          void SYSCLK_Init (void)
- 397          {
- 398   1         SI_SEGMENT_VARIABLE(i, char, xdata);
- 399   1        
- 400   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
- 401   1        
- 402   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
- 403   1      
- 404   1         SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
- 405   1      
- 406   1         OSCICN = 0x83;
- 407   1      
- 408   1         // Step 2. Set the PLLSRC bit (PLL0CN.2) to select the desired
- 409   1         // clock source for the PLL.
- 410   1         PLL0CN &= ~0x04;                    // Internal oscillator
- 411   1      
- 412   1         // Step 3. Program the Flash read timing bits, FLRT (FLSCL.5-4) to the
- 413   1         // appropriate value for the new clock rate (see Section 15. Flash Memory
- 414   1         // on page 199).
- 415   1         SFRPAGE = LEGACY_PAGE;
- 416   1         FLSCL |= 0x30;                      // >= 100 MHz
- 417   1         SFRPAGE = CONFIG_PAGE;
- 418   1      
- 419   1         // Step 4. Enable power to the PLL by setting PLLPWR (PLL0CN.0) to ‘1’.
- 420   1         PLL0CN |= 0x01;
+ 396          // SYSCLK_Init
+ 397          //-----------------------------------------------------------------------------
+ 398          //
+ 399          // Return Value:  None
+ 400          // Parameters:    None
+ 401          //
+ 402          // This routine initializes the system clock to use the internal 24.5MHz*4
+ 403          // oscillator as its clock source.
+ 404          //
+ 405          //-----------------------------------------------------------------------------
+ 406          void SYSCLK_Init (void)
+ 407          {
+ 408   1         SI_SEGMENT_VARIABLE(i, char, xdata);
+ 409   1        
+ 410   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+ 411   1        
+ 412   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
+ 413   1      
+ 414   1         SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
+ 415   1      
+ 416   1         OSCICN = 0x83;
+ 417   1      
+ 418   1         // Step 2. Set the PLLSRC bit (PLL0CN.2) to select the desired
+ 419   1         // clock source for the PLL.
+ 420   1         PLL0CN &= ~0x04;                    // Internal oscillator
  421   1      
- 422   1         // Step 5. Program the PLL0DIV register to produce the divided reference
- 423   1         // frequency to the PLL.
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 8   
+ 422   1         // Step 3. Program the Flash read timing bits, FLRT (FLSCL.5-4) to the
+ 423   1         // appropriate value for the new clock rate (see Section 15. Flash Memory
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 8   
 
- 424   1         PLL0DIV = 0x01;
- 425   1      
- 426   1         // Step 6. Program the PLLLP3-0 bits (PLL0FLT.3-0) to the appropriate
- 427   1         // range for the divided reference frequency.
- 428   1         PLL0FLT |= 0x01;
- 429   1      
- 430   1         // Step 7. Program the PLLICO1-0 bits (PLL0FLT.5-4) to the appropriate
- 431   1         // range for the PLL output frequency.
- 432   1         PLL0FLT &= ~0x30;
- 433   1      
- 434   1         // Step 8. Program the PLL0MUL register to the desired clock multiplication
- 435   1         // factor.
- 436   1         PLL0MUL = 0x04;
- 437   1      
- 438   1         // Step 9. Wait at least 5 µs, to provide a fast frequency lock.
- 439   1         for (i = 100; i > 0; i--);
- 440   1      
- 441   1         // Step 10. Enable the PLL by setting PLLEN (PLL0CN.1) to ‘1’.
- 442   1         PLL0CN |= 0x02;
+ 424   1         // on page 199).
+ 425   1         SFRPAGE = LEGACY_PAGE;
+ 426   1         FLSCL |= 0x30;                      // >= 100 MHz
+ 427   1         SFRPAGE = CONFIG_PAGE;
+ 428   1      
+ 429   1         // Step 4. Enable power to the PLL by setting PLLPWR (PLL0CN.0) to ‘1’.
+ 430   1         PLL0CN |= 0x01;
+ 431   1      
+ 432   1         // Step 5. Program the PLL0DIV register to produce the divided reference
+ 433   1         // frequency to the PLL.
+ 434   1         PLL0DIV = 0x01;
+ 435   1      
+ 436   1         // Step 6. Program the PLLLP3-0 bits (PLL0FLT.3-0) to the appropriate
+ 437   1         // range for the divided reference frequency.
+ 438   1         PLL0FLT |= 0x01;
+ 439   1      
+ 440   1         // Step 7. Program the PLLICO1-0 bits (PLL0FLT.5-4) to the appropriate
+ 441   1         // range for the PLL output frequency.
+ 442   1         PLL0FLT &= ~0x30;
  443   1      
- 444   1         // Step 11. Poll PLLLCK (PLL0CN.4) until it changes from ‘0’ to ‘1’.
- 445   1         while ((PLL0CN & 0x10) != 0x10);
- 446   1      
- 447   1         // Step 12. Switch the System Clock source to the PLL using the CLKSEL
- 448   1         // register.
- 449   1         CLKSEL = 0x02;
+ 444   1         // Step 8. Program the PLL0MUL register to the desired clock multiplication
+ 445   1         // factor.
+ 446   1         PLL0MUL = 0x04;
+ 447   1      
+ 448   1         // Step 9. Wait at least 5 µs, to provide a fast frequency lock.
+ 449   1         for (i = 100; i > 0; i--);
  450   1      
- 451   1         SFRPAGE = SFRPAGE_SAVE;             // Restore the SFRPAGE
- 452   1      }
- 453          
- 454          //-----------------------------------------------------------------------------
- 455          // PORT_Init
- 456          //-----------------------------------------------------------------------------
- 457          //
- 458          // Return Value:  None
- 459          // Parameters:    None
- 460          //
- 461          // Configure the Crossbar and GPIO ports.
- 462          //
- 463          // Pinout:
- 464          //
- 465          // P0.0 - UART TX1 (push-pull)
- 466          // P0.1 - UART RX1
+ 451   1         // Step 10. Enable the PLL by setting PLLEN (PLL0CN.1) to ‘1’.
+ 452   1         PLL0CN |= 0x02;
+ 453   1      
+ 454   1         // Step 11. Poll PLLLCK (PLL0CN.4) until it changes from ‘0’ to ‘1’.
+ 455   1         while ((PLL0CN & 0x10) != 0x10);
+ 456   1      
+ 457   1         // Step 12. Switch the System Clock source to the PLL using the CLKSEL
+ 458   1         // register.
+ 459   1         CLKSEL = 0x02;
+ 460   1      
+ 461   1         SFRPAGE = SFRPAGE_SAVE;             // Restore the SFRPAGE
+ 462   1      }
+ 463          
+ 464          //-----------------------------------------------------------------------------
+ 465          // PORT_Init
+ 466          //-----------------------------------------------------------------------------
  467          //
- 468          // P1.6 - LED (push-pull)
- 469          //
- 470          // DAC0 - DAC0 output
- 471          //
- 472          // AIN0.0 - ADC0 analog input
- 473          //
- 474          // Note: DAC0 and AIN0.0 must be tied together.
- 475          //
- 476          //-----------------------------------------------------------------------------
- 477          void PORT_Init (void)
- 478          {
- 479   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
- 480   1         SFRPAGE_save = SFRPAGE;             // Save the current SFRPAGE
- 481   1      
- 482   1         SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
- 483   1      
- 484   1         XBR0     = 0x04;
- 485   1         XBR1     = 0x00;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 9   
+ 468          // Return Value:  None
+ 469          // Parameters:    None
+ 470          //
+ 471          // Configure the Crossbar and GPIO ports.
+ 472          //
+ 473          // Pinout:
+ 474          //
+ 475          // P0.0 - UART TX1 (push-pull)
+ 476          // P0.1 - UART RX1
+ 477          //
+ 478          // P1.6 - LED (push-pull)
+ 479          //
+ 480          // DAC0 - DAC0 output
+ 481          //
+ 482          // AIN0.0 - ADC0 analog input
+ 483          //
+ 484          // Note: DAC0 and AIN0.0 must be tied together.
+ 485          //
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 9   
 
- 486   1         XBR2     = 0x40;                    // Enable crossbar and weak pull-up
- 487   1                                             // Enable UART0
- 488   1      
- 489   1         P0MDOUT |= 0x01;                    // Set TX1 pin to push-pull
- 490   1         P1MDOUT |= 0x40;                    // Set P1.6(LED) to push-pull
- 491   1         
- 492   1         P3MDOUT &= ~0x80;                   // Set P3.7 to input
- 493   1         
- 494   1         P4MDOUT |= 0x04;                    // Set P4.2 to push-pull
- 495   1         P4MDOUT |= 0x10;                    // Set P4.4 to push-pull
- 496   1         P4MDOUT &= ~0x08;                   // Set P4.3 to input
- 497   1        
- 498   1         P5MDOUT |= 0xFF;
- 499   1         P6MDOUT |= 0xFF;
- 500   1         P7MDOUT |= 0xFF;
- 501   1         P5 =  0x00;
- 502   1         P6 |= 0x0F;
- 503   1         P7 =  0xFF;
- 504   1         DC24OUTPUT = 1;
- 505   1         DC24INPUT = 1;
- 506   1         SELECT485 = 0;                      // to receive
- 507   1         CONDSELECTOR = 1;                   // set to KP condition
- 508   1         
- 509   1         SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
- 510   1      }
- 511          
- 512          //-----------------------------------------------------------------------------
- 513          // UART0_Init
- 514          //-----------------------------------------------------------------------------
- 515          void Timer0_Init(void)
- 516          {
- 517   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
- 518   1        SFRPAGE_save = SFRPAGE;
- 519   1        
- 520   1        SFRPAGE = TIMER01_PAGE;
- 521   1        
- 522   1        TMOD   &= 0xFD;
- 523   1        TMOD   |= 0x01;
- 524   1        TH0     = 0x00;
- 525   1        TL0     = 0x00;
- 526   1        ET0     = 1;
- 527   1        TR0     = 1;
- 528   1        CKCON  |= 0x08;
- 529   1        SFRPAGE = SFRPAGE_save;
- 530   1      }
- 531          //-----------------------------------------------------------------------------
- 532          // UART0_Init
- 533          //-----------------------------------------------------------------------------
- 534          //
- 535          // Return Value:  None
- 536          // Parameters:    None
- 537          //
- 538          // Configure the UART0 using Timer1, for <BAUDRATE> and 8-N-1.
- 539          //
- 540          //-----------------------------------------------------------------------------
- 541          void UART0_Init (void)
- 542          {
- 543   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata); 
- 544   1         SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
- 545   1      
- 546   1         SFRPAGE = UART0_PAGE;               // Switch to the necessary SFRPAGE
- 547   1          
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 10  
+ 486          //-----------------------------------------------------------------------------
+ 487          void PORT_Init (void)
+ 488          {
+ 489   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+ 490   1         SFRPAGE_save = SFRPAGE;             // Save the current SFRPAGE
+ 491   1      
+ 492   1         SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
+ 493   1      
+ 494   1         XBR0     = 0x04;
+ 495   1         XBR1     = 0x00;
+ 496   1         XBR2     = 0x40;                    // Enable crossbar and weak pull-up
+ 497   1                                             // Enable UART0
+ 498   1      
+ 499   1         P0MDOUT |= 0x01;                    // Set TX1 pin to push-pull
+ 500   1         P1MDOUT |= 0x40;                    // Set P1.6(LED) to push-pull
+ 501   1         
+ 502   1         P3MDOUT &= ~0x80;                   // Set P3.7 to input
+ 503   1         
+ 504   1         P4MDOUT |= 0x04;                    // Set P4.2 to push-pull
+ 505   1         P4MDOUT |= 0x10;                    // Set P4.4 to push-pull
+ 506   1         P4MDOUT &= ~0x08;                   // Set P4.3 to input
+ 507   1        
+ 508   1         P5MDOUT |= 0xFF;
+ 509   1         P6MDOUT |= 0xFF;
+ 510   1         P7MDOUT |= 0xFF;
+ 511   1         P5 =  0x00;
+ 512   1         P6 |= 0x0F;
+ 513   1         P7 =  0xFF;
+ 514   1         DC24OUTPUT = 1;
+ 515   1         DC24INPUT = 1;
+ 516   1         SELECT485 = 0;                      // to receive
+ 517   1         CONDSELECTOR = 1;                   // set to KP condition
+ 518   1         
+ 519   1         SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
+ 520   1      }
+ 521          
+ 522          //-----------------------------------------------------------------------------
+ 523          // UART0_Init
+ 524          //-----------------------------------------------------------------------------
+ 525          void Timer0_Init(void)
+ 526          {
+ 527   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+ 528   1        SFRPAGE_save = SFRPAGE;
+ 529   1        
+ 530   1        SFRPAGE = TIMER01_PAGE;
+ 531   1        
+ 532   1        TMOD   &= 0xFD;
+ 533   1        TMOD   |= 0x01;
+ 534   1        TH0     = 0x00;
+ 535   1        TL0     = 0x00;
+ 536   1        ET0     = 1;
+ 537   1        TR0     = 1;
+ 538   1        CKCON  |= 0x08;
+ 539   1        SFRPAGE = SFRPAGE_save;
+ 540   1      }
+ 541          //-----------------------------------------------------------------------------
+ 542          // UART0_Init
+ 543          //-----------------------------------------------------------------------------
+ 544          //
+ 545          // Return Value:  None
+ 546          // Parameters:    None
+ 547          //
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 10  
 
- 548   1         SCON0  = 0x70;
- 549   1         TMOD   = 0x20;
- 550   1         TH1    = 0x5D;///0xE5;///0x5D;////0xE5;// - 115200;
- 551   1         TR1    = 1;
- 552   1         CKCON |= 0x10;
- 553   1         PCON  |= 0x80;//SMOD0 = 1 
- 554   1        
- 555   1         TI0    = 0;                         // Indicate TX0 ready
- 556   1         
- 557   1         PS0    = 1;
- 558   1        
- 559   1         ES0    = 1; 
- 560   1        
- 561   1         SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
- 562   1      }
- 563          //-----------------------------------------------------------------------------
- 564          // DAC0_Init
- 565          //-----------------------------------------------------------------------------
- 566          //
- 567          // Return Value:  None
- 568          // Parameters:    None
- 569          //
- 570          // Configure DAC1 to update on Timer4 overflows.  VREF is already enabled by
- 571          // the ADC initialization code.
- 572          //
+ 548          // Configure the UART0 using Timer1, for <BAUDRATE> and 8-N-1.
+ 549          //
+ 550          //-----------------------------------------------------------------------------
+ 551          void UART0_Init (void)
+ 552          {
+ 553   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata); 
+ 554   1         SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
+ 555   1      
+ 556   1         SFRPAGE = UART0_PAGE;               // Switch to the necessary SFRPAGE
+ 557   1          
+ 558   1         SCON0  = 0x70;
+ 559   1         TMOD   = 0x20;
+ 560   1         TH1    = 0x5D;///0xE5;///0x5D;////0xE5;// - 115200;
+ 561   1         TR1    = 1;
+ 562   1         CKCON |= 0x10;
+ 563   1         PCON  |= 0x80;//SMOD0 = 1 
+ 564   1        
+ 565   1         TI0    = 0;                         // Indicate TX0 ready
+ 566   1         
+ 567   1         PS0    = 1;
+ 568   1        
+ 569   1         ES0    = 1; 
+ 570   1        
+ 571   1         SFRPAGE = SFRPAGE_save;             // Restore the SFRPAGE
+ 572   1      }
  573          //-----------------------------------------------------------------------------
- 574          void DAC0_Init(void){
- 575   1      
- 576   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
- 577   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
- 578   1      
- 579   1         SFRPAGE = DAC0_PAGE;
- 580   1      
- 581   1         DAC0CN = 0x94;                      // Enable DAC0 in left-justified mode
- 582   1                                             // managed by Timer4 overflows
- 583   1      
- 584   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
- 585   1      }
- 586          
- 587          //-----------------------------------------------------------------------------
- 588          // DAC1_Init
- 589          //-----------------------------------------------------------------------------
- 590          //
- 591          // Return Value:  None
- 592          // Parameters:    None
- 593          //
- 594          // Configure DAC1 to update on write to DAC1H.  VREF is already enabled by
- 595          // the ADC initialization code.
- 596          //
+ 574          // DAC0_Init
+ 575          //-----------------------------------------------------------------------------
+ 576          //
+ 577          // Return Value:  None
+ 578          // Parameters:    None
+ 579          //
+ 580          // Configure DAC1 to update on Timer4 overflows.  VREF is already enabled by
+ 581          // the ADC initialization code.
+ 582          //
+ 583          //-----------------------------------------------------------------------------
+ 584          void DAC0_Init(void){
+ 585   1      
+ 586   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+ 587   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
+ 588   1      
+ 589   1         SFRPAGE = DAC0_PAGE;
+ 590   1      
+ 591   1         DAC0CN = 0x94;                      // Enable DAC0 in left-justified mode
+ 592   1                                             // managed by Timer4 overflows
+ 593   1      
+ 594   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
+ 595   1      }
+ 596          
  597          //-----------------------------------------------------------------------------
- 598          void DAC1_Init(void){
- 599   1      
- 600   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
- 601   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
- 602   1      
- 603   1         SFRPAGE = DAC1_PAGE;
- 604   1      
- 605   1         DAC1CN = 0x84;                      // Enable DAC1 in left-justified mode
- 606   1                                             // managed by write data to DAC1H
- 607   1         
- 608   1         DAC1 = DAC1_VALUE;                  // Write to DAC1
+ 598          // DAC1_Init
+ 599          //-----------------------------------------------------------------------------
+ 600          //
+ 601          // Return Value:  None
+ 602          // Parameters:    None
+ 603          //
+ 604          // Configure DAC1 to update on write to DAC1H.  VREF is already enabled by
+ 605          // the ADC initialization code.
+ 606          //
+ 607          //-----------------------------------------------------------------------------
+ 608          void DAC1_Init(void){
  609   1      
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 11  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 11  
 
- 610   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
- 611   1      }
- 612          
- 613          //-----------------------------------------------------------------------------
- 614          // ADC0_Init
- 615          //-----------------------------------------------------------------------------
- 616          //
- 617          // Return Value:  None
- 618          // Parameters:    None
- 619          //
- 620          // Configures ADC0 to make single-ended analog measurements on pin AIN0.0 for
- 621          // the FIR filter.  Timer3 overflows are the conversion source and the data is
- 622          // left-justified.  This function also enables the ADC end-of-conversion
- 623          // interrupt and leaves the ADC disabled.
- 624          //
+ 610   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+ 611   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
+ 612   1      
+ 613   1         SFRPAGE = DAC1_PAGE;
+ 614   1      
+ 615   1         DAC1CN = 0x84;                      // Enable DAC1 in left-justified mode
+ 616   1                                             // managed by write data to DAC1H
+ 617   1         
+ 618   1         DAC1 = DAC1_VALUE;                  // Write to DAC1
+ 619   1      
+ 620   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
+ 621   1      }
+ 622          
+ 623          //-----------------------------------------------------------------------------
+ 624          // ADC0_Init
  625          //-----------------------------------------------------------------------------
- 626          void ADC0_Init (void)
- 627          {
- 628   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
- 629   1        
- 630   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
- 631   1      
- 632   1         SFRPAGE = ADC0_PAGE;
- 633   1      
- 634   1         ADC0CN = 0x05;                      // ADC0 disabled; normal tracking
- 635   1                                             // mode; ADC0 conversions are initiated
- 636   1                                             // on overflow of Timer3; ADC0 data is
- 637   1                                             // left-justified
- 638   1      
- 639   1         REF0CN = 0x03;                      // Enable on-chip VREF and VREF output
- 640   1                                             // buffer
- 641   1      #ifndef BIPOLIAR_ADC
- 642   1         AMX0SL = 0x00;                      // Select AIN0.0 as ADC mux input
- 643   1      #else 
+ 626          //
+ 627          // Return Value:  None
+ 628          // Parameters:    None
+ 629          //
+ 630          // Configures ADC0 to make single-ended analog measurements on pin AIN0.0 for
+ 631          // the FIR filter.  Timer3 overflows are the conversion source and the data is
+ 632          // left-justified.  This function also enables the ADC end-of-conversion
+ 633          // interrupt and leaves the ADC disabled.
+ 634          //
+ 635          //-----------------------------------------------------------------------------
+ 636          void ADC0_Init (void)
+ 637          {
+ 638   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+ 639   1        
+ 640   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
+ 641   1      
+ 642   1         SFRPAGE = ADC0_PAGE;
+ 643   1      
+ 644   1         ADC0CN = 0x05;                      // ADC0 disabled; normal tracking
+ 645   1                                             // mode; ADC0 conversions are initiated
+ 646   1                                             // on overflow of Timer3; ADC0 data is
+ 647   1                                             // left-justified
+ 648   1      
+ 649   1         REF0CN = 0x03;                      // Enable on-chip VREF and VREF output
+ 650   1                                             // buffer
+ 651   1      #ifndef BIPOLIAR_ADC
+ 652   1         AMX0SL = 0x00;                      // Select AIN0.0 as ADC mux input
+ 653   1      #else 
                  AMX0CF = 0x01;
                  AMX0SL = 0x00;
               #endif
- 647   1        
- 648   1         ADC0CF = (SYSCLK/2500000) << 3;     // ADC conversion clock = 2.5MHz
- 649   1      
- 650   1         EIE2 |= 0x02;                       // Enable ADC interrupts
- 651   1      
- 652   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
- 653   1      }
- 654          
- 655          //-----------------------------------------------------------------------------
- 656          // Timer3_Init
- 657          //-----------------------------------------------------------------------------
- 658          //
- 659          // Return Value:  None
- 660          // Parameters:    None
- 661          //
- 662          // Configure Timer3 to auto-reload at interval specified by <counts> (no
- 663          // interrupt generated) using SYSCLK as its time base.
- 664          //
- 665          // Timer 3 overflow automatically triggers ADC0 conversion.
- 666          //
+ 657   1        
+ 658   1         ADC0CF = (SYSCLK/2500000) << 3;     // ADC conversion clock = 2.5MHz
+ 659   1      
+ 660   1         EIE2 |= 0x02;                       // Enable ADC interrupts
+ 661   1      
+ 662   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
+ 663   1      }
+ 664          
+ 665          //-----------------------------------------------------------------------------
+ 666          // Timer3_Init
  667          //-----------------------------------------------------------------------------
- 668          void Timer3_Init (int counts)
- 669          {
- 670   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
- 671   1        
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 12  
+ 668          //
+ 669          // Return Value:  None
+ 670          // Parameters:    None
+ 671          //
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 12  
 
- 672   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
- 673   1      
- 674   1         SFRPAGE = TMR3_PAGE;
- 675   1      
- 676   1         TMR3CN = 0x00;                      // Stop Timer3; Clear TF3;
- 677   1         TMR3CF = 0x08;                      // use SYSCLK as timebase
- 678   1      
- 679   1         RCAP3   = -counts;                  // Init reload values
- 680   1         TMR3    = RCAP3;                    // set to reload immediately
- 681   1         EIE2   &= ~0x01;                    // Disable Timer3 interrupts
- 682   1         TR3 = 1;                            // Start Timer3
+ 672          // Configure Timer3 to auto-reload at interval specified by <counts> (no
+ 673          // interrupt generated) using SYSCLK as its time base.
+ 674          //
+ 675          // Timer 3 overflow automatically triggers ADC0 conversion.
+ 676          //
+ 677          //-----------------------------------------------------------------------------
+ 678          void Timer3_Init (int counts)
+ 679          {
+ 680   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+ 681   1        
+ 682   1         SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
  683   1      
- 684   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
- 685   1      }
- 686          //-----------------------------------------------------------------------------
- 687          // Timer4_Init
- 688          //-----------------------------------------------------------------------------
- 689          //
- 690          // Return Value:  None
- 691          // Parameters:
- 692          //   1) counts - the number of timer clocks to count before a timer interrupt
- 693          //           should occur
- 694          //
- 695          // Configure Timer4 to auto-reload mode and to generate interrupts
- 696          // at intervals specified in <counts> using SYSCLK as its time base.
- 697          //
- 698          // Timer 4 overflow controls the DAC update rate.
+ 684   1         SFRPAGE = TMR3_PAGE;
+ 685   1      
+ 686   1         TMR3CN = 0x00;                      // Stop Timer3; Clear TF3;
+ 687   1         TMR3CF = 0x08;                      // use SYSCLK as timebase
+ 688   1      
+ 689   1         RCAP3   = -counts;                  // Init reload values
+ 690   1         TMR3    = RCAP3;                    // set to reload immediately
+ 691   1         EIE2   &= ~0x01;                    // Disable Timer3 interrupts
+ 692   1         TR3 = 1;                            // Start Timer3
+ 693   1      
+ 694   1         SFRPAGE = SFRPAGE_SAVE;             // Restore SFR page
+ 695   1      }
+ 696          //-----------------------------------------------------------------------------
+ 697          // Timer4_Init
+ 698          //-----------------------------------------------------------------------------
  699          //
- 700          //-----------------------------------------------------------------------------
- 701          void Timer4_Init (int counts)
- 702          {
- 703   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
- 704   1        
- 705   1         SFRPAGE_SAVE = SFRPAGE;          // Save Current SFR page
- 706   1      
- 707   1         SFRPAGE = TMR4_PAGE;
- 708   1      
- 709   1         TMR4CN = 0x00;                   // Stop Timer4; Clear overflow flag (TF4);
- 710   1                                          // Set to Auto-Reload Mode
- 711   1      
- 712   1         TMR4CF = 0x08;                   // Configure Timer4 to increment;
- 713   1                                          // Timer4 counts SYSCLKs
- 714   1      
- 715   1         RCAP4 = -counts;                 // Set reload value
- 716   1         TMR4 = RCAP4;                    // Initialzie Timer4 to reload value
- 717   1        
- 718   1         EIE2 |= 0x04;                    // Enable Timer4 interrupts
- 719   1         TR4 = 1;                         // Start Timer4
- 720   1      
- 721   1         SFRPAGE = SFRPAGE_SAVE;          // Restore SFR page
- 722   1      }
- 723          //-----------------------------------------------------------------------------
- 724          // ADC0_ISR
- 725          //-----------------------------------------------------------------------------
- 726          //
- 727          // ADC0 end-of-conversion ISR
- 728          //
- 729          // This interrupt service routine is called on ADC0 conversion complete.
- 730          // The ADC result is converted to signed and stored in the FIR delay line.
- 731          //
- 732          // If the global <FIR_On> bit is set to a '1', then the FIR output is computed
- 733          // and stored in the global variable 'Sample'.  The 'Sample_Ready' indicator
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 13  
+ 700          // Return Value:  None
+ 701          // Parameters:
+ 702          //   1) counts - the number of timer clocks to count before a timer interrupt
+ 703          //           should occur
+ 704          //
+ 705          // Configure Timer4 to auto-reload mode and to generate interrupts
+ 706          // at intervals specified in <counts> using SYSCLK as its time base.
+ 707          //
+ 708          // Timer 4 overflow controls the DAC update rate.
+ 709          //
+ 710          //-----------------------------------------------------------------------------
+ 711          void Timer4_Init (int counts)
+ 712          {
+ 713   1         SI_SEGMENT_VARIABLE(SFRPAGE_SAVE, char, xdata);
+ 714   1        
+ 715   1         SFRPAGE_SAVE = SFRPAGE;          // Save Current SFR page
+ 716   1      
+ 717   1         SFRPAGE = TMR4_PAGE;
+ 718   1      
+ 719   1         TMR4CN = 0x00;                   // Stop Timer4; Clear overflow flag (TF4);
+ 720   1                                          // Set to Auto-Reload Mode
+ 721   1      
+ 722   1         TMR4CF = 0x08;                   // Configure Timer4 to increment;
+ 723   1                                          // Timer4 counts SYSCLKs
+ 724   1      
+ 725   1         RCAP4 = -counts;                 // Set reload value
+ 726   1         TMR4 = RCAP4;                    // Initialzie Timer4 to reload value
+ 727   1        
+ 728   1         EIE2 |= 0x04;                    // Enable Timer4 interrupts
+ 729   1         TR4 = 1;                         // Start Timer4
+ 730   1      
+ 731   1         SFRPAGE = SFRPAGE_SAVE;          // Restore SFR page
+ 732   1      }
+ 733          //-----------------------------------------------------------------------------
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 13  
 
- 734          // bit is set to indicate the value is ready.
- 735          //
- 736          // If <FIR_On> is set to '0', then the ADC sample is copied to the global
- 737          // 'Sample' variable.  The 'Sample_Ready' indicator bit is set to indicate
- 738          // that the value is ready.
- 739          //
- 740          //-----------------------------------------------------------------------------
- 741          //void ADC0_ISR (void) interrupt 15
- 742          #pragma NOAREGS
- 743          SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
- 744          {
- 745   1         volatile SI_UU16_t input;
- 746   1        
- 747   1         AD0INT = 0;                         // Clear ADC conversion complete
- 748   1                                             // indicator
- 749   1      
- 750   1         input.s16 = ADC0^0x8000;            // Convert to bipolar value
- 751   1         
- 752   1         
- 753   1         if (data_for_filter_counter < N) {
- 754   2            data_for_filter [data_for_filter_counter++].u16 = input.u16;
- 755   2         }
- 756   1      }
- 757          
- 758          #pragma NOAREGS
- 759          SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
- 760          {
- 761   1        unsigned char SFRPAGE_save = SFRPAGE;
- 762   1        SFRPAGE = TIMER01_PAGE;
- 763   1        TH0     = 0x00;
- 764   1        TL0     = 0x00;
- 765   1        TF0     = 0;
- 766   1        SFRPAGE = SFRPAGE_save;
- 767   1        if(modbus_was_sendind_received()) {
- 768   2          modbus_command_received();
- 769   2          SFRPAGE = CONFIG_PAGE;
- 770   2          LED485  = !LED485;
- 771   2        }
- 772   1        SFRPAGE = CONFIG_PAGE;
- 773   1        if (DC24OUTPUT == 0) {
- 774   2          if (TimerForDC24Output++ % DividerForDC24Output == 0) {
- 775   3            DC24OUTPUT = 1;
- 776   3          }
- 777   2        }
- 778   1        TIMER++;
- 779   1        SFRPAGE = SFRPAGE_save;
- 780   1      }
- 781          
- 782          #pragma NOAREGS
- 783          SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
- 784          {
- 785   1        unsigned char SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
- 786   1        SFRPAGE = UART0_PAGE;
- 787   1        if(RI0 == 1) {
- 788   2          modbus_byte_receive(SBUF0);
- 789   2          RI0 = 0;
- 790   2        }
- 791   1        if(TI0 == 1) {
- 792   2          TI0 = 0;
- 793   2          toTransmit485();
- 794   2          if (modbus_transmit_buffer_is_empty()) {
- 795   3            toReceive485();
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 14  
+ 734          // ADC0_ISR
+ 735          //-----------------------------------------------------------------------------
+ 736          //
+ 737          // ADC0 end-of-conversion ISR
+ 738          //
+ 739          // This interrupt service routine is called on ADC0 conversion complete.
+ 740          // The ADC result is converted to signed and stored in the FIR delay line.
+ 741          //
+ 742          // If the global <FIR_On> bit is set to a '1', then the FIR output is computed
+ 743          // and stored in the global variable 'Sample'.  The 'Sample_Ready' indicator
+ 744          // bit is set to indicate the value is ready.
+ 745          //
+ 746          // If <FIR_On> is set to '0', then the ADC sample is copied to the global
+ 747          // 'Sample' variable.  The 'Sample_Ready' indicator bit is set to indicate
+ 748          // that the value is ready.
+ 749          //
+ 750          //-----------------------------------------------------------------------------
+ 751          //void ADC0_ISR (void) interrupt 15
+ 752          #pragma NOAREGS
+ 753          SI_INTERRUPT(ADC0_ISR, INTERRUPT_ADC0_EOC)
+ 754          {
+ 755   1         volatile SI_UU16_t input;
+ 756   1        
+ 757   1         AD0INT = 0;                         // Clear ADC conversion complete
+ 758   1                                             // indicator
+ 759   1      
+ 760   1         input.s16 = ADC0^0x8000;            // Convert to bipolar value
+ 761   1         
+ 762   1         
+ 763   1         if (data_for_filter_counter < N) {
+ 764   2            data_for_filter [data_for_filter_counter++].u16 = input.u16;
+ 765   2         }
+ 766   1      }
+ 767          
+ 768          #pragma NOAREGS
+ 769          SI_INTERRUPT(TIMER0_ISR, INTERRUPT_TIMER0)
+ 770          {
+ 771   1        unsigned char SFRPAGE_save = SFRPAGE;
+ 772   1        SFRPAGE = TIMER01_PAGE;
+ 773   1        TH0     = 0x00;
+ 774   1        TL0     = 0x00;
+ 775   1        TF0     = 0;
+ 776   1        SFRPAGE = SFRPAGE_save;
+ 777   1        if(modbus_was_sendind_received()) {
+ 778   2          modbus_command_received();
+ 779   2          SFRPAGE = CONFIG_PAGE;
+ 780   2          LED485  = !LED485;
+ 781   2        }
+ 782   1        SFRPAGE = CONFIG_PAGE;
+ 783   1        if (DC24OUTPUT == 0) {
+ 784   2          if (TimerForDC24Output++ % DividerForDC24Output == 0) {
+ 785   3            DC24OUTPUT = 1;
+ 786   3          }
+ 787   2        }
+ 788   1        TIMER++;
+ 789   1        SFRPAGE = SFRPAGE_save;
+ 790   1      }
+ 791          
+ 792          #pragma NOAREGS
+ 793          SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
+ 794          {
+ 795   1        unsigned char SFRPAGE_save = SFRPAGE; // Save the current SFRPAGE
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 14  
 
- 796   3          }
- 797   2          else {
- 798   3            modbus_transmit_byte();
- 799   3          }
+ 796   1        SFRPAGE = UART0_PAGE;
+ 797   1        if(RI0 == 1) {
+ 798   2          modbus_byte_receive(SBUF0);
+ 799   2          RI0 = 0;
  800   2        }
- 801   1        SFRPAGE = SFRPAGE_save;               // Restore the SFRPAGE  
- 802   1      }
- 803          //-----------------------------------------------------------------------------
- 804          // Timer4_ISR
- 805          //-----------------------------------------------------------------------------
- 806          //
- 807          // This ISR is called on Timer4 overflows.  Timer4 is set to auto-reload mode
- 808          // and is used to schedule the DAC output sample rate in this example.
- 809          // Note that the value that is written to DAC1 during this ISR call is
- 810          // actually transferred to DAC1 at the next Timer4 overflow.
- 811          //
- 812          //-----------------------------------------------------------------------------
- 813          //void Timer4_ISR (void) interrupt 16
- 814          #pragma NOAREGS
- 815          SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
- 816          { 
- 817   1         char number = 0;
- 818   1         int temp1 = 0;                      // The temporary value that passes
- 819   1                                             // through 3 stages before being written
- 820   1                                             // to the IDAC
- 821   1         TMR3CN &= ~0x80;                    // Clear Timer3 overflow flag
- 822   1        
- 823   1         for (number=0; number<12; number++) {
- 824   2            if (freq_dac_flags [number] == 1) {
- 825   3              phase_acc[number].u16 += Phase_Add [number];
- 826   3              temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
- 827   3            }
- 828   2         }
- 829   1           
- 830   1         SFRPAGE = DAC0_PAGE;
- 831   1      
- 832   1         // Add a DC bias to make the rails 0 to 65535
- 833   1         // Note: the XOR with 0x8000 translates the bipolar quantity into
- 834   1         // a unipolar quantity.
- 835   1      
- 836   1         DAC0 = 0x8000 ^ temp1;              // Write to DAC0
- 837   1      }
- 838          
- 839          #pragma NOAREGS
- 840          void init_after_flash_reload() {
- 841   1         //-----------------------------------------------------------------------
- 842   1         SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
- 843   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 844   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 845   1         //-----------------------------------------------------------------------
- 846   1         SFRPAGE_save = SFRPAGE;
- 847   1         d = 0;
- 848   1         //----------------------- FREQ DIVIDER INIT -----------------------------
- 849   1         freq_divider = modbus_get_freq_divider();
- 850   1         if (freq_divider == 0) {
- 851   2            freq_divider = 1;
- 852   2         }
- 853   1         //--------------------------- FREQ INIT ---------------------------------
- 854   1         modbus_init_freqs(FREQS);
- 855   1         for (i=0; i<12; i++) {
- 856   2            Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
- 857   2                      PHASE_PRECISION) / OUTPUT_RATE_DAC));
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 15  
+ 801   1        if(TI0 == 1) {
+ 802   2          TI0 = 0;
+ 803   2          toTransmit485();
+ 804   2          if (modbus_transmit_buffer_is_empty()) {
+ 805   3            toReceive485();
+ 806   3          }
+ 807   2          else {
+ 808   3            modbus_transmit_byte();
+ 809   3          }
+ 810   2        }
+ 811   1        SFRPAGE = SFRPAGE_save;               // Restore the SFRPAGE  
+ 812   1      }
+ 813          //-----------------------------------------------------------------------------
+ 814          // Timer4_ISR
+ 815          //-----------------------------------------------------------------------------
+ 816          //
+ 817          // This ISR is called on Timer4 overflows.  Timer4 is set to auto-reload mode
+ 818          // and is used to schedule the DAC output sample rate in this example.
+ 819          // Note that the value that is written to DAC1 during this ISR call is
+ 820          // actually transferred to DAC1 at the next Timer4 overflow.
+ 821          //
+ 822          //-----------------------------------------------------------------------------
+ 823          //void Timer4_ISR (void) interrupt 16
+ 824          #pragma NOAREGS
+ 825          SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
+ 826          { 
+ 827   1         char number = 0;
+ 828   1         int temp1 = 0;                      // The temporary value that passes
+ 829   1                                             // through 3 stages before being written
+ 830   1                                             // to the IDAC
+ 831   1         TMR3CN &= ~0x80;                    // Clear Timer3 overflow flag
+ 832   1        
+ 833   1         for (number=0; number<12; number++) {
+ 834   2            if (freq_dac_flags [number] == 1) {
+ 835   3              phase_acc[number].u16 += Phase_Add [number];
+ 836   3              temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
+ 837   3            }
+ 838   2         }
+ 839   1           
+ 840   1         SFRPAGE = DAC0_PAGE;
+ 841   1      
+ 842   1         // Add a DC bias to make the rails 0 to 65535
+ 843   1         // Note: the XOR with 0x8000 translates the bipolar quantity into
+ 844   1         // a unipolar quantity.
+ 845   1      
+ 846   1         DAC0 = 0x8000 ^ temp1;              // Write to DAC0
+ 847   1      }
+ 848          
+ 849          #pragma NOAREGS
+ 850          void init_after_flash_reload() {
+ 851   1         //-----------------------------------------------------------------------
+ 852   1         SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
+ 853   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 854   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 855   1         //-----------------------------------------------------------------------
+ 856   1         SFRPAGE_save = SFRPAGE;
+ 857   1         d = 0;
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 15  
 
- 858   2            if (getFreqFromModbusForDAC(i) != 0) {
- 859   3               freq_dac_flags [i] = 1;
- 860   3               if (i < 8) {
- 861   4                  d = bit_set(d, i);
- 862   4               }
- 863   3            } else {
- 864   3               freq_dac_flags [i] = 0;
- 865   3            }
- 866   2            if (getCondition() == DP_CONDITION) {
- 867   3               // DP
- 868   3               flashP5P6(i, freq_dac_flags [i]);
- 869   3            }
- 870   2         }
- 871   1         if (getCondition() == KP_CONDITION) {
- 872   2            // KP
- 873   2            flashDiodesOnCommand(d, KP_CONDITION);
- 874   2         }
- 875   1         d = getDC24DurationTimeIfEnabed();
- 876   1         if (d != 0) {
- 877   2            setDC24OUTPUT(0);
- 878   2            DividerForDC24Output = d * MILLISECONDS_10;
- 879   2            TimerForDC24Output = 1;
+ 858   1         //----------------------- FREQ DIVIDER INIT -----------------------------
+ 859   1         freq_divider = modbus_get_freq_divider();
+ 860   1         if (freq_divider == 0) {
+ 861   2            freq_divider = 1;
+ 862   2         }
+ 863   1         //--------------------------- FREQ INIT ---------------------------------
+ 864   1         modbus_init_freqs(FREQS);
+ 865   1         for (i=0; i<12; i++) {
+ 866   2            Phase_Add [i] = (unsigned int)((unsigned long)((FREQS [i] *
+ 867   2                      PHASE_PRECISION) / OUTPUT_RATE_DAC));
+ 868   2            if (getFreqFromModbusForDAC(i) != 0) {
+ 869   3               freq_dac_flags [i] = 1;
+ 870   3               if (i < 8) {
+ 871   4                  d = bit_set(d, i);
+ 872   4               }
+ 873   3            } else {
+ 874   3               freq_dac_flags [i] = 0;
+ 875   3            }
+ 876   2            if (getCondition() == DP_CONDITION) {
+ 877   3               // DP
+ 878   3               flashP5P6(i, freq_dac_flags [i]);
+ 879   3            }
  880   2         }
- 881   1         //--------------------------------------------------------------------------
- 882   1         if (isNeedGetADCValues() == 1) {
- 883   2           isNeedGetADCValuesFlag = 1;
+ 881   1         if (getCondition() == KP_CONDITION) {
+ 882   2            // KP
+ 883   2            flashDiodesOnCommand(d, KP_CONDITION);
  884   2         }
- 885   1         SFRPAGE = SFRPAGE_save;
- 886   1         //--------------------------------------------------------------------------
- 887   1      }
- 888          //-----------------------------------------------------------------------------
- 889          // delay
- 890          void delay(unsigned short timer) {
- 891   1        TIMER = 0;
- 892   1        while(TIMER < timer); 
- 893   1      }
- 894          //-----------------------------------------------------------------------------
- 895          // transmit 485
- 896          void toTransmit485() {
- 897   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 898   1        SFRPAGE_save = SFRPAGE;
- 899   1        SFRPAGE = CONFIG_PAGE;
- 900   1        SELECT485 = 1;
- 901   1        SFRPAGE = SFRPAGE_save;
+ 885   1         d = getDC24DurationTimeIfEnabed();
+ 886   1         if (d != 0) {
+ 887   2            setDC24OUTPUT(0);
+ 888   2            DividerForDC24Output = d * MILLISECONDS_10;
+ 889   2            TimerForDC24Output = 1;
+ 890   2         }
+ 891   1         //--------------------------------------------------------------------------
+ 892   1         if (isNeedGetADCValues() == 1) {
+ 893   2           isNeedGetADCValuesFlag = 1;
+ 894   2         }
+ 895   1         SFRPAGE = SFRPAGE_save;
+ 896   1      }
+ 897          //-----------------------------------------------------------------------------
+ 898          // delay
+ 899          void delay(unsigned short timer) {
+ 900   1        TIMER = 0;
+ 901   1        while(TIMER < timer); 
  902   1      }
  903          //-----------------------------------------------------------------------------
- 904          // receive 485
- 905          void toReceive485() {
+ 904          // transmit 485
+ 905          void toTransmit485() {
  906   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
  907   1        SFRPAGE_save = SFRPAGE;
  908   1        SFRPAGE = CONFIG_PAGE;
- 909   1        SELECT485 = 0;
+ 909   1        SELECT485 = 1;
  910   1        SFRPAGE = SFRPAGE_save;
  911   1      }
  912          //-----------------------------------------------------------------------------
- 913          // putchar
- 914          //-----------------------------------------------------------------------------
- 915          //
- 916          // Return Value:
- 917          //   1) char c - returns the char c that was passed as a parameter
- 918          // Parameters:
- 919          //   1) char c - the character to be printed
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                06/23/2020 18:55:24 PAGE 16  
+ 913          // receive 485
+ 914          void toReceive485() {
+ 915   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 916   1        SFRPAGE_save = SFRPAGE;
+ 917   1        SFRPAGE = CONFIG_PAGE;
+ 918   1        SELECT485 = 0;
+ 919   1        SFRPAGE = SFRPAGE_save;
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                07/02/2020 01:35:01 PAGE 16  
 
- 920          //
- 921          // Print the character <c> using UART0 at <BAUDRATE>.
- 922          //
+ 920   1      }
+ 921          //-----------------------------------------------------------------------------
+ 922          // putchar
  923          //-----------------------------------------------------------------------------
- 924          #if defined __C51__
- 925          char putchar (char c)
- 926          #elif defined SDCC
+ 924          //
+ 925          // Return Value:
+ 926          //   1) char c - returns the char c that was passed as a parameter
+ 927          // Parameters:
+ 928          //   1) char c - the character to be printed
+ 929          //
+ 930          // Print the character <c> using UART0 at <BAUDRATE>.
+ 931          //
+ 932          //-----------------------------------------------------------------------------
+ 933          #if defined __C51__
+ 934          char putchar (char c)
+ 935          #elif defined SDCC
               void putchar (char c)
               #endif
- 929          {
- 930   1         modbus_push_transmit_buffer(c);
- 931   1      #if defined __C51__
- 932   1         return c;                           // Print the character
- 933   1      #endif
- 934   1      }
- 935          //-----------------------------------------------------------------------------
- 936          // End Of File
- 937          //-----------------------------------------------------------------------------
+ 938          {
+ 939   1         modbus_push_transmit_buffer(c);
+ 940   1      #if defined __C51__
+ 941   1         return c;                           // Print the character
+ 942   1      #endif
+ 943   1      }
+ 944          //-----------------------------------------------------------------------------
+ 945          // End Of File
+ 946          //-----------------------------------------------------------------------------
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   2259    ----
+   CODE SIZE        =   2285    ----
    CONSTANT SIZE    =    512    ----
-   XDATA SIZE       =   2383      24
+   XDATA SIZE       =   2384      24
    PDATA SIZE       =   ----    ----
    DATA SIZE        =      1      12
    IDATA SIZE       =   ----    ----

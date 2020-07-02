@@ -108,6 +108,7 @@ SI_SEGMENT_VARIABLE(TimerForDC24Output, unsigned int, xdata);
 SI_SEGMENT_VARIABLE(DividerForDC24Output, unsigned int, xdata);
 SI_SEGMENT_VARIABLE(isNeedGetADCValuesFlag, unsigned int, xdata);
 SI_SEGMENT_VARIABLE(TIMER, unsigned short, xdata);
+SI_SEGMENT_VARIABLE(modbus_16_post_func_invoke_flag, uint8_t, xdata);
 //-----------------------------------------------------------------------------
 // Function Prototypes
 //-----------------------------------------------------------------------------
@@ -247,8 +248,17 @@ void main (void)
 	
 	 modbus_init_from_flash(init_func_pointer);
 	 
+	 modbus_16_post_func_invoke_flag = FALSE;
+	 
 //-----------------------------------------------------------------------------	 
    while (1) {
+		  //-----------------------------------------------------------------------
+		  if (modbus_16_post_func_invoke_flag == TRUE) {
+				 EA = 0; EA = 0;
+				 init_after_flash_reload();
+				 EA = 1;
+			   modbus_16_post_func_invoke_flag = FALSE;
+			}
 		  //-----------------------------------------------------------------------
 		  if (getDC24INPUT() == 0) {
 		    setDC24InputRegister(1);
@@ -883,7 +893,6 @@ void init_after_flash_reload() {
 	   isNeedGetADCValuesFlag = 1;
 	 }
 	 SFRPAGE = SFRPAGE_save;
-	 //--------------------------------------------------------------------------
 }
 //-----------------------------------------------------------------------------
 // delay

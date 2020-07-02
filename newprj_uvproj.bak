@@ -108,7 +108,7 @@
           <SimDllArguments></SimDllArguments>
           <SimDlgDll>DCYG.DLL</SimDlgDll>
           <SimDlgDllArguments>-pCYGF120</SimDlgDllArguments>
-          <TargetDllName>S8051.DLL</TargetDllName>
+          <TargetDllName>SiC8051F.DLL</TargetDllName>
           <TargetDllArguments></TargetDllArguments>
           <TargetDlgDll>TCYG.DLL</TargetDlgDll>
           <TargetDlgDllArguments>-pCYGF120</TargetDlgDllArguments>
@@ -147,7 +147,7 @@
             <UsePdscDebugDescription>1</UsePdscDebugDescription>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>4</TargetSelection>
+          <TargetSelection>9</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -161,7 +161,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>BIN\UL2UPSD.DLL</Driver>
+            <Driver>BIN\SiC8051F.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>

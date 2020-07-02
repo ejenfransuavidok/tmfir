@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               06/23/2020 18:55:25 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               07/02/2020 01:35:02 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -62,7 +62,7 @@ line level    source
   53   1      }
   54          
   55          #pragma NOAREGS
-C51 COMPILER V9.53.0.0   FIR                                                               06/23/2020 18:55:25 PAGE 2   
+C51 COMPILER V9.53.0.0   FIR                                                               07/02/2020 01:35:02 PAGE 2   
 
   56          int getFreqFromModbusForDAC(int number) {
   57   1        uint8_t hi;
@@ -126,7 +126,7 @@ line level    source
  115   1        SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
  116   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
  117   1        SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
-C51 COMPILER V9.53.0.0   FIR                                                               06/23/2020 18:55:25 PAGE 3   
+C51 COMPILER V9.53.0.0   FIR                                                               07/02/2020 01:35:02 PAGE 3   
 
  118   1        
  119   1        SFRPAGE_save = SFRPAGE;
@@ -190,7 +190,7 @@ line level    source
  177   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
  178   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
  179   1         SFRPAGE_save = SFRPAGE;
-C51 COMPILER V9.53.0.0   FIR                                                               06/23/2020 18:55:25 PAGE 4   
+C51 COMPILER V9.53.0.0   FIR                                                               07/02/2020 01:35:02 PAGE 4   
 
  180   1         SFRPAGE = CONFIG_PAGE;
  181   1         d = (0x01<<position);
@@ -254,7 +254,7 @@ line level    source
  239   1      }
  240          #pragma NOAREGS
  241          uint8_t bit_set(uint8_t d, uint8_t position)
-C51 COMPILER V9.53.0.0   FIR                                                               06/23/2020 18:55:25 PAGE 5   
+C51 COMPILER V9.53.0.0   FIR                                                               07/02/2020 01:35:02 PAGE 5   
 
  242          {
  243   1         d |= (1u<<position);
@@ -318,7 +318,7 @@ line level    source
  301          // Parameters   :
  302          //   1) input_samples - pointer to an array of the data to be used for the RMS
  303          //                        Value calculations
-C51 COMPILER V9.53.0.0   FIR                                                               06/23/2020 18:55:25 PAGE 6   
+C51 COMPILER V9.53.0.0   FIR                                                               07/02/2020 01:35:02 PAGE 6   
 
  304          //   2) num_samples - the number of data elements in the <input_samples> array
  305          //
@@ -382,7 +382,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   1682    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----      39
-C51 COMPILER V9.53.0.0   FIR                                                               06/23/2020 18:55:25 PAGE 7   
+C51 COMPILER V9.53.0.0   FIR                                                               07/02/2020 01:35:02 PAGE 7   
 
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----      39
