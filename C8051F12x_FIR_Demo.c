@@ -109,6 +109,7 @@ SI_SEGMENT_VARIABLE(DividerForDC24Output, unsigned int, xdata);
 SI_SEGMENT_VARIABLE(isNeedGetADCValuesFlag, unsigned int, xdata);
 SI_SEGMENT_VARIABLE(TIMER, unsigned short, xdata);
 SI_SEGMENT_VARIABLE(modbus_16_post_func_invoke_flag, uint8_t, xdata);
+SI_SEGMENT_VARIABLE(FOUND_1_OR_2_FREQ_FLAG, extern uint8_t, xdata);
 //-----------------------------------------------------------------------------
 // Function Prototypes
 //-----------------------------------------------------------------------------
@@ -250,6 +251,11 @@ void main (void)
 	 
 	 modbus_16_post_func_invoke_flag = FALSE;
 	 
+	 FOUND_1_OR_2_FREQ_FLAG = FALSE;
+	 
+	 //------------------------------------------------------------------------
+	 // DP VERSION !!!!!!!!!!!!!!!!! FOR FAST REASON !!!!!!!!!!!!!!!!!!!!!!!!!!
+	 freq_quantity = 2;
 //-----------------------------------------------------------------------------	 
    while (1) {
 		  //-----------------------------------------------------------------------
@@ -264,12 +270,6 @@ void main (void)
 		    setDC24InputRegister(1);
 			} else {
 			  setDC24InputRegister(0);
-			}
-			if (getCondition() == DP_CONDITION) {
-			  freq_quantity = 6;
-			}
-			else {
-				freq_quantity = 12;
 			}
 			//------------------------------------------------------------------------
       if (data_for_filter_counter == N) {
@@ -382,7 +382,12 @@ void main (void)
 						}
 				 }
 			   LED = !LED;
-				 data_for_filter_counter = 0;
+				 if (FOUND_1_OR_2_FREQ_FLAG == TRUE && freq_quantity == 2) {
+				   freq_quantity = 6;
+				 } else {
+					 freq_quantity = 2;
+				   data_for_filter_counter = 0;
+				 }
 			}
    }
 //-----------------------------------------------------------------------------	 

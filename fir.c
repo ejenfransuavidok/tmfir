@@ -1,5 +1,7 @@
 #include "fir.h"
 
+SI_SEGMENT_VARIABLE(FOUND_1_OR_2_FREQ_FLAG, uint8_t, xdata);
+
 /**
  *
  * MUST WRITE COMMAND TO MODBUS FROM 1278 TO 1283 FOR DP
@@ -146,26 +148,23 @@ void putRms2Modbus(int value, uint8_t number) {
 	address = address << 1;
 	modbus_buffer_data [address] = 0;
 	modbus_buffer_data [address + 1] = flag;
-	//---------------------------------------- FLASH -------------------------------------
-	// KP
-	if (getCondition() == KP_CONDITION) {
-	    // KP
-			flashP5P6(number, flag);
-	}
 	//-------------------------------------------------------------------------------------
 	// DP
-	if (getCondition() == DP_CONDITION) {
-	   d = 0;
-	   for (i=0; i<8; i++) {
-			  address = MODBUS_FREQUENCY_VALUE_START + i;
-		    address = address << 1;
-	      address += 1;
-		    if (modbus_buffer_data [address] == 1) {
-		       d = bit_set(d, i);
-		    }
-	   }
-	   flashDiodesOnCommand(d, DP_CONDITION);
+	d = 0;
+	for (i=0; i<8; i++) {
+		address = MODBUS_FREQUENCY_VALUE_START + i;
+		address = address << 1;
+	  address += 1;
+		if (modbus_buffer_data [address] == 1) {
+		   d = bit_set(d, i);
+		}
+		if ((d & 0x01 == 0x01) || (d & 0x02 == 0x02)) {
+		   FOUND_1_OR_2_FREQ_FLAG = TRUE;
+		} else {
+		   FOUND_1_OR_2_FREQ_FLAG = FALSE;
+		}
 	}
+	flashDiodesOnCommand(d, DP_CONDITION);
 	//-------------------------------------------------------------------------------------
 }
 //-----------------------------------------------------------------------------

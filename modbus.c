@@ -272,9 +272,6 @@ int modbus_process_function_16() {
 				FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
 			}
 		}
-		//EA = 0;
-		//init_after_flash_reload_func_pointer();
-		//EA = 1;
 		modbus_16_post_func_invoke_flag = TRUE;
 		TI0 = 1;
 		return MODBUS_GOOD;
