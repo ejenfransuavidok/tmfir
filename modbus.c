@@ -15,7 +15,7 @@ SI_SEGMENT_VARIABLE(modbus_command_transmitter[MODBUS_TRANSMITTER_LENGTH], uint8
 SI_SEGMENT_VARIABLE(modbus_buffer_data[MODBUS_DATA_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_error_response[5], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(reset_registers_on_read_table[RESET_REGISTERS_ON_READ_TABLE_SIZE], unsigned int, xdata) = {
-	1274, 1278, 1279, 1280, 1281, 1282, 1283
+	1274, 1276, 1278, 1279, 1280, 1281, 1282, 1283
 };
 SI_SEGMENT_VARIABLE(modbus_16_post_func_invoke_flag, extern uint8_t, xdata);
 
@@ -272,9 +272,6 @@ int modbus_process_function_16() {
 				FLASH_Update(MODBUS_FLASH_ADDRESS + p * 1024, modbus_buffer_data + p * 1024, 1024, 0);
 			}
 		}
-		//EA = 0;
-		//init_after_flash_reload_func_pointer();
-		//EA = 1;
 		modbus_16_post_func_invoke_flag = TRUE;
 		TI0 = 1;
 		return MODBUS_GOOD;
