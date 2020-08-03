@@ -377,6 +377,7 @@ void main (void)
 								 filtered_samples[i] = Sample.u16;
 							}
 							RMS_Value = RMS_Calc(filtered_samples, N, TAPS);
+							
 							putRms2Modbus(RMS_Value, freq_number);
 							delay_index_arr [freq_number] = delay_index;
 						}
@@ -872,7 +873,7 @@ void init_after_flash_reload() {
                 PHASE_PRECISION) / OUTPUT_RATE_DAC));
 	    if (getFreqFromModbusForDAC(i) != 0) {
 				 freq_dac_flags [i] = 1;
-			   if (i < 8) {
+				 if (i < 8) {
 				    d = bit_set(d, i);
 				 }
 			} else {

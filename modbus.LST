@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 1   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE MODBUS
@@ -25,7 +25,7 @@ line level    source
   16          SI_SEGMENT_VARIABLE(modbus_error_response[5], uint8_t, xdata);
   17          SI_SEGMENT_VARIABLE(reset_registers_on_read_table[RESET_REGISTERS_ON_READ_TABLE_SIZE], unsigned int, xdata
              -) = {
-  18            1274, 1278, 1279, 1280, 1281, 1282, 1283
+  18            1274, 1276, 1278, 1279, 1280, 1281, 1282, 1283
   19          };
   20          SI_SEGMENT_VARIABLE(modbus_16_post_func_invoke_flag, extern uint8_t, xdata);
   21          
@@ -62,7 +62,7 @@ line level    source
   52   1        modbus_buffer_data [MODBUS_REFRESH_FLASH_MEMORY_ADDRESS_3] = 0; 
   53   1      }
   54          
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 2   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 2   
 
   55          #pragma NOAREGS
   56          bool isNeedFlashUpdate() {
@@ -126,7 +126,7 @@ line level    source
  114   1      }
  115          
  116          #pragma NOAREGS
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 3   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 3   
 
  117          void modbus_response_error(uint8_t error) {
  118   1        SI_SEGMENT_VARIABLE(crc, uint16_t, xdata);
@@ -190,7 +190,7 @@ line level    source
  176   3            modbus_data = register_lo;
  177   3            crc = crc16_update(crc, modbus_data);
  178   3            modbus_push_transmit_buffer(modbus_data);
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 4   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 4   
 
  179   3            modbus_data = register_hi;
  180   3            crc = crc16_update(crc, modbus_data);
@@ -254,7 +254,7 @@ line level    source
  238   3            register_lo = (address << 1) + (i << 1) + 1;
  239   3            modbus_buffer_data [register_lo] = register_in_lo;
  240   3            modbus_buffer_data [register_hi] = register_in_hi;
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 5   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 5   
 
  241   3          }
  242   2          modbus_data = modbus_get_address();
@@ -318,7 +318,7 @@ line level    source
  300   3            modbus_response_error(MODBUS_ERROR_ILLEGAL_FUNCTION_CODE);
  301   3          }
  302   2        }
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 6   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 6   
 
  303   1        sender_pause_timer = 0;
  304   1        modbus_receiver_pointer = 0;
@@ -382,7 +382,7 @@ line level    source
  362          #pragma NOAREGS
  363          void inc_modbus_receiver_counter() {
  364   1        sender_pause_timer++;
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 7   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 7   
 
  365   1      }
  366          
@@ -446,7 +446,7 @@ line level    source
  424   1         SI_SEGMENT_VARIABLE(i, char, xdata);
  425   1         SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
  426   1         SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
-C51 COMPILER V9.53.0.0   MODBUS                                                            07/19/2020 09:18:10 PAGE 8   
+C51 COMPILER V9.53.0.0   MODBUS                                                            08/03/2020 23:29:47 PAGE 8   
 
  427   1         SI_SEGMENT_VARIABLE(address, unsigned short int, xdata);
  428   1         address = MODBUS_FREQ_VALUES_START_ADDRESS;
@@ -468,7 +468,7 @@ line level    source
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   2394    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   5067      70
+   XDATA SIZE       =   5069      70
    PDATA SIZE       =   ----    ----
    DATA SIZE        =     11      21
    IDATA SIZE       =   ----    ----
