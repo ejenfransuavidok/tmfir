@@ -14,23 +14,9 @@ SI_SEGMENT_VARIABLE(modbus_command_receiver[MODBUS_RECEIVER_LENGTH], uint8_t, xd
 SI_SEGMENT_VARIABLE(modbus_command_transmitter[MODBUS_TRANSMITTER_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_buffer_data[MODBUS_DATA_LENGTH], uint8_t, xdata);
 SI_SEGMENT_VARIABLE(modbus_error_response[5], uint8_t, xdata);
-SI_SEGMENT_VARIABLE(reset_registers_on_read_table[RESET_REGISTERS_ON_READ_TABLE_SIZE], unsigned int, xdata) = {
-	1274, 1276, 1278, 1279, 1280, 1281, 1282, 1283
-};
 SI_SEGMENT_VARIABLE(modbus_16_post_func_invoke_flag, extern uint8_t, xdata);
 
 void (*init_after_flash_reload_func_pointer)(void);
-
-#pragma NOAREGS
-void reset_register_on_read(uint16_t address) {
-	 SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
-	 for (i=0; i<RESET_REGISTERS_ON_READ_TABLE_SIZE; i++) {
-	   if (reset_registers_on_read_table [i] == address) {
-			 modbus_buffer_data [address << 1] = 0;
-			 modbus_buffer_data [(address << 1) + 1] = 0;
-		 }
-	 }
-}
 
 #pragma NOAREGS
 uint8_t * getModbusBufferData() {
@@ -179,10 +165,6 @@ int modbus_process_function_3() {
 			modbus_data = register_hi;
 			crc = crc16_update(crc, modbus_data);
 			modbus_push_transmit_buffer(modbus_data);
-			//--------------------------------------------------------------------------
-			// reset -------------------------------------------------------------------
-			reset_register_on_read (address + i);
-			//--------------------------------------------------------------------------
 		}
 		modbus_push_transmit_buffer((uint8_t)(crc));
 		modbus_push_transmit_buffer((uint8_t)(crc >> 8));

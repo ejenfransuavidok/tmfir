@@ -88,7 +88,7 @@ uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 	order = order << 1;
 	// get filter order
 	result = modbus_buffer_data [order + 1];
-	if (result != 61) {
+	if (result != FILTER_MAX_ORDER) {
 		result = 0;
 	}
 	for (i = 0; i<result; i++) {
@@ -97,7 +97,7 @@ uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 		lo = modbus_buffer_data [(temp << 1) + 1];
 		coefficients [i].u16 = (hi << 8) + lo;
 	}
-	if (result != 61) {
+	if (result != FILTER_MAX_ORDER) {
 		NOP();
 	}
 	return result;
