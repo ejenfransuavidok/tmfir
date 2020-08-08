@@ -26,7 +26,7 @@
 
 #define SAMPLE_RATE  11000             // Sample frequency in Hz
 
-#define N            500               // Number of samples to capture at
+#define N            256               // Number of samples to capture at
                                        // each DAC frequency
 
 #define PHASE_PRECISION  65536         // Range of phase accumulator
@@ -268,8 +268,6 @@ void main (void)
 		  //-----------------------------------------------------------------------
 		  if (getDC24INPUT() == 0) {
 		    setDC24InputRegister(1);
-			} else {
-			  setDC24InputRegister(0);
 			}
 			//------------------------------------------------------------------------
       if (data_for_filter_counter == N) {
@@ -313,10 +311,10 @@ void main (void)
 					  }
 						//--------------------------------------------------------------------------------------------------
 						TAPS = populateFirCoefficients(B_FIR, freq_number);
-						if (TAPS != 61) {
+						if (TAPS != FILTER_MAX_ORDER) {
 						   NOP();
 						}
-						if (TAPS == 61) {
+						if (TAPS == FILTER_MAX_ORDER) {
 							for (i=0; i<N; i++) {					
 								 // Store ADC result in the delay line
 								 x[delay_index].u16 = data_for_filter[i].u16;
@@ -837,9 +835,9 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
    TMR3CN &= ~0x80;                    // Clear Timer3 overflow flag
 	
    for (number=0; number<12; number++) {
-			if (freq_dac_flags [number] == 1) {
+		 if (freq_dac_flags [number] == 1) {
 				phase_acc[number].u16 += Phase_Add [number];
-				temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
+				temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / 8);
 	 		}
 	 }
 		 

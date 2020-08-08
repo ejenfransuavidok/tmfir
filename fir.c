@@ -1,6 +1,7 @@
 #include "fir.h"
 
 SI_SEGMENT_VARIABLE(FOUND_1_OR_2_FREQ_FLAG, uint8_t, xdata);
+SI_SEGMENT_VARIABLE(thresholds[12], char, xdata) = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 /**
  *
@@ -90,7 +91,7 @@ uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 	order = order << 1;
 	// get filter order
 	result = modbus_buffer_data [order + 1];
-	if (result != 61) {
+	if (result != FILTER_MAX_ORDER) {
 		result = 0;
 	}
 	for (i = 0; i<result; i++) {
@@ -99,7 +100,7 @@ uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
 		lo = modbus_buffer_data [(temp << 1) + 1];
 		coefficients [i].u16 = (hi << 8) + lo;
 	}
-	if (result != 61) {
+	if (result != FILTER_MAX_ORDER) {
 		NOP();
 	}
 	return result;
@@ -139,6 +140,23 @@ void putRms2Modbus(int value, uint8_t number) {
 	amplitude_reference = (hi << 8) + lo;
 	//---------------------- COMPARE FIR RESULT AND REFEREBCE ----------------------
 	if (value > amplitude_reference) {
+		 flag = 1;
+	} else {
+	   flag = 0;
+	}
+	//------------------------------ THRESHOLDS LOGIC -----------------------------------
+	if (flag == 1) {
+		 thresholds [number] += 1;
+	} else {
+		 thresholds [number] -= 1;
+	}		
+	if (thresholds [number] >= THRESHOLD) {
+		 thresholds [number] = THRESHOLD;
+	}
+	if (thresholds [number] < THRESHOLD) {
+		 thresholds [number] = -THRESHOLD;
+	}
+	if (thresholds [number] >= 0) {
 		 flag = 1;
 	} else {
 	   flag = 0;
