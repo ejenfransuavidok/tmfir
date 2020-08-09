@@ -837,7 +837,7 @@ SI_INTERRUPT(Timer4_ISR, INTERRUPT_TIMER4)
    for (number=0; number<12; number++) {
 		 if (freq_dac_flags [number] == 1) {
 				phase_acc[number].u16 += Phase_Add [number];
-				temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / 8);
+				temp1 += (SINE_TABLE[phase_acc[number].u8[MSB]] / freq_divider);
 	 		}
 	 }
 		 
