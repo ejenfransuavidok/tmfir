@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 1   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE C8051F12X_FIR_DEMO
@@ -62,7 +62,7 @@ line level    source
               #define NOP() \
                  _asm \
                  nop \
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 2   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 2   
 
                  _endasm;
               #endif // defined SDCC
@@ -126,7 +126,7 @@ line level    source
  113          //-----------------------------------------------------------------------------
  114          // Function Prototypes
  115          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 3   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 3   
 
  116          
  117          void SYSCLK_Init (void);               // Configure system clock
@@ -190,7 +190,7 @@ line level    source
  175             0xcf05, 0xd1ef, 0xd4e1, 0xd7da, 0xdad8, 0xdddd, 0xe0e7, 0xe3f5,
  176             0xe708, 0xea1e, 0xed38, 0xf055, 0xf375, 0xf696, 0xf9b9, 0xfcdc,
  177          };
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 4   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 4   
 
  178          
  179          // Similar to STARTUP.A51 for Keil, this function stub for SDCC allows us to
@@ -254,7 +254,7 @@ line level    source
  237   1         MAC0CF = 0x06;                      // Fractional mode; Saturate
  238   1                                             // enabled
  239   1         data_for_filter_counter = 0;
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 5   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 5   
 
  240   1         
  241   1         //
@@ -318,7 +318,7 @@ line level    source
  298   7                         TI0 = 1;
  299   7                         delay(100);
  300   7                       }
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 6   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 6   
 
  301   6                       if (i == N - 1) {
  302   7                         modbus_push_transmit_buffer(0xBB);
@@ -382,7 +382,7 @@ line level    source
  359   7                          {
  360   8                             opposite_sample_index = 0;
  361   8                          }
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 7   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 7   
 
  362   7                          else
  363   7                          {
@@ -446,7 +446,7 @@ line level    source
  421   1      
  422   1         // Step 2. Set the PLLSRC bit (PLL0CN.2) to select the desired
  423   1         // clock source for the PLL.
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 8   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 8   
 
  424   1         PLL0CN &= ~0x04;                    // Internal oscillator
  425   1      
@@ -510,7 +510,7 @@ line level    source
  483          //
  484          // DAC0 - DAC0 output
  485          //
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 9   
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 9   
 
  486          // AIN0.0 - ADC0 analog input
  487          //
@@ -574,7 +574,7 @@ line level    source
  545          //-----------------------------------------------------------------------------
  546          // UART0_Init
  547          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 10  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 10  
 
  548          //
  549          // Return Value:  None
@@ -638,7 +638,7 @@ line level    source
  607          //
  608          // Configure DAC1 to update on write to DAC1H.  VREF is already enabled by
  609          // the ADC initialization code.
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 11  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 11  
 
  610          //
  611          //-----------------------------------------------------------------------------
@@ -702,7 +702,7 @@ line level    source
  669          //-----------------------------------------------------------------------------
  670          // Timer3_Init
  671          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 12  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 12  
 
  672          //
  673          // Return Value:  None
@@ -766,7 +766,7 @@ line level    source
  731   1        
  732   1         EIE2 |= 0x04;                    // Enable Timer4 interrupts
  733   1         TR4 = 1;                         // Start Timer4
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 13  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 13  
 
  734   1      
  735   1         SFRPAGE = SFRPAGE_SAVE;          // Restore SFR page
@@ -830,7 +830,7 @@ line level    source
  793   1        SFRPAGE = SFRPAGE_save;
  794   1      }
  795          
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 14  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 14  
 
  796          #pragma NOAREGS
  797          SI_INTERRUPT(UART0_ISR, INTERRUPT_UART0)
@@ -894,7 +894,7 @@ line level    source
  855   1         //-----------------------------------------------------------------------
  856   1         SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
  857   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 15  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 15  
 
  858   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
  859   1         //-----------------------------------------------------------------------
@@ -958,7 +958,7 @@ line level    source
  917          // receive 485
  918          void toReceive485() {
  919   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
-C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/09/2020 07:46:22 PAGE 16  
+C51 COMPILER V9.53.0.0   C8051F12X_FIR_DEMO                                                08/14/2020 20:32:17 PAGE 16  
 
  920   1        SFRPAGE_save = SFRPAGE;
  921   1        SFRPAGE = CONFIG_PAGE;

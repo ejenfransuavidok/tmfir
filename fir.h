@@ -39,8 +39,6 @@ sbit DC24INPUT = P4^3;
 #define CMD_ADDRESS_5 1282
 #define CMD_ADDRESS_6 1283
 
-#define THRESHOLD 2
-
 #define TRUE 1
 #define FALSE 0
 

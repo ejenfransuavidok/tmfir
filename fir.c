@@ -1,7 +1,6 @@
 #include "fir.h"
 
 SI_SEGMENT_VARIABLE(FOUND_1_OR_2_FREQ_FLAG, uint8_t, xdata);
-SI_SEGMENT_VARIABLE(thresholds[12], char, xdata) = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 /**
  *
@@ -144,23 +143,6 @@ void putRms2Modbus(int value, uint8_t number) {
 	} else {
 	   flag = 0;
 	}
-	//------------------------------ THRESHOLDS LOGIC -----------------------------------
-	if (flag == 1) {
-		 thresholds [number] += 1;
-	} else {
-		 thresholds [number] -= 1;
-	}		
-	if (thresholds [number] >= THRESHOLD) {
-		 thresholds [number] = THRESHOLD;
-	}
-	if (thresholds [number] < THRESHOLD) {
-		 thresholds [number] = -THRESHOLD;
-	}
-	if (thresholds [number] >= 0) {
-		 flag = 1;
-	} else {
-	   flag = 0;
-	}
 	//---------------------- PUT COMPARATIVE TO MODBUS LIKE A FLAG ----------------------
 	address = MODBUS_FREQUENCY_VALUE_START + number;
 	address = address << 1;
@@ -176,9 +158,10 @@ void putRms2Modbus(int value, uint8_t number) {
 		if (modbus_buffer_data [address] == 1) {
 		   d = bit_set(d, i);
 		}
-		if ((d & 0x01 == 0x01) || (d & 0x02 == 0x02)) {
+		if (((d & 0x01) == 0x01) || ((d & 0x02) == 0x02)) {
 		   FOUND_1_OR_2_FREQ_FLAG = TRUE;
 		} else {
+			 d = d & 0x02;
 		   FOUND_1_OR_2_FREQ_FLAG = FALSE;
 		}
 	}

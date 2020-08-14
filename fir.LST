@@ -1,4 +1,4 @@
-C51 COMPILER V9.53.0.0   FIR                                                               08/09/2020 07:46:23 PAGE 1   
+C51 COMPILER V9.53.0.0   FIR                                                               08/14/2020 20:32:18 PAGE 1   
 
 
 C51 COMPILER V9.53.0.0, COMPILATION OF MODULE FIR
@@ -10,397 +10,380 @@ line level    source
    1          #include "fir.h"
    2          
    3          SI_SEGMENT_VARIABLE(FOUND_1_OR_2_FREQ_FLAG, uint8_t, xdata);
-   4          SI_SEGMENT_VARIABLE(thresholds[12], char, xdata) = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-   5          
-   6          /**
-   7           *
-   8           * MUST WRITE COMMAND TO MODBUS FROM 1278 TO 1283 FOR DP
-   9           *
-  10           */
-  11          #pragma NOAREGS
-  12          void flashDiodesOnCommand(uint8_t d, uint8_t kp_or_dp) {
-  13   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
-  14   1         SFRPAGE_save = SFRPAGE;
-  15   1         SFRPAGE = CONFIG_PAGE;
-  16   1         //-----------------------------------------------------------------------
-  17   1         // CLEAR - INVERSE LOGIC
-  18   1         P7 =  0xFF;
-  19   1         if ((d & CMD_1) == (uint8_t)CMD_1) {
-  20   2            bit_clear_P7(0);
-  21   2            if (kp_or_dp == DP_CONDITION) {
-  22   3               modbus_write_register(CMD_ADDRESS_1, 1);
-  23   3            }
-  24   2         }
-  25   1         if ((d & CMD_2) == CMD_2) {
-  26   2            bit_clear_P7(1);
-  27   2            if (kp_or_dp == DP_CONDITION) {
-  28   3               modbus_write_register(CMD_ADDRESS_2, 1);
-  29   3            }
-  30   2         }
-  31   1         if ((d & CMD_3) == CMD_3) {
-  32   2            bit_clear_P7(2);
-  33   2            if (kp_or_dp == DP_CONDITION) {
-  34   3               modbus_write_register(CMD_ADDRESS_3, 1);
-  35   3            }
-  36   2         }
-  37   1         if ((d & CMD_4) == CMD_4) {
-  38   2            bit_clear_P7(3);
-  39   2            if (kp_or_dp == DP_CONDITION) {
-  40   3               modbus_write_register(CMD_ADDRESS_4, 1);
-  41   3            }
-  42   2         }
-  43   1         if ((d & CMD_5) == CMD_5) {
-  44   2            bit_clear_P7(4);
-  45   2            if (kp_or_dp == DP_CONDITION) {
-  46   3               modbus_write_register(CMD_ADDRESS_5, 1);
-  47   3            }
-  48   2         }
-  49   1         if ((d & CMD_6) == CMD_6) {
-  50   2            bit_clear_P7(5);
-  51   2            if (kp_or_dp == DP_CONDITION) {
-  52   3               modbus_write_register(CMD_ADDRESS_6, 1);
-  53   3            }
-  54   2         }
-  55   1         SFRPAGE = SFRPAGE_save;
-C51 COMPILER V9.53.0.0   FIR                                                               08/09/2020 07:46:23 PAGE 2   
+   4          
+   5          /**
+   6           *
+   7           * MUST WRITE COMMAND TO MODBUS FROM 1278 TO 1283 FOR DP
+   8           *
+   9           */
+  10          #pragma NOAREGS
+  11          void flashDiodesOnCommand(uint8_t d, uint8_t kp_or_dp) {
+  12   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+  13   1         SFRPAGE_save = SFRPAGE;
+  14   1         SFRPAGE = CONFIG_PAGE;
+  15   1         //-----------------------------------------------------------------------
+  16   1         // CLEAR - INVERSE LOGIC
+  17   1         P7 =  0xFF;
+  18   1         if ((d & CMD_1) == (uint8_t)CMD_1) {
+  19   2            bit_clear_P7(0);
+  20   2            if (kp_or_dp == DP_CONDITION) {
+  21   3               modbus_write_register(CMD_ADDRESS_1, 1);
+  22   3            }
+  23   2         }
+  24   1         if ((d & CMD_2) == CMD_2) {
+  25   2            bit_clear_P7(1);
+  26   2            if (kp_or_dp == DP_CONDITION) {
+  27   3               modbus_write_register(CMD_ADDRESS_2, 1);
+  28   3            }
+  29   2         }
+  30   1         if ((d & CMD_3) == CMD_3) {
+  31   2            bit_clear_P7(2);
+  32   2            if (kp_or_dp == DP_CONDITION) {
+  33   3               modbus_write_register(CMD_ADDRESS_3, 1);
+  34   3            }
+  35   2         }
+  36   1         if ((d & CMD_4) == CMD_4) {
+  37   2            bit_clear_P7(3);
+  38   2            if (kp_or_dp == DP_CONDITION) {
+  39   3               modbus_write_register(CMD_ADDRESS_4, 1);
+  40   3            }
+  41   2         }
+  42   1         if ((d & CMD_5) == CMD_5) {
+  43   2            bit_clear_P7(4);
+  44   2            if (kp_or_dp == DP_CONDITION) {
+  45   3               modbus_write_register(CMD_ADDRESS_5, 1);
+  46   3            }
+  47   2         }
+  48   1         if ((d & CMD_6) == CMD_6) {
+  49   2            bit_clear_P7(5);
+  50   2            if (kp_or_dp == DP_CONDITION) {
+  51   3               modbus_write_register(CMD_ADDRESS_6, 1);
+  52   3            }
+  53   2         }
+  54   1         SFRPAGE = SFRPAGE_save;
+  55   1      }
+C51 COMPILER V9.53.0.0   FIR                                                               08/14/2020 20:32:18 PAGE 2   
 
-  56   1      }
-  57          
-  58          #pragma NOAREGS
-  59          int getFreqFromModbusForDAC(int number) {
-  60   1        uint8_t hi;
-  61   1        uint8_t lo;
-  62   1        uint8_t * modbus_buffer_data;
-  63   1        
-  64   1        modbus_buffer_data = getModbusBufferData();
-  65   1        
-  66   1        hi = modbus_buffer_data[((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1)];
-  67   1        lo = modbus_buffer_data[(((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1) + 1)];
-  68   1        
-  69   1        return ((hi << 8) + lo);
-  70   1      }
-  71          
-  72          #pragma NOAREGS
-  73          uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
-  74   1        SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
-  75   1        SI_SEGMENT_VARIABLE(order, uint16_t, xdata);
-  76   1        SI_SEGMENT_VARIABLE(result, uint8_t, xdata);
-  77   1        SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);
-  78   1        SI_SEGMENT_VARIABLE(coefficientIndex, uint16_t, xdata);
-  79   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
-  80   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
-  81   1        
-  82   1        uint8_t * modbus_buffer_data;
-  83   1        if (number > 11 || number < 0) {
-  84   2          return 0;
-  85   2        }
-  86   1        coefficientIndex = MODBUS_FILTER_COEFFICIENT_START_REGISTER + FILTER_MAX_ORDER_IN_MODBUS * number;
-  87   1        modbus_buffer_data = getModbusBufferData();
-  88   1        order = MODBUS_FILTER_ORDER_START_REGISTER;
-  89   1        order = order + number;
-  90   1        // reg number to byte number
-  91   1        order = order << 1;
-  92   1        // get filter order
-  93   1        result = modbus_buffer_data [order + 1];
-  94   1        if (result != FILTER_MAX_ORDER) {
-  95   2          result = 0;
-  96   2        }
-  97   1        for (i = 0; i<result; i++) {
-  98   2          temp = coefficientIndex + i;
-  99   2          hi = modbus_buffer_data [temp << 1];
- 100   2          lo = modbus_buffer_data [(temp << 1) + 1];
- 101   2          coefficients [i].u16 = (hi << 8) + lo;
- 102   2        }
- 103   1        if (result != FILTER_MAX_ORDER) {
- 104   2          NOP();
- 105   2        }
- 106   1        return result;
- 107   1      }
+  56          
+  57          #pragma NOAREGS
+  58          int getFreqFromModbusForDAC(int number) {
+  59   1        uint8_t hi;
+  60   1        uint8_t lo;
+  61   1        uint8_t * modbus_buffer_data;
+  62   1        
+  63   1        modbus_buffer_data = getModbusBufferData();
+  64   1        
+  65   1        hi = modbus_buffer_data[((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1)];
+  66   1        lo = modbus_buffer_data[(((MODBUS_OUTPUT_FREQ_FLAG_REGISTER_OFFSET + number) << 1) + 1)];
+  67   1        
+  68   1        return ((hi << 8) + lo);
+  69   1      }
+  70          
+  71          #pragma NOAREGS
+  72          uint8_t populateFirCoefficients(SI_UU16_t * coefficients, int number) {
+  73   1        SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
+  74   1        SI_SEGMENT_VARIABLE(order, uint16_t, xdata);
+  75   1        SI_SEGMENT_VARIABLE(result, uint8_t, xdata);
+  76   1        SI_SEGMENT_VARIABLE(temp, uint16_t, xdata);
+  77   1        SI_SEGMENT_VARIABLE(coefficientIndex, uint16_t, xdata);
+  78   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+  79   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+  80   1        
+  81   1        uint8_t * modbus_buffer_data;
+  82   1        if (number > 11 || number < 0) {
+  83   2          return 0;
+  84   2        }
+  85   1        coefficientIndex = MODBUS_FILTER_COEFFICIENT_START_REGISTER + FILTER_MAX_ORDER_IN_MODBUS * number;
+  86   1        modbus_buffer_data = getModbusBufferData();
+  87   1        order = MODBUS_FILTER_ORDER_START_REGISTER;
+  88   1        order = order + number;
+  89   1        // reg number to byte number
+  90   1        order = order << 1;
+  91   1        // get filter order
+  92   1        result = modbus_buffer_data [order + 1];
+  93   1        if (result != FILTER_MAX_ORDER) {
+  94   2          result = 0;
+  95   2        }
+  96   1        for (i = 0; i<result; i++) {
+  97   2          temp = coefficientIndex + i;
+  98   2          hi = modbus_buffer_data [temp << 1];
+  99   2          lo = modbus_buffer_data [(temp << 1) + 1];
+ 100   2          coefficients [i].u16 = (hi << 8) + lo;
+ 101   2        }
+ 102   1        if (result != FILTER_MAX_ORDER) {
+ 103   2          NOP();
+ 104   2        }
+ 105   1        return result;
+ 106   1      }
+ 107          
  108          
- 109          
- 110          #pragma NOAREGS
- 111          void putRms2Modbus(int value, uint8_t number) {
- 112   1        uint8_t * modbus_buffer_data;
- 113   1        SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
- 114   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
- 115   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
- 116   1        SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
- 117   1        SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
-C51 COMPILER V9.53.0.0   FIR                                                               08/09/2020 07:46:23 PAGE 3   
+ 109          #pragma NOAREGS
+ 110          void putRms2Modbus(int value, uint8_t number) {
+ 111   1        uint8_t * modbus_buffer_data;
+ 112   1        SI_SEGMENT_VARIABLE(i, uint8_t, xdata);
+ 113   1        SI_SEGMENT_VARIABLE(hi, uint8_t, xdata);
+ 114   1        SI_SEGMENT_VARIABLE(lo, uint8_t, xdata);
+ 115   1        SI_SEGMENT_VARIABLE(address, unsigned int, xdata);
+ 116   1        SI_SEGMENT_VARIABLE(amplitude_reference, unsigned int, xdata);
+ 117   1        SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
+C51 COMPILER V9.53.0.0   FIR                                                               08/14/2020 20:32:18 PAGE 3   
 
- 118   1        SI_SEGMENT_VARIABLE(flag, uint8_t, xdata);
- 119   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
- 120   1        SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 121   1        
- 122   1        SFRPAGE_save = SFRPAGE;
- 123   1        
- 124   1        if (number > 11 || number < 0) {
- 125   2          return;
- 126   2        }
- 127   1        //---------------------- PUT FIR RESULT TO MODBUS ----------------------
- 128   1        address = MODBUS_FREQUENCY_AMPLITUDES_VALUE_START + number;
- 129   1        address = address << 1;
- 130   1        hi = (value >> 8);
- 131   1        lo = (value & 0xFF);
- 132   1        modbus_buffer_data = getModbusBufferData();
- 133   1        modbus_buffer_data [address] = hi;
- 134   1        modbus_buffer_data [address + 1] = lo;
- 135   1        //---------------------- READ REFERENCE FROM MODBUS ----------------------
- 136   1        address = MODBUS_AMPLITUDES_THREASHOLS_VALUE_START + number;
- 137   1        address = address << 1;
- 138   1        hi = modbus_buffer_data [address];
- 139   1        lo = modbus_buffer_data [address + 1];
- 140   1        amplitude_reference = (hi << 8) + lo;
- 141   1        //---------------------- COMPARE FIR RESULT AND REFEREBCE ----------------------
- 142   1        if (value > amplitude_reference) {
- 143   2           flag = 1;
- 144   2        } else {
- 145   2           flag = 0;
- 146   2        }
- 147   1        //------------------------------ THRESHOLDS LOGIC -----------------------------------
- 148   1        if (flag == 1) {
- 149   2           thresholds [number] += 1;
- 150   2        } else {
- 151   2           thresholds [number] -= 1;
- 152   2        }   
- 153   1        if (thresholds [number] >= THRESHOLD) {
- 154   2           thresholds [number] = THRESHOLD;
- 155   2        }
- 156   1        if (thresholds [number] < THRESHOLD) {
- 157   2           thresholds [number] = -THRESHOLD;
- 158   2        }
- 159   1        if (thresholds [number] >= 0) {
- 160   2           flag = 1;
- 161   2        } else {
- 162   2           flag = 0;
- 163   2        }
- 164   1        //---------------------- PUT COMPARATIVE TO MODBUS LIKE A FLAG ----------------------
- 165   1        address = MODBUS_FREQUENCY_VALUE_START + number;
- 166   1        address = address << 1;
- 167   1        modbus_buffer_data [address] = 0;
- 168   1        modbus_buffer_data [address + 1] = flag;
+ 118   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, unsigned char, xdata);
+ 119   1        SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 120   1        
+ 121   1        SFRPAGE_save = SFRPAGE;
+ 122   1        
+ 123   1        if (number > 11 || number < 0) {
+ 124   2          return;
+ 125   2        }
+ 126   1        //---------------------- PUT FIR RESULT TO MODBUS ----------------------
+ 127   1        address = MODBUS_FREQUENCY_AMPLITUDES_VALUE_START + number;
+ 128   1        address = address << 1;
+ 129   1        hi = (value >> 8);
+ 130   1        lo = (value & 0xFF);
+ 131   1        modbus_buffer_data = getModbusBufferData();
+ 132   1        modbus_buffer_data [address] = hi;
+ 133   1        modbus_buffer_data [address + 1] = lo;
+ 134   1        //---------------------- READ REFERENCE FROM MODBUS ----------------------
+ 135   1        address = MODBUS_AMPLITUDES_THREASHOLS_VALUE_START + number;
+ 136   1        address = address << 1;
+ 137   1        hi = modbus_buffer_data [address];
+ 138   1        lo = modbus_buffer_data [address + 1];
+ 139   1        amplitude_reference = (hi << 8) + lo;
+ 140   1        //---------------------- COMPARE FIR RESULT AND REFEREBCE ----------------------
+ 141   1        if (value > amplitude_reference) {
+ 142   2           flag = 1;
+ 143   2        } else {
+ 144   2           flag = 0;
+ 145   2        }
+ 146   1        //---------------------- PUT COMPARATIVE TO MODBUS LIKE A FLAG ----------------------
+ 147   1        address = MODBUS_FREQUENCY_VALUE_START + number;
+ 148   1        address = address << 1;
+ 149   1        modbus_buffer_data [address] = 0;
+ 150   1        modbus_buffer_data [address + 1] = flag;
+ 151   1        //-------------------------------------------------------------------------------------
+ 152   1        // DP
+ 153   1        d = 0;
+ 154   1        for (i=0; i<8; i++) {
+ 155   2          address = MODBUS_FREQUENCY_VALUE_START + i;
+ 156   2          address = address << 1;
+ 157   2          address += 1;
+ 158   2          if (modbus_buffer_data [address] == 1) {
+ 159   3             d = bit_set(d, i);
+ 160   3          }
+ 161   2          if (((d & 0x01) == 0x01) || ((d & 0x02) == 0x02)) {
+ 162   3             FOUND_1_OR_2_FREQ_FLAG = TRUE;
+ 163   3          } else {
+ 164   3             d = d & 0x02;
+ 165   3             FOUND_1_OR_2_FREQ_FLAG = FALSE;
+ 166   3          }
+ 167   2        }
+ 168   1        flashDiodesOnCommand(d, DP_CONDITION);
  169   1        //-------------------------------------------------------------------------------------
- 170   1        // DP
- 171   1        d = 0;
- 172   1        for (i=0; i<8; i++) {
- 173   2          address = MODBUS_FREQUENCY_VALUE_START + i;
- 174   2          address = address << 1;
- 175   2          address += 1;
- 176   2          if (modbus_buffer_data [address] == 1) {
- 177   3             d = bit_set(d, i);
- 178   3          }
- 179   2          if ((d & 0x01 == 0x01) || (d & 0x02 == 0x02)) {
-C51 COMPILER V9.53.0.0   FIR                                                               08/09/2020 07:46:23 PAGE 4   
+ 170   1      }
+ 171          //-----------------------------------------------------------------------------
+ 172          // bits operations
+ 173          //-----------------------------------------------------------------------------
+ 174          #pragma NOAREGS
+ 175          void bit_set_P5(uint8_t position)
+ 176          {
+ 177   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 178   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 179   1         SFRPAGE_save = SFRPAGE;
+C51 COMPILER V9.53.0.0   FIR                                                               08/14/2020 20:32:18 PAGE 4   
 
- 180   3             FOUND_1_OR_2_FREQ_FLAG = TRUE;
- 181   3          } else {
- 182   3             FOUND_1_OR_2_FREQ_FLAG = FALSE;
- 183   3          }
- 184   2        }
- 185   1        flashDiodesOnCommand(d, DP_CONDITION);
- 186   1        //-------------------------------------------------------------------------------------
- 187   1      }
- 188          //-----------------------------------------------------------------------------
- 189          // bits operations
- 190          //-----------------------------------------------------------------------------
- 191          #pragma NOAREGS
- 192          void bit_set_P5(uint8_t position)
- 193          {
- 194   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 195   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 196   1         SFRPAGE_save = SFRPAGE;
- 197   1         SFRPAGE = CONFIG_PAGE;
- 198   1         d = (0x01<<position);
- 199   1         P5|= d;
- 200   1         SFRPAGE = SFRPAGE_save;
- 201   1      }
- 202          #pragma NOAREGS
- 203          void bit_clear_P5(uint8_t position)
- 204          {
- 205   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 206   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 207   1         SFRPAGE_save = SFRPAGE;
- 208   1         SFRPAGE = CONFIG_PAGE;
- 209   1         d = (1u<<position);
- 210   1         P5&= ~d;
- 211   1         SFRPAGE = SFRPAGE_save;
- 212   1      }
- 213          #pragma NOAREGS
- 214          void bit_set_P6(uint8_t position)
- 215          {
- 216   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 217   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 218   1         SFRPAGE_save = SFRPAGE;
- 219   1         SFRPAGE = CONFIG_PAGE;
- 220   1         d = (1u<<position);
- 221   1         P6|= d;
- 222   1         SFRPAGE = SFRPAGE_save;
- 223   1      }
- 224          #pragma NOAREGS
- 225          void bit_clear_P6(uint8_t position)
- 226          {
- 227   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 228   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 229   1         SFRPAGE_save = SFRPAGE;
- 230   1         SFRPAGE = CONFIG_PAGE;
- 231   1         d = (1u<<position);
- 232   1         P6&= ~d;
- 233   1         SFRPAGE = SFRPAGE_save;
- 234   1      }
- 235          #pragma NOAREGS
- 236          void bit_set_P7(uint8_t position)
- 237          {
- 238   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 239   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 240   1         SFRPAGE_save = SFRPAGE;
- 241   1         SFRPAGE = CONFIG_PAGE;
-C51 COMPILER V9.53.0.0   FIR                                                               08/09/2020 07:46:23 PAGE 5   
+ 180   1         SFRPAGE = CONFIG_PAGE;
+ 181   1         d = (0x01<<position);
+ 182   1         P5|= d;
+ 183   1         SFRPAGE = SFRPAGE_save;
+ 184   1      }
+ 185          #pragma NOAREGS
+ 186          void bit_clear_P5(uint8_t position)
+ 187          {
+ 188   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 189   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 190   1         SFRPAGE_save = SFRPAGE;
+ 191   1         SFRPAGE = CONFIG_PAGE;
+ 192   1         d = (1u<<position);
+ 193   1         P5&= ~d;
+ 194   1         SFRPAGE = SFRPAGE_save;
+ 195   1      }
+ 196          #pragma NOAREGS
+ 197          void bit_set_P6(uint8_t position)
+ 198          {
+ 199   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 200   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 201   1         SFRPAGE_save = SFRPAGE;
+ 202   1         SFRPAGE = CONFIG_PAGE;
+ 203   1         d = (1u<<position);
+ 204   1         P6|= d;
+ 205   1         SFRPAGE = SFRPAGE_save;
+ 206   1      }
+ 207          #pragma NOAREGS
+ 208          void bit_clear_P6(uint8_t position)
+ 209          {
+ 210   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 211   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 212   1         SFRPAGE_save = SFRPAGE;
+ 213   1         SFRPAGE = CONFIG_PAGE;
+ 214   1         d = (1u<<position);
+ 215   1         P6&= ~d;
+ 216   1         SFRPAGE = SFRPAGE_save;
+ 217   1      }
+ 218          #pragma NOAREGS
+ 219          void bit_set_P7(uint8_t position)
+ 220          {
+ 221   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 222   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 223   1         SFRPAGE_save = SFRPAGE;
+ 224   1         SFRPAGE = CONFIG_PAGE;
+ 225   1         d = (1u<<position);
+ 226   1         P7|= d;
+ 227   1         SFRPAGE = SFRPAGE_save;
+ 228   1      }
+ 229          #pragma NOAREGS
+ 230          void bit_clear_P7(uint8_t position)
+ 231          {
+ 232   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 233   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
+ 234   1         SFRPAGE_save = SFRPAGE;
+ 235   1         SFRPAGE = CONFIG_PAGE;
+ 236   1         d = (1u<<position);
+ 237   1         P7&=~d;
+ 238   1         SFRPAGE = SFRPAGE_save;
+ 239   1      }
+ 240          #pragma NOAREGS
+ 241          uint8_t bit_set(uint8_t d, uint8_t position)
+C51 COMPILER V9.53.0.0   FIR                                                               08/14/2020 20:32:18 PAGE 5   
 
- 242   1         d = (1u<<position);
- 243   1         P7|= d;
- 244   1         SFRPAGE = SFRPAGE_save;
+ 242          {
+ 243   1         d |= (1u<<position);
+ 244   1         return d;
  245   1      }
  246          #pragma NOAREGS
- 247          void bit_clear_P7(uint8_t position)
+ 247          uint8_t bit_clear(uint8_t d, uint8_t position)
  248          {
- 249   1         SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 250   1         SI_SEGMENT_VARIABLE(d, uint8_t, xdata);
- 251   1         SFRPAGE_save = SFRPAGE;
- 252   1         SFRPAGE = CONFIG_PAGE;
- 253   1         d = (1u<<position);
- 254   1         P7&=~d;
- 255   1         SFRPAGE = SFRPAGE_save;
- 256   1      }
- 257          #pragma NOAREGS
- 258          uint8_t bit_set(uint8_t d, uint8_t position)
- 259          {
- 260   1         d |= (1u<<position);
- 261   1         return d;
- 262   1      }
- 263          #pragma NOAREGS
- 264          uint8_t bit_clear(uint8_t d, uint8_t position)
- 265          {
- 266   1         d &= ~(1u<<position);
- 267   1         return d;
- 268   1      }
- 269          //-----------------------------------------------------------------------------
- 270          // KP - 1 / DP - 0
- 271          #pragma NOAREGS
- 272          int getCondition() {
- 273   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 274   1        SI_SEGMENT_VARIABLE(result, int, xdata);
- 275   1        SFRPAGE_save = SFRPAGE;
- 276   1        SFRPAGE = CONFIG_PAGE;
- 277   1        result = CONDSELECTOR;
- 278   1        SFRPAGE = SFRPAGE_save;
- 279   1        return result;
- 280   1      }
- 281          //-----------------------------------------------------------------------------
- 282          // FLASH DIODES P5 and P6
- 283          #pragma NOAREGS
- 284          void flashP5P6(uint8_t number, uint8_t flag) {
- 285   1        if (number < 8) {
- 286   2           flag == 1 ? bit_set_P5(number) : bit_clear_P5(number);
- 287   2        } else {
- 288   2           flag == 1 ? bit_set_P6(number - 4) : bit_clear_P6(number - 4);
- 289   2        }
- 290   1      }
- 291          //-----------------------------------------------------------------------------
- 292          // get DC24 input P4^3 value
- 293          #pragma NOAREGS
- 294          uint8_t getDC24INPUT() {
- 295   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 296   1        SI_SEGMENT_VARIABLE(value, uint8_t, xdata);
- 297   1        SFRPAGE_save = SFRPAGE;
- 298   1        SFRPAGE = CONFIG_PAGE;
- 299   1        value = DC24INPUT;
- 300   1        SFRPAGE = SFRPAGE_save;
- 301   1        return value;
- 302   1      }
- 303          //-----------------------------------------------------------------------------
-C51 COMPILER V9.53.0.0   FIR                                                               08/09/2020 07:46:23 PAGE 6   
+ 249   1         d &= ~(1u<<position);
+ 250   1         return d;
+ 251   1      }
+ 252          //-----------------------------------------------------------------------------
+ 253          // KP - 1 / DP - 0
+ 254          #pragma NOAREGS
+ 255          int getCondition() {
+ 256   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 257   1        SI_SEGMENT_VARIABLE(result, int, xdata);
+ 258   1        SFRPAGE_save = SFRPAGE;
+ 259   1        SFRPAGE = CONFIG_PAGE;
+ 260   1        result = CONDSELECTOR;
+ 261   1        SFRPAGE = SFRPAGE_save;
+ 262   1        return result;
+ 263   1      }
+ 264          //-----------------------------------------------------------------------------
+ 265          // FLASH DIODES P5 and P6
+ 266          #pragma NOAREGS
+ 267          void flashP5P6(uint8_t number, uint8_t flag) {
+ 268   1        if (number < 8) {
+ 269   2           flag == 1 ? bit_set_P5(number) : bit_clear_P5(number);
+ 270   2        } else {
+ 271   2           flag == 1 ? bit_set_P6(number - 4) : bit_clear_P6(number - 4);
+ 272   2        }
+ 273   1      }
+ 274          //-----------------------------------------------------------------------------
+ 275          // get DC24 input P4^3 value
+ 276          #pragma NOAREGS
+ 277          uint8_t getDC24INPUT() {
+ 278   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 279   1        SI_SEGMENT_VARIABLE(value, uint8_t, xdata);
+ 280   1        SFRPAGE_save = SFRPAGE;
+ 281   1        SFRPAGE = CONFIG_PAGE;
+ 282   1        value = DC24INPUT;
+ 283   1        SFRPAGE = SFRPAGE_save;
+ 284   1        return value;
+ 285   1      }
+ 286          //-----------------------------------------------------------------------------
+ 287          // set DC24 output P4^2 value
+ 288          #pragma NOAREGS
+ 289          void setDC24OUTPUT(uint8_t value) {
+ 290   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
+ 291   1        SFRPAGE_save = SFRPAGE;
+ 292   1        SFRPAGE = CONFIG_PAGE;
+ 293   1        DC24OUTPUT = value;
+ 294   1        SFRPAGE = SFRPAGE_save;
+ 295   1      }
+ 296          /*-----------------------------------------------------------------------------
+ 297          // RMS_Calc
+ 298          //-----------------------------------------------------------------------------
+ 299          //
+ 300          // Return Value : None
+ 301          // Parameters   :
+ 302          //   1) input_samples - pointer to an array of the data to be used for the RMS
+ 303          //                        Value calculations
+C51 COMPILER V9.53.0.0   FIR                                                               08/14/2020 20:32:18 PAGE 6   
 
- 304          // set DC24 output P4^2 value
- 305          #pragma NOAREGS
- 306          void setDC24OUTPUT(uint8_t value) {
- 307   1        SI_SEGMENT_VARIABLE(SFRPAGE_save, uint8_t, xdata);
- 308   1        SFRPAGE_save = SFRPAGE;
- 309   1        SFRPAGE = CONFIG_PAGE;
- 310   1        DC24OUTPUT = value;
- 311   1        SFRPAGE = SFRPAGE_save;
- 312   1      }
- 313          /*-----------------------------------------------------------------------------
- 314          // RMS_Calc
- 315          //-----------------------------------------------------------------------------
- 316          //
- 317          // Return Value : None
- 318          // Parameters   :
- 319          //   1) input_samples - pointer to an array of the data to be used for the RMS
- 320          //                        Value calculations
- 321          //   2) num_samples - the number of data elements in the <input_samples> array
- 322          //
- 323          // This routine takes a pointer to an array and a number of samples and first
- 324          // computes the average value of the data.  Then, it uses this average to
- 325          // calculate the RMS Value by using the following equation:
- 326          //
- 327          //                 N
- 328          //                 __
- 329          //                 \
- 330          //                 /_  (x-x_avg)^2
- 331          //                 n=10
- 332          // RMS_Value^2 =  -----------------
- 333          //                       N-10
- 334          //
- 335          //
- 336          // The above routine skips the first <TAPS> samples where the filter hasn't quite
- 337          // settled.
- 338          //---------------------------------------------------------------------------*/
- 339          #pragma NOAREGS
- 340          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
- 341          {
- 342   1         int count = 0;
- 343   1         float average = 0;
- 344   1         float RMS_summation = 0;
- 345   1         float RMS_Value;
- 346   1         float temp;
- 347   1        
- 348   1         // Calculate the average value (x_avg) of the <input_samples> array
- 349   1         average = 0.0;
- 350   1      
- 351   1         for (count = TAPS; count < num_samples; count++)
- 352   1         {
- 353   2            average += (float) input_samples[count];
- 354   2         }
- 355   1         average = (float)(average / (num_samples-TAPS));
- 356   1      
- 357   1         // Calculate the RMS Value using the average computed above
- 358   1         // Calculate the sum from 1 to N of (x-x_avg)^2
- 359   1         for (count = TAPS; count < num_samples; count++)
- 360   1         {
- 361   2            // calculate difference from mean
- 362   2            temp = input_samples[count] - average;
- 363   2            // square it
- 364   2            temp *= temp;
- 365   2            // and add it to sum
-C51 COMPILER V9.53.0.0   FIR                                                               08/09/2020 07:46:23 PAGE 7   
-
- 366   2            RMS_summation += temp;
- 367   2         }
- 368   1         // Calculate sum from above / N
- 369   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
- 370   1      #if defined __C51__
- 371   1         RMS_Value = sqrt(RMS_summation);
- 372   1      #elif defined SDCC
+ 304          //   2) num_samples - the number of data elements in the <input_samples> array
+ 305          //
+ 306          // This routine takes a pointer to an array and a number of samples and first
+ 307          // computes the average value of the data.  Then, it uses this average to
+ 308          // calculate the RMS Value by using the following equation:
+ 309          //
+ 310          //                 N
+ 311          //                 __
+ 312          //                 \
+ 313          //                 /_  (x-x_avg)^2
+ 314          //                 n=10
+ 315          // RMS_Value^2 =  -----------------
+ 316          //                       N-10
+ 317          //
+ 318          //
+ 319          // The above routine skips the first <TAPS> samples where the filter hasn't quite
+ 320          // settled.
+ 321          //---------------------------------------------------------------------------*/
+ 322          #pragma NOAREGS
+ 323          int RMS_Calc (int *input_samples, int num_samples, int TAPS)
+ 324          {
+ 325   1         int count = 0;
+ 326   1         float average = 0;
+ 327   1         float RMS_summation = 0;
+ 328   1         float RMS_Value;
+ 329   1         float temp;
+ 330   1        
+ 331   1         // Calculate the average value (x_avg) of the <input_samples> array
+ 332   1         average = 0.0;
+ 333   1      
+ 334   1         for (count = TAPS; count < num_samples; count++)
+ 335   1         {
+ 336   2            average += (float) input_samples[count];
+ 337   2         }
+ 338   1         average = (float)(average / (num_samples-TAPS));
+ 339   1      
+ 340   1         // Calculate the RMS Value using the average computed above
+ 341   1         // Calculate the sum from 1 to N of (x-x_avg)^2
+ 342   1         for (count = TAPS; count < num_samples; count++)
+ 343   1         {
+ 344   2            // calculate difference from mean
+ 345   2            temp = input_samples[count] - average;
+ 346   2            // square it
+ 347   2            temp *= temp;
+ 348   2            // and add it to sum
+ 349   2            RMS_summation += temp;
+ 350   2         }
+ 351   1         // Calculate sum from above / N
+ 352   1         RMS_summation = (float)RMS_summation / (num_samples-TAPS);
+ 353   1      #if defined __C51__
+ 354   1         RMS_Value = sqrt(RMS_summation);
+ 355   1      #elif defined SDCC
                  RMS_Value = sqrtf(RMS_summation);
               #endif
- 375   1         return (int)RMS_Value;
- 376   1      }
+ 358   1         return (int)RMS_Value;
+ 359   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1815    ----
+   CODE SIZE        =   1688    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =     13      39
+   XDATA SIZE       =      1      39
+C51 COMPILER V9.53.0.0   FIR                                                               08/14/2020 20:32:18 PAGE 7   
+
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----      39
    IDATA SIZE       =   ----    ----
