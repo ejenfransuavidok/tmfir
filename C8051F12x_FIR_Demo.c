@@ -22,7 +22,8 @@
 
 #define INTCLK       24500000          // Internal oscillator frequency in Hz    
 
-#define SYSCLK       98000000          // Output of PLL derived from (INTCLK*2)
+#define SYSCLK       22100000 * 4
+//#define SYSCLK     98000000          // Output of PLL derived from (INTCLK*2)
 
 #define SAMPLE_RATE  11000             // Sample frequency in Hz
 
@@ -417,12 +418,15 @@ void SYSCLK_Init (void)
 
    SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
 
-   OSCICN = 0x83;
-
+   //OSCICN = 0x83;
+  
+   OSCXCN |= 0x67;//0110 0111	
+	
    // Step 2. Set the PLLSRC bit (PLL0CN.2) to select the desired
    // clock source for the PLL.
-   PLL0CN &= ~0x04;                    // Internal oscillator
-
+   //PLL0CN &= ~0x04;                  // Internal oscillator
+   PLL0CN |= 0x04;                     // External oscillator
+	
    // Step 3. Program the Flash read timing bits, FLRT (FLSCL.5-4) to the
    // appropriate value for the new clock rate (see Section 15. Flash Memory
    // on page 199).
@@ -561,7 +565,7 @@ void UART0_Init (void)
 	 	
    SCON0  = 0x70;
 	 TMOD   = 0x20;
-	 TH1    = 0x5D;///0xE5;///0x5D;////0xE5;// - 115200;
+	 TH1    = 0x70;//0x5D;///0xE5;///0x5D;////0xE5;// - 115200;
 	 TR1    = 1;
 	 CKCON |= 0x10;
 	 PCON  |= 0x80;//SMOD0 = 1 
