@@ -22,7 +22,9 @@
 
 #define INTCLK       24500000          // Internal oscillator frequency in Hz    
 
-#define SYSCLK       98000000          // Output of PLL derived from (INTCLK*2)
+//#define SYSCLK       98000000          // Output of PLL derived from (INTCLK*2)
+
+#define SYSCLK       22100000 * 4
 
 #define SAMPLE_RATE  11000             // Sample frequency in Hz
 
@@ -211,7 +213,7 @@ void main (void)
 	 //-----------------------------------------------------------------------------
    WDTCN = 0xDE;                       // Disable watchdog timer
    WDTCN = 0xAD;
-
+	
    SYSCLK_Init ();                     // Initialize oscillator
    PORT_Init ();                       // Initialize crossbar and GPIO
    UART0_Init ();                      // Initialize UART0
@@ -410,12 +412,12 @@ void SYSCLK_Init (void)
 	 SFRPAGE_SAVE = SFRPAGE;             // Save Current SFR page
 
    SFRPAGE = CONFIG_PAGE;              // Switch to the necessary SFRPAGE
-
-   OSCICN = 0x83;
-
+  
+   OSCXCN |= 0x67;	
+	
    // Step 2. Set the PLLSRC bit (PLL0CN.2) to select the desired
    // clock source for the PLL.
-   PLL0CN &= ~0x04;                    // Internal oscillator
+   PLL0CN |= 0x04;                     // External oscillator
 
    // Step 3. Program the Flash read timing bits, FLRT (FLSCL.5-4) to the
    // appropriate value for the new clock rate (see Section 15. Flash Memory
@@ -555,7 +557,7 @@ void UART0_Init (void)
 	 	
    SCON0  = 0x70;
 	 TMOD   = 0x20;
-	 TH1    = 0x5D;///0xE5;///0x5D;////0xE5;// - 115200;
+	 TH1    = 0x70;//0x5D;///0xE5;///0x5D;////0xE5;// - 115200;
 	 TR1    = 1;
 	 CKCON |= 0x10;
 	 PCON  |= 0x80;//SMOD0 = 1 
